@@ -1,30 +1,31 @@
 package com.github.cd721.data_leakage_plugin;
 
 import com.github.cd721.data_leakage_plugin.listeners.FileChangeDetector;
+import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.Scanner;
 
 public class OverlapLeakageDetector {
 
-    public FileChangeDetector fileChangeDetector = new FileChangeDetector();
 
-    public boolean OverlapLeakageDetected(){
+    public boolean OverlapLeakageDetected() {
         int count = 0;
         try {
-            String currentFile = "";
-            File FinalOverlapLeak = new File(currentFile);
-            Scanner scanner = new Scanner(FinalOverlapLeak);
-            while (scanner.hasNextLine()){
-                count ++;
+
+            File file = new File("C:/dev/paper-sample-2-fact/FinalOverlapLeak.csv");
+            BufferedReader reader =  new BufferedReader(new FileReader(file));
+            while(reader.readLine()!=null) {
+                count++;
             }
-        } catch (FileNotFoundException e){
-            //TODO
+
+            return count > 0;
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return count > 0;
+
+
     }
-
-
-
 }
