@@ -4,9 +4,6 @@ import java.io.*;
 
 public class LeakageAnalysisParser {
     private boolean overlapLeakageDetected;
-    public LeakageAnalysisParser(){
-
-    }
 
     public int OverlapLeakageInstances() {
         int count = 0;

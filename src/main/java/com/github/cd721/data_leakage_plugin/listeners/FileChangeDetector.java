@@ -16,18 +16,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import static org.apache.tools.ant.types.resources.MultiRootFileSet.SetType.file;
-
 public class FileChangeDetector implements BulkFileListener {
-    private boolean fileChanged;
-    private Editor editorForFileChanged;
+
     private final LeakageAnalysisParser leakageAnalysisParser;
 
     private final DataLeakageIndicator dataLeakageIndicator;
 
     public FileChangeDetector() {
 
-        fileChanged = false;
         leakageAnalysisParser = new LeakageAnalysisParser();
         dataLeakageIndicator = new DataLeakageIndicator();
     }
@@ -35,23 +31,13 @@ public class FileChangeDetector implements BulkFileListener {
     @Override
     public void after(@NotNull List<? extends @NotNull VFileEvent> events) {
         for (VFileEvent event : events) {
+            if (theChangedFileIsInTheCurrentProject(event.getFile()) && aPythonFileWasChanged(event)) {
+                if (leakageAnalysisParser.isOverlapLeakageDetected()) {
+                    dataLeakageIndicator.renderDataLeakageWarning(getEditorForFileChanged(event));
 
-
-            setEditorForFileChanged(event);
-
-            if (theChangedFileIsInTheCurrentProject(event.getFile())) {
-
-                if (aPythonFileWasChanged(event)) {
-
-
-                    fileChanged = true;
-                    if (leakageAnalysisParser.isOverlapLeakageDetected()) {
-                        dataLeakageIndicator.renderDataLeakageWarning(getEditorForFileChanged());
-                    }
                 }
             }
         }
-
 
     }
 
@@ -65,15 +51,6 @@ public class FileChangeDetector implements BulkFileListener {
         return event.getPath().endsWith(".py") && event instanceof VFileContentChangeEvent;
     }
 
-    public boolean isFileChanged() {
-        return fileChanged;
-    }
-
-    public Editor getEditorForFileChanged() {
-
-        return editorForFileChanged;
-
-    }
 
     private static Project getProjectForFile(VirtualFile file) {
         Project project = null;
@@ -83,7 +60,7 @@ public class FileChangeDetector implements BulkFileListener {
         return project;
     }
 
-    public void setEditorForFileChanged(VFileEvent event) {
+    public Editor getEditorForFileChanged(VFileEvent event) {
         var file = event.getFile();
         var project = getProjectForFile(file);
         TextEditor currentEditor = null;
@@ -95,6 +72,6 @@ public class FileChangeDetector implements BulkFileListener {
             editor = currentEditor.getEditor();
         }
 
-        this.editorForFileChanged = editor;
+        return editor;
     }
 }
