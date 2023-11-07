@@ -1,5 +1,7 @@
 package com.github.cd721.data_leakage_plugin.listeners;
 
+import com.github.cd721.data_leakage_plugin.DataLeakageIndicator;
+import com.github.cd721.data_leakage_plugin.LeakageAnalysisParser;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.TextEditor;
@@ -14,47 +16,34 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import static org.apache.tools.ant.types.resources.MultiRootFileSet.SetType.file;
-
 public class FileChangeDetector implements BulkFileListener {
-    private boolean fileChanged;
-    private Editor editorForFileChanged;
+
+    private final LeakageAnalysisParser leakageAnalysisParser;
+
+    private final DataLeakageIndicator dataLeakageIndicator;
 
     public FileChangeDetector() {
-        fileChanged = true;
+
+        leakageAnalysisParser = new LeakageAnalysisParser();
+        dataLeakageIndicator = new DataLeakageIndicator();
     }
 
     @Override
     public void after(@NotNull List<? extends @NotNull VFileEvent> events) {
         for (VFileEvent event : events) {
-            var file = event.getFile();
-            Project project = null;
-            if (file != null) {
-                project = ProjectLocator.getInstance().guessProjectForFile(file);
-            }
-            TextEditor currentEditor = null;
-            if (project != null) {
-                currentEditor = (TextEditor) FileEditorManager.getInstance(project).getSelectedEditor();
-            }
-            Editor editor = null;
-            if (currentEditor != null) {
-                editor = currentEditor.getEditor();
-            }
+            if (theChangedFileIsInTheCurrentProject(event.getFile()) && aPythonFileWasChanged(event)) {
+                if (leakageAnalysisParser.isOverlapLeakageDetected()) {
+                    dataLeakageIndicator.renderDataLeakageWarning(getEditorForFileChanged(event));
 
-
-            setEditorForFileChanged(editor);
-
-            if (project != null && ProjectFileIndex.getInstance(project).isInProject(file)) {
-
-                if (aPythonFileWasChanged(event)) {
-                    // if (leakageAnalysisParser.isOverlapLeakageDetected()) {
-
-                    fileChanged = true;
                 }
             }
         }
 
+    }
 
+    private static boolean theChangedFileIsInTheCurrentProject(VirtualFile file) {
+        var project = getProjectForFile(file);
+        return project != null && ProjectFileIndex.getInstance(project).isInProject(file);
     }
 
 
@@ -62,17 +51,27 @@ public class FileChangeDetector implements BulkFileListener {
         return event.getPath().endsWith(".py") && event instanceof VFileContentChangeEvent;
     }
 
-    public boolean isFileChanged() {
-        return fileChanged;
+
+    private static Project getProjectForFile(VirtualFile file) {
+        Project project = null;
+        if (file != null) {
+            project = ProjectLocator.getInstance().guessProjectForFile(file);
+        }
+        return project;
     }
 
-    public Editor getEditorForFileChanged() {
+    public Editor getEditorForFileChanged(VFileEvent event) {
+        var file = event.getFile();
+        var project = getProjectForFile(file);
+        TextEditor currentEditor = null;
+        if (project != null) {
+            currentEditor = (TextEditor) FileEditorManager.getInstance(project).getSelectedEditor();
+        }
+        Editor editor = null;
+        if (currentEditor != null) {
+            editor = currentEditor.getEditor();
+        }
 
-        return editorForFileChanged;
-
-    }
-
-    public void setEditorForFileChanged(Editor editorForFileChanged) {
-        this.editorForFileChanged = editorForFileChanged;
+        return editor;
     }
 }
