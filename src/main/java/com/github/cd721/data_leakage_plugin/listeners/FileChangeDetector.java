@@ -32,7 +32,7 @@ public class FileChangeDetector implements BulkFileListener {
     public void after(@NotNull List<? extends @NotNull VFileEvent> events) {
         for (VFileEvent event : events) {
             if (theChangedFileIsInTheCurrentProject(event.getFile()) && aPythonFileWasChanged(event)) {
-                if (leakageAnalysisParser.isOverlapLeakageDetected()) {
+                if (leakageAnalysisParser.isLeakageDetected()) {
                     dataLeakageIndicator.renderDataLeakageWarning(getEditorForFileChanged(event));
 
                 }

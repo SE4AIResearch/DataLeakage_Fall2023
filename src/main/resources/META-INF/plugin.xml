@@ -16,17 +16,14 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.cd721.data_leakage_plugin.toolWindow.MyToolWindowFactory"
-                    id="MyToolWindow"/>
 
-        <postStartupActivity implementation="com.github.cd721.data_leakage_plugin.listeners.MyPostStartupActivity"/>
+
         <lang.inspectionSuppressor language="Python"
                                    implementationClass="com.github.cd721.data_leakage_plugin.FlakeInspectionSuppressor"/>
     </extensions>
 
     <applicationListeners>
-        <listener class="com.github.cd721.data_leakage_plugin.listeners.MyApplicationActivationListener"
-                  topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+
             <listener
                     class="com.github.cd721.data_leakage_plugin.listeners.FileChangeDetector"
                     topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>

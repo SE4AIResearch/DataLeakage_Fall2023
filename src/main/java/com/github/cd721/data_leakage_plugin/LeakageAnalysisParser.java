@@ -1,30 +1,23 @@
 package com.github.cd721.data_leakage_plugin;
 
-import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LeakageAnalysisParser {
-    private boolean overlapLeakageDetected;
+    private final List<LeakageDetector> leakageDetectors;
 
-    public int OverlapLeakageInstances() {
-        int count = 0;
-        try {
+    public LeakageAnalysisParser() {
+        this.leakageDetectors = new ArrayList<LeakageDetector> ();
+        leakageDetectors.add(new OverlapLeakageDetector());
+    }
 
-            File file = new File("C:/dev/paper-sample-2-fact/FinalOverlapLeak.csv");
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            while (reader.readLine() != null) {
-                count++;
+    public boolean isLeakageDetected() {
+        for(LeakageDetector detector: leakageDetectors){
+            if (detector.isLeakageDetected()){
+                return true;
             }
-
-            return count;
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
+        return false;
     }
 
-
-    public boolean isOverlapLeakageDetected() {
-        return OverlapLeakageInstances() > 0;
-    }
 }
