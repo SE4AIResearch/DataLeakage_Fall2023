@@ -31,7 +31,7 @@ public class FileChangeDetector implements BulkFileListener {
     @Override
     public void after(@NotNull List<? extends @NotNull VFileEvent> events) {
         for (VFileEvent event : events) {
-            if (theChangedFileIsInTheCurrentProject(event.getFile()) && aPythonFileWasChanged(event)) {
+            if ((theChangedFileIsInTheCurrentProject(event.getFile()) ||theChangedFileIsCurrentlyBeingEdited(event))&& aPythonFileWasChanged(event)) {
                 if (leakageAnalysisParser.isLeakageDetected()) {
                     dataLeakageIndicator.renderDataLeakageWarning(getEditorForFileChanged(event));
 
@@ -44,6 +44,13 @@ public class FileChangeDetector implements BulkFileListener {
     private static boolean theChangedFileIsInTheCurrentProject(VirtualFile file) {
         var project = getProjectForFile(file);
         return project != null && ProjectFileIndex.getInstance(project).isInProject(file);
+    }
+
+    private boolean theChangedFileIsCurrentlyBeingEdited(VFileEvent event) {
+        var editor = getEditorForFileChanged(event);
+        var fileBeingEdited = editor.getVirtualFile();
+
+        return fileBeingEdited.equals(event.getFile());
     }
 
 
