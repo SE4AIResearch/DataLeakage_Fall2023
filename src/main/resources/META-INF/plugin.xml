@@ -18,8 +18,6 @@
     <extensions defaultExtensionNs="com.intellij">
 
 
-        <lang.inspectionSuppressor language="Python"
-                                   implementationClass="com.github.cd721.data_leakage_plugin.FlakeInspectionSuppressor"/>
     </extensions>
 
     <applicationListeners>
