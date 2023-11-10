@@ -14,22 +14,18 @@ import static javax.swing.UIManager.getFont;
 public class DataLeakageWarningRenderer implements EditorCustomElementRenderer {
     private boolean blockInlayDisplayed;
 
+
     @Override
-        public int calcWidthInPixels(@NotNull Inlay inlay) {
-            return 30;
-        }
+    public int calcWidthInPixels(@NotNull Inlay inlay) {
+        return 50;
+    }
 
-        @Override
-        public int calcHeightInPixels(@NotNull Inlay inlay) {
-            return 15;
-        }
-
-        @Override
+    @Override
         public void paint(@NotNull Inlay inlay, @NotNull Graphics g, @NotNull Rectangle targetRegion, @NotNull TextAttributes textAttributes) {
             Editor editor = inlay.getEditor();
             g.setColor(JBColor.GRAY);
             g.setFont(getFont(editor));
-            g.drawString("Your code may contain data leakage.", targetRegion.x, targetRegion.y);
+            g.drawString("Your code may contain data leakage.", targetRegion.x, targetRegion.y + editor.getAscent());
             blockInlayDisplayed = true;
         }
 
