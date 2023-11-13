@@ -1,5 +1,7 @@
 package com.github.cd721.data_leakage_plugin;
 
+import java.util.List;
+
 public abstract class LeakageDetector {
     public LeakageType leakageType;
     public String folderPath;
@@ -10,6 +12,8 @@ public abstract class LeakageDetector {
     }
 
     public abstract int CountInstances();
+
+    public abstract List<Integer> FindLineNumbers();
 
     public boolean isLeakageDetected() {
         return CountInstances() > 0;

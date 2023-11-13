@@ -48,6 +48,9 @@ public class FileChangeDetector implements BulkFileListener {
 
     private boolean theChangedFileIsCurrentlyBeingEdited(VFileEvent event) {
         var editor = getEditorForFileChanged(event);
+        if (editor ==null){
+            return false;
+        }
         var fileBeingEdited = editor.getVirtualFile();
 
         return fileBeingEdited.equals(event.getFile());

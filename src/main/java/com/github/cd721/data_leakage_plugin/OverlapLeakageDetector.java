@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OverlapLeakageDetector extends LeakageDetector{
 
@@ -31,6 +33,29 @@ public class OverlapLeakageDetector extends LeakageDetector{
             }
 
             return count;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Integer> FindLineNumbers(){
+        List<Integer> lineNumbers = new ArrayList<Integer>();
+        try {
+
+            File file = new File(folderPath + "FinalOverlapLeak.csv");
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                String[] columns = line.split(("\t"));
+                Invocation invocation = new Invocation(columns[2]);
+                int internalLineNumber = getInternalLineNumberFromInvocation(invocation);
+                int actualLineNumber = getActualLineNumberFromInternalLineNumber(internalLineNumber);
+                lineNumbers.add(actualLineNumber);
+            }
+
+            return lineNumbers;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

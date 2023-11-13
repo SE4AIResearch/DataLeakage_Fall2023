@@ -25,8 +25,12 @@ public class DataLeakageWarningRenderer implements EditorCustomElementRenderer {
             Editor editor = inlay.getEditor();
             g.setColor(JBColor.GRAY);
             g.setFont(getFont(editor));
-            g.drawString("Your code may contain data leakage.", targetRegion.x, targetRegion.y + editor.getAscent());
-            blockInlayDisplayed = true;
+        int line = editor.getCaretModel().getLogicalPosition().line;
+        line = 11;
+        int visualLine = editor.visualLineToY(line);
+        g.drawString("Your code may contain data leakage.", targetRegion.x, visualLine);
+
+        blockInlayDisplayed = true;
         }
 
 
