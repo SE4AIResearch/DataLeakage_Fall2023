@@ -27,5 +27,14 @@ public class LeakageAnalysisParser {
         }
         return lineNumbers;
     }
+    public List<LeakageInstance> LeakageInstances(){
+        List<LeakageInstance> instances = new ArrayList<>();
+        for (LeakageDetector detector : leakageDetectors) {
+            instances.addAll(detector.FindLeakageInstances());
+        }
+        return instances;
+
+    }
 
 }
+

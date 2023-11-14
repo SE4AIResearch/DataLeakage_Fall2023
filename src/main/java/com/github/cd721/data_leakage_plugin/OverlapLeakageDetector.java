@@ -14,6 +14,31 @@ public class OverlapLeakageDetector extends LeakageDetector{
         this.leakageType= LeakageType.OverlapLeakage;
     }
 
+    @Override
+    public List<LeakageInstance> FindLeakageInstances() {
+        int count = 0;
+        List<LeakageInstance> instances = new ArrayList<>();
+        try {
+
+            File file = new File(folderPath + "FinalOverlapLeak.csv");
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                String[] columns = line.split(("\t"));
+                Invocation invocation = new Invocation(columns[2]);
+                int internalLineNumber = getInternalLineNumberFromInvocation(invocation);
+                int actualLineNumber = getActualLineNumberFromInternalLineNumber(internalLineNumber);
+
+                instances.add(new LeakageInstance(actualLineNumber,LeakageType.OverlapLeakage));
+                count++;
+            }
+
+            return instances;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public int CountInstances() {

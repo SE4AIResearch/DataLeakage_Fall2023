@@ -15,6 +15,8 @@ public abstract class LeakageDetector {
 
     public abstract List<Integer> FindLineNumbers();
 
+    public abstract List<LeakageInstance> FindLeakageInstances();
+
     public boolean isLeakageDetected() {
         return CountInstances() > 0;
     }

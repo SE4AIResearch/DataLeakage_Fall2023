@@ -1,7 +1,9 @@
 package com.github.cd721.data_leakage_plugin.listeners;
 
 import com.github.cd721.data_leakage_plugin.DataLeakageIndicator;
+import com.github.cd721.data_leakage_plugin.DataLeakageIndicatorFactory;
 import com.github.cd721.data_leakage_plugin.LeakageAnalysisParser;
+import com.github.cd721.data_leakage_plugin.LeakageInstance;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.TextEditor;
@@ -20,11 +22,14 @@ public class FileChangeDetector implements BulkFileListener {
 
     private final LeakageAnalysisParser leakageAnalysisParser;
 
+    //TODO: fix this
+    private final DataLeakageIndicatorFactory dataLeakageIndicatorFactory;
     private final DataLeakageIndicator dataLeakageIndicator;
 
     public FileChangeDetector() {
 
         leakageAnalysisParser = new LeakageAnalysisParser();
+        dataLeakageIndicatorFactory = new DataLeakageIndicatorFactory();
         dataLeakageIndicator = new DataLeakageIndicator();
     }
 
@@ -33,16 +38,18 @@ public class FileChangeDetector implements BulkFileListener {
         for (VFileEvent event : events) {
             if ((theChangedFileIsInTheCurrentProject(event.getFile()) || theChangedFileIsCurrentlyBeingEdited(event)) && aPythonFileWasChanged(event)) {
                 var editor = getEditorForFileChanged(event);
+
                 if (leakageAnalysisParser.isLeakageDetected()) {
                     List<Integer> lineNumbers = leakageAnalysisParser.LeakageLineNumbers();
-
-                    for (int lineNumber : lineNumbers) {
-                        dataLeakageIndicator.renderDataLeakageWarning(editor, lineNumber);
+                    var instances = leakageAnalysisParser.LeakageInstances();
+                    for (var instance : instances) {
+                        var dataLeakageIndicator = dataLeakageIndicatorFactory.GetIndicatorForLeakageType(instance.type);
+                        dataLeakageIndicator.renderDataLeakageWarning(editor, instance.lineNumber, instance.type);
 
                     }
 
                 } else {
-                    dataLeakageIndicator.clearDataLeakageWarnings(editor);
+                    dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
                 }
             }
         }
