@@ -7,17 +7,25 @@ public class LeakageAnalysisParser {
     private final List<LeakageDetector> leakageDetectors;
 
     public LeakageAnalysisParser() {
-        this.leakageDetectors = new ArrayList<LeakageDetector> ();
+        this.leakageDetectors = new ArrayList<LeakageDetector>();
         leakageDetectors.add(new OverlapLeakageDetector());
     }
 
     public boolean isLeakageDetected() {
-        for(LeakageDetector detector: leakageDetectors){
-            if (detector.isLeakageDetected()){
+        for (LeakageDetector detector : leakageDetectors) {
+            if (detector.isLeakageDetected()) {
                 return true;
             }
         }
         return false;
+    }
+
+    public List<Integer> LeakageLineNumbers() {
+        List<Integer> lineNumbers = new ArrayList<Integer>();
+        for (LeakageDetector detector : leakageDetectors) {
+            lineNumbers.addAll(detector.FindLineNumbers());
+        }
+        return lineNumbers;
     }
 
 }

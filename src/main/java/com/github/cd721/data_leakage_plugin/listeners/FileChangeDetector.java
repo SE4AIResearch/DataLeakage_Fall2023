@@ -31,10 +31,18 @@ public class FileChangeDetector implements BulkFileListener {
     @Override
     public void after(@NotNull List<? extends @NotNull VFileEvent> events) {
         for (VFileEvent event : events) {
-            if ((theChangedFileIsInTheCurrentProject(event.getFile()) ||theChangedFileIsCurrentlyBeingEdited(event))&& aPythonFileWasChanged(event)) {
+            if ((theChangedFileIsInTheCurrentProject(event.getFile()) || theChangedFileIsCurrentlyBeingEdited(event)) && aPythonFileWasChanged(event)) {
+                var editor = getEditorForFileChanged(event);
                 if (leakageAnalysisParser.isLeakageDetected()) {
-                    dataLeakageIndicator.renderDataLeakageWarning(getEditorForFileChanged(event));
+                    List<Integer> lineNumbers = leakageAnalysisParser.LeakageLineNumbers();
 
+                    for (int lineNumber : lineNumbers) {
+                        dataLeakageIndicator.renderDataLeakageWarning(editor, lineNumber);
+
+                    }
+
+                } else {
+                    dataLeakageIndicator.clearDataLeakageWarnings(editor);
                 }
             }
         }
@@ -48,7 +56,7 @@ public class FileChangeDetector implements BulkFileListener {
 
     private boolean theChangedFileIsCurrentlyBeingEdited(VFileEvent event) {
         var editor = getEditorForFileChanged(event);
-        if (editor ==null){
+        if (editor == null) {
             return false;
         }
         var fileBeingEdited = editor.getVirtualFile();
