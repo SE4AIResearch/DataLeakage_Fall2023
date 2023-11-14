@@ -23,6 +23,14 @@
         <lang.inspectionSuppressor language="Python"
                                    implementationClass="com.github.cd721.data_leakage_plugin.FlakeInspectionSuppressor"/>
     </extensions>
+    
+    <actions>
+        <action id="com.github.cd721.data_leakage_plugin.actions.MyAction"
+                class="com.github.cd721.data_leakage_plugin.actions.MyAction" text="Run Analysis Action"
+                description="Runs leakage analysis on currently open file">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+        </action>
+    </actions>
 
     <applicationListeners>
         <listener class="com.github.cd721.data_leakage_plugin.listeners.MyApplicationActivationListener"
