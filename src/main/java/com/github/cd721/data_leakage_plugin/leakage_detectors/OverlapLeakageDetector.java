@@ -1,4 +1,7 @@
-package com.github.cd721.data_leakage_plugin;
+package com.github.cd721.data_leakage_plugin.leakage_detectors;
+
+import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
+import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -7,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OverlapLeakageDetector extends LeakageDetector{
+public class OverlapLeakageDetector extends LeakageDetector {
 
     public OverlapLeakageDetector(){
         super();
@@ -23,7 +26,7 @@ public class OverlapLeakageDetector extends LeakageDetector{
             File file = new File(folderPath + "FinalOverlapLeak.csv");
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
-            String line = "";
+            String line ;
             while ((line = reader.readLine()) != null) {
                 String[] columns = line.split(("\t"));
                 Invocation invocation = new Invocation(columns[2]);
@@ -48,7 +51,7 @@ public class OverlapLeakageDetector extends LeakageDetector{
             File file = new File(folderPath + "FinalOverlapLeak.csv");
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
-            String line = "";
+            String line;
             while ((line = reader.readLine()) != null) {
                 String[] columns = line.split(("\t"));
                 Invocation invocation = new Invocation(columns[2]);
@@ -65,13 +68,13 @@ public class OverlapLeakageDetector extends LeakageDetector{
 
     @Override
     public List<Integer> FindLineNumbers(){
-        List<Integer> lineNumbers = new ArrayList<Integer>();
+        List<Integer> lineNumbers = new ArrayList<>();
         try {
 
             File file = new File(folderPath + "FinalOverlapLeak.csv");
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
-            String line = "";
+            String line;
             while ((line = reader.readLine()) != null) {
                 String[] columns = line.split(("\t"));
                 Invocation invocation = new Invocation(columns[2]);
@@ -91,7 +94,7 @@ public class OverlapLeakageDetector extends LeakageDetector{
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
-            String line = "";
+            String line ;
 
             while (((line = reader.readLine()) != null)) {
 
@@ -134,8 +137,8 @@ public class OverlapLeakageDetector extends LeakageDetector{
 
     }
 
-    private class Invocation {
-        private int number;
+    private static class Invocation {
+        private final int number;
 
         public Invocation(String invocationString) {
             number = Integer.parseInt(String.valueOf(invocationString.charAt(invocationString.length() - 1)));

@@ -1,6 +1,7 @@
-package com.github.cd721.data_leakage_plugin;
+package com.github.cd721.data_leakage_plugin.leakage_indicators;
 
-import javax.xml.crypto.Data;
+import com.github.cd721.data_leakage_plugin.enums.LeakageType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ public class DataLeakageIndicatorFactory {
     public DataLeakageIndicatorFactory() {
       indicators = new ArrayList<>();
         indicators.add(new OverlapLeakageIndicator());
-        indicators.add(new MultitestLeakageIndicator());
+        indicators.add(new MultiTestLeakageIndicator());
         indicators.add(new PreprocessingLeakageIndicator());
 
     }

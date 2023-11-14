@@ -1,4 +1,4 @@
-package com.github.cd721.data_leakage_plugin;
+package com.github.cd721.data_leakage_plugin.warning_renderers;
 
 import com.intellij.openapi.editor.EditorCustomElementRenderer;
 import com.intellij.openapi.editor.Inlay;

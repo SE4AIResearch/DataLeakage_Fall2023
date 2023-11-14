@@ -1,15 +1,9 @@
-package com.github.cd721.data_leakage_plugin;
+package com.github.cd721.data_leakage_plugin.leakage_indicators;
 
+import com.github.cd721.data_leakage_plugin.enums.LeakageType;
+import com.github.cd721.data_leakage_plugin.warning_renderers.DataLeakageWarningRenderer;
+import com.github.cd721.data_leakage_plugin.warning_renderers.DataLeakageWarningRendererFactory;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.Inlay;
-import com.intellij.openapi.editor.VisualPosition;
-import com.intellij.openapi.editor.markup.GutterIconRenderer;
-import com.intellij.openapi.util.Key;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class DataLeakageIndicator {

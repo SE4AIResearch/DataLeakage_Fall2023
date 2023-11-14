@@ -1,7 +1,7 @@
-package com.github.cd721.data_leakage_plugin;
+package com.github.cd721.data_leakage_plugin.warning_renderers;
 
+import com.github.cd721.data_leakage_plugin.warning_renderers.DataLeakageWarningRenderer;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorCustomElementRenderer;
 import com.intellij.openapi.editor.Inlay;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.ui.JBColor;

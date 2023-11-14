@@ -1,9 +1,8 @@
 package com.github.cd721.data_leakage_plugin.listeners;
 
-import com.github.cd721.data_leakage_plugin.DataLeakageIndicator;
-import com.github.cd721.data_leakage_plugin.DataLeakageIndicatorFactory;
-import com.github.cd721.data_leakage_plugin.LeakageAnalysisParser;
-import com.github.cd721.data_leakage_plugin.LeakageInstance;
+import com.github.cd721.data_leakage_plugin.leakage_indicators.DataLeakageIndicator;
+import com.github.cd721.data_leakage_plugin.leakage_indicators.DataLeakageIndicatorFactory;
+import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.TextEditor;
@@ -43,8 +42,8 @@ public class FileChangeDetector implements BulkFileListener {
                     List<Integer> lineNumbers = leakageAnalysisParser.LeakageLineNumbers();
                     var instances = leakageAnalysisParser.LeakageInstances();
                     for (var instance : instances) {
-                        var dataLeakageIndicator = dataLeakageIndicatorFactory.GetIndicatorForLeakageType(instance.type);
-                        dataLeakageIndicator.renderDataLeakageWarning(editor, instance.lineNumber, instance.type);
+                        var dataLeakageIndicator = dataLeakageIndicatorFactory.GetIndicatorForLeakageType(instance.type());
+                        dataLeakageIndicator.renderDataLeakageWarning(editor, instance.lineNumber(), instance.type());
 
                     }
 

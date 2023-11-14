@@ -1,9 +1,9 @@
-package com.github.cd721.data_leakage_plugin;
+package com.github.cd721.data_leakage_plugin.warning_renderers;
+
+import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.github.cd721.data_leakage_plugin.LeakageType.OverlapLeakage;
 
 public class DataLeakageWarningRendererFactory {
     //TODO: fix improper use of factory pattern

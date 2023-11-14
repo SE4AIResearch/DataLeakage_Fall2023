@@ -1,13 +1,15 @@
-package com.github.cd721.data_leakage_plugin;
+package com.github.cd721.data_leakage_plugin.leakage_detectors;
+
+import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
+import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 
 import java.util.List;
 
 public abstract class LeakageDetector {
     public LeakageType leakageType;
-    public String folderPath;
+    public final String folderPath = "C:/dev/paper-sample-2-fact/";
 
     public LeakageDetector() {
-        this.folderPath = "C:/dev/paper-sample-2-fact/";
 
     }
 
