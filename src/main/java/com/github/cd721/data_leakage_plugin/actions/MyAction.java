@@ -36,10 +36,7 @@ public class MyAction extends AnAction {
         }
         String[] fileNameArr = fileName.split("\\.");
         String fileExtension = fileNameArr[fileNameArr.length - 1];
-        if (fileExtension.equals("py")) {
-            event.getPresentation().setEnabledAndVisible(true);
-            return;
-        }
+        event.getPresentation().setEnabledAndVisible(fileExtension.equals("py"));
     }
 
     @Override
