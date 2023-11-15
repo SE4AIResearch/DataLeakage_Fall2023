@@ -18,6 +18,17 @@
 
 
     </extensions>
+    
+    <actions>
+        <action id="com.github.cd721.data_leakage_plugin.actions.MyAction"
+                class="com.github.cd721.data_leakage_plugin.actions.MyAction" text="Run Analysis Action"
+                description="Runs leakage analysis on currently open file">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+        </action>
+        <action id="com.github.cd721.data_leakage_plugin.actions.IPYNBAnalysis"
+                class="com.github.cd721.data_leakage_plugin.actions.IPYNBAnalysis" text="IPYNBAnalysis"
+                description="Action to convert IPYNB files to python files and analyze them like normal"/>
+    </actions>
 
     <applicationListeners>
 
