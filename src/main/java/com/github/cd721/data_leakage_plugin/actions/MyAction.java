@@ -1,20 +1,45 @@
 package com.github.cd721.data_leakage_plugin.actions;
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.pom.Navigatable;
 import org.jetbrains.annotations.NotNull;
 
 public class MyAction extends AnAction {
     @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
+    }
+
+//    public PopupDialogAction() {
+//        super();
+//    }
+//
+//    public PopupDialogAction(@Nullable String text, @Nullable String description, @Nullable Icon icon) {
+//        super(text, description, icon);
+//    }
+
+    @Override
     public void update(@NotNull AnActionEvent event) {
-        // Using the event, evaluate the context,
+        // Using the event, evalbouate the context,
         // and enable or disable the action.
         Project project = event.getProject();
-        event.getPresentation().setEnabledAndVisible(project != null);
+//        event.getPresentation().setEnabledAndVisible(project != null);
+
+        VirtualFile vFile = event.getData(PlatformDataKeys.VIRTUAL_FILE);
+        String fileName = vFile != null ? vFile.getName() : null;
+        if (fileName == null) {
+            event.getPresentation().setEnabledAndVisible(false);
+            return;
+        }
+        String[] fileNameArr = fileName.split("\\.");
+        String fileExtension = fileNameArr[fileNameArr.length - 1];
+        if (fileExtension.equals("py")) {
+            event.getPresentation().setEnabledAndVisible(true);
+            return;
+        }
     }
 
     @Override
