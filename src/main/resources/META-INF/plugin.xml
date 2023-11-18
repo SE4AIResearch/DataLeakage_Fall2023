@@ -14,7 +14,6 @@
     <depends>com.intellij.modules.python-core-capable</depends>
 
     <resource-bundle>messages.MyBundle</resource-bundle>
-
     <extensions defaultExtensionNs="com.intellij">
 
 
@@ -22,8 +21,8 @@
 
     <applicationListeners>
 
-            <listener
-                    class="com.github.cd721.data_leakage_plugin.listeners.FileChangeDetector"
-                    topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
+        <listener
+                class="com.github.cd721.data_leakage_plugin.listeners.FileChangeDetector"
+                topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
     </applicationListeners>
 </idea-plugin>

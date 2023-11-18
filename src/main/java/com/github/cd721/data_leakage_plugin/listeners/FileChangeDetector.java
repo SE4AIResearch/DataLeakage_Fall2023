@@ -49,6 +49,7 @@ public class FileChangeDetector implements BulkFileListener {
 
                 } else {
                     dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
+
                 }
             }
         }
