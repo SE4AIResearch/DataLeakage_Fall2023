@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-.DS_Store
-=======
 .gradle
 .idea
 .qodana
 build
->>>>>>> develop
+.DS_Store
