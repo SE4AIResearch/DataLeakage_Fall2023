@@ -21,13 +21,8 @@
                         dynamic="true"/>
 
     </extensionPoints>
-    c
-    <extensions defaultExtensionNs="com.intellij">
-        <codeInsight.inlayProvider
-                language="JAVA"
-                implementationClass="com.github.cd721.data_leakage_plugin.leakage_indicators.Provider"/>
 
-    </extensions>
+
 
     <applicationListeners>
 
