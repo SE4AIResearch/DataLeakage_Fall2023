@@ -1,6 +1,3 @@
-[submodule "leakage-analysis"]
-	path = leakage-analysis
-	url = https://github.com/malusamayo/leakage-analysis
 [submodule "website"]
 	path = website
 	url = git@github.com:SE4AIResearch/DataLeakage_Website_Fall2023.git
