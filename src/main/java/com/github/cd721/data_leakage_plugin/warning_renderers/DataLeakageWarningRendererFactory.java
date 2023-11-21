@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataLeakageWarningRendererFactory {
-    //TODO: fix improper use of factory pattern
     private final List<DataLeakageWarningRenderer> renderers;
 
     public DataLeakageWarningRendererFactory() {
