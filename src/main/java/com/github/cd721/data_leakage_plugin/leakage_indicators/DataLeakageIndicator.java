@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public class DataLeakageIndicator   {
+public class DataLeakageIndicator implements InlayHintsCollector {
     private final DataLeakageWarningRendererFactory dataLeakageWarningRendererFactory;
 
     public DataLeakageIndicator() {
@@ -28,9 +28,14 @@ public class DataLeakageIndicator   {
             if (editor != null) {
                 int y = editor.visualLineToY(lineNumber);
                 int offset = y+editor.getLineHeight()*2;
-                //  editor.getInlayModel().addListener(new ClickListener(),);
-                editor.getInlayModel().addBlockElement(offset, false, true, 100, dataLeakageWarningRenderer);
-                // editor.getInlayModel().addAfterLineEndElement(offset, false, dataLeakageWarningRenderer);
+              //  editor.getInlayModel().addListener(new ClickListener(),);
+                int startOffset = editor.getDocument().getLineStartOffset(lineNumber);
+
+
+
+                editor.getInlayModel().addBlockElement(startOffset, true, true, 1, dataLeakageWarningRenderer);
+
+               // editor.getInlayModel().addAfterLineEndElement(offset, false, dataLeakageWarningRenderer);
 
             }
         }
@@ -49,7 +54,10 @@ public class DataLeakageIndicator   {
     }
 
 
-
+    @Override
+    public boolean collect(@NotNull PsiElement psiElement, @NotNull Editor editor, @NotNull InlayHintsSink inlayHintsSink) {
+        return false;
+    }
 }
 
 

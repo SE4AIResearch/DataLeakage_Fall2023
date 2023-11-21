@@ -20,7 +20,7 @@ public class FileChangeDetector implements BulkFileListener {
 
     private final LeakageAnalysisParser leakageAnalysisParser;
 
-    //TODO: fix this
+
     private final DataLeakageIndicator dataLeakageIndicator;
 
     public FileChangeDetector() {

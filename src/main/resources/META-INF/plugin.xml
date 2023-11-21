@@ -14,13 +14,8 @@
     <depends>com.intellij.modules.python-core-capable</depends>
 
     <resource-bundle>messages.MyBundle</resource-bundle>
+    <extensions defaultExtensionNs="com.intellij">
 
-    <extensionPoints>
-        <extensionPoint qualifiedName="com.github.cd721.data_leakage_plugin.inlays.Provider"
-                        interface="com.intellij.codeInsight.hints.declarative.InlayHintsProvider"
-                        dynamic="true"/>
-
-    </extensionPoints>
 
 
 
