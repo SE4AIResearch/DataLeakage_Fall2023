@@ -23,13 +23,13 @@ public class FileChangeDetector implements BulkFileListener {
 
     //TODO: fix this
     private final DataLeakageIndicatorFactory dataLeakageIndicatorFactory;
- //   private final DataLeakageIndicator dataLeakageIndicator;
+    private final DataLeakageIndicator dataLeakageIndicator;
 
     public FileChangeDetector() {
 
         leakageAnalysisParser = new LeakageAnalysisParser();
         dataLeakageIndicatorFactory = new DataLeakageIndicatorFactory();
-      //  dataLeakageIndicator = new DataLeakageIndicator();
+        dataLeakageIndicator = new DataLeakageIndicator();
     }
 
     @Override
@@ -42,8 +42,8 @@ public class FileChangeDetector implements BulkFileListener {
                     List<Integer> lineNumbers = leakageAnalysisParser.LeakageLineNumbers();
                     var instances = leakageAnalysisParser.LeakageInstances();
                     for (var instance : instances) {
-                      //  var dataLeakageIndicator = dataLeakageIndicatorFactory.GetIndicatorForLeakageType(instance.type());
-                     //   dataLeakageIndicator.renderDataLeakageWarning(editor, instance.lineNumber(), instance.type());
+                        var dataLeakageIndicator = dataLeakageIndicatorFactory.GetIndicatorForLeakageType(instance.type());
+                        dataLeakageIndicator.renderDataLeakageWarning(editor, instance.lineNumber(), instance.type());
 
                     }
 

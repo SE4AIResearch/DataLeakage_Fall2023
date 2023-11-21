@@ -4,28 +4,20 @@ import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.github.cd721.data_leakage_plugin.listeners.ClickListener;
 import com.github.cd721.data_leakage_plugin.warning_renderers.DataLeakageWarningRenderer;
 import com.github.cd721.data_leakage_plugin.warning_renderers.DataLeakageWarningRendererFactory;
-import com.intellij.codeInsight.hints.FactoryInlayHintsCollector;
+import com.intellij.codeInsight.hints.InlayHintsCollector;
 import com.intellij.codeInsight.hints.InlayHintsSink;
-import com.intellij.codeInsight.hints.InlayParameterHintsProvider;
-import com.intellij.codeInsight.hints.declarative.InlayHintsCollector;
 import com.intellij.codeInsight.hints.declarative.InlayHintsProvider;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Set;
 
-
-public class DataLeakageIndicator extends InlayHintsCollector {
+public class DataLeakageIndicator implements InlayHintsCollector {
     private final DataLeakageWarningRendererFactory dataLeakageWarningRendererFactory;
 
-    public DataLeakageIndicator(@NotNull Editor editor) {
-        super(editor);
-
-
+    public DataLeakageIndicator() {
         dataLeakageWarningRendererFactory = new DataLeakageWarningRendererFactory();
     }
 
@@ -34,7 +26,6 @@ public class DataLeakageIndicator extends InlayHintsCollector {
         DataLeakageWarningRenderer dataLeakageWarningRenderer = dataLeakageWarningRendererFactory.GetRendererForLeakageType(leakageType);
         if (!dataLeakageWarningRenderer.warningIsDisplayed()) {
             if (editor != null) {
-<<<<<<< Updated upstream
               //  int y = editor.visualLineToY(lineNumber);
 
                // int offset = y+editor.getLineHeight()*2;
@@ -49,11 +40,6 @@ public class DataLeakageIndicator extends InlayHintsCollector {
                 editor.getInlayModel().addBlockElement(startOffset, false, true, 1, dataLeakageWarningRenderer);
                // editor.getInlayModel().addAfterLineEndElement(offset, false, dataLeakageWarningRenderer);
 
-=======
-                int y = editor.visualLineToY(lineNumber);
-                int offset = y + editor.getLineHeight();
-                //   collect()
->>>>>>> Stashed changes
             }
         }
 
@@ -73,11 +59,7 @@ public class DataLeakageIndicator extends InlayHintsCollector {
 
     @Override
     public boolean collect(@NotNull PsiElement psiElement, @NotNull Editor editor, @NotNull InlayHintsSink inlayHintsSink) {
-        if (psiElement instanceof PsiComment) {
-            inlayHintsSink.addBlockElement(editor.getAscent(), false, true, 1, getFactory().smallText("Overlap Leakage"));
-
-        }
-        return true;
+        return false;
     }
 }
 

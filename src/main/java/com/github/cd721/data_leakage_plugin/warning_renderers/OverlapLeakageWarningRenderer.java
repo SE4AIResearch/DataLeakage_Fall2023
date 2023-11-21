@@ -26,7 +26,8 @@ private boolean blockInlayDisplayed;
 
         int lineNumber = editor.yToVisualLine(inlay.getOffset());
 
-        g.drawString("Your code may contain overlap leakage.", targetRegion.x, inlay.getOffset());
+
+        g.drawString("Your code may contain overlap leakage.", targetRegion.x, targetRegion.y+ editor.getAscent());
 
         blockInlayDisplayed = true;
         }

@@ -11,9 +11,9 @@ public class DataLeakageIndicatorFactory {
     //TODO: fix improper use of factory pattern
     public DataLeakageIndicatorFactory() {
       indicators = new ArrayList<>();
-//        indicators.add(new OverlapLeakageIndicator());
-//        indicators.add(new MultiTestLeakageIndicator());
-//        indicators.add(new PreprocessingLeakageIndicator());
+        indicators.add(new OverlapLeakageIndicator());
+        indicators.add(new MultiTestLeakageIndicator());
+        indicators.add(new PreprocessingLeakageIndicator());
 
     }
 
