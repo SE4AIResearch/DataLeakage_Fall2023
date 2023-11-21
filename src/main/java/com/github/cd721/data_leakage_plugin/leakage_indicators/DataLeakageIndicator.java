@@ -43,6 +43,7 @@ public class DataLeakageIndicator extends InlayHintsCollector {
 =======
                 int y = editor.visualLineToY(lineNumber);
                 int offset = y+editor.getLineHeight()*3;
+>>>>>>> parent of 14f3653 (move inlay one line up)
               //  editor.getInlayModel().addListener(new ClickListener(),);
                int startOffset = editor.getDocument().getLineStartOffset(lineNumber);
                int endOffset = editor.getDocument().getLineEndOffset(lineNumber);
