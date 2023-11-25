@@ -1,5 +1,6 @@
 package com.github.cd721.data_leakage_plugin.listeners;
 
+import com.github.cd721.data_leakage_plugin.BinaryApi;
 import com.github.cd721.data_leakage_plugin.leakage_indicators.DataLeakageIndicator;
 import com.github.cd721.data_leakage_plugin.leakage_indicators.DataLeakageIndicatorFactory;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
@@ -53,6 +54,8 @@ public class FileChangeDetector implements BulkFileListener {
 //                }
 //            }
             //TODO: run leakage analysis
+            BinaryApi api = new BinaryApi("C:/dev/paper-sample-4.py");
+            api.analysis();
         }
 
     }
