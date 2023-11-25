@@ -16,7 +16,7 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
     <extensions defaultExtensionNs="com.intellij">
 
-
+    </extensions>
 
 
     <applicationListeners>
