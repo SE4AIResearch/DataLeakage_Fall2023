@@ -1,0 +1,6 @@
+[submodule "website"]
+	path = website
+	url = git@github.com:SE4AIResearch/DataLeakage_Website_Fall2023.git
+[submodule "api/bin/pyright"]
+	path = api/pyright
+	url = https://github.com/malusamayo/pyright.git
