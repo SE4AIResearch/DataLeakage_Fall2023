@@ -19,40 +19,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class FileChangeDetector implements BulkFileListener {
-
-    private final LeakageAnalysisParser leakageAnalysisParser;
-
-    //TODO: fix this
-    private final DataLeakageIndicatorFactory dataLeakageIndicatorFactory;
-    private final DataLeakageIndicator dataLeakageIndicator;
-
-    public FileChangeDetector() {
-
-        leakageAnalysisParser = new LeakageAnalysisParser();
-        dataLeakageIndicatorFactory = new DataLeakageIndicatorFactory();
-        dataLeakageIndicator = new DataLeakageIndicator();
-    }
-
+    
     @Override
     public void after(@NotNull List<? extends @NotNull VFileEvent> events) {
         for (VFileEvent event : events) {
-//            if ((theChangedFileIsInTheCurrentProject(event.getFile()) || theChangedFileIsCurrentlyBeingEdited(event)) && aPythonFileWasChanged(event)) {
-//                var editor = getEditorForFileChanged(event);
-//
-//                if (leakageAnalysisParser.isLeakageDetected()) {
-//                    List<Integer> lineNumbers = leakageAnalysisParser.LeakageLineNumbers();
-//                    var instances = leakageAnalysisParser.LeakageInstances();
-//                    for (var instance : instances) {
-//                        var dataLeakageIndicator = dataLeakageIndicatorFactory.GetIndicatorForLeakageType(instance.type());
-//                        dataLeakageIndicator.renderDataLeakageWarning(editor, instance.lineNumber(), instance.type());
-//
-//                    }
-//
-//                } else {
-//                    dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
-//
-//                }
-//            }
             //TODO: run leakage analysis
             BinaryApi api = new BinaryApi("C:/dev/paper-sample-4.py");
             api.analysis();
