@@ -17,9 +17,9 @@ public class DataLeakageWarningRendererFactory {
 
     public DataLeakageWarningRenderer GetRendererForLeakageType(LeakageType leakageType) {
         return switch (leakageType) {
-            case OverlapLeakage -> new OverlapLeakageWarningRenderer();
-            case MultiTestLeakage -> new MultiTestLeakageWarningRenderer();
-            case PreprocessingLeakage -> new PreprocessingLeakageWarningRenderer();
+            case OverlapLeakage -> renderers.get(0);
+            case MultiTestLeakage -> renderers.get(1);
+            case PreprocessingLeakage -> renderers.get(2);
         };
 
     }
