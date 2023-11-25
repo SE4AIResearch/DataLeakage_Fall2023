@@ -26,7 +26,7 @@ public abstract class DataLeakageWarningRenderer implements EditorCustomElementR
 
         int lineNumber = inlay.getEditor().getDocument().getLineNumber(inlay.getOffset());
 
-        g.drawString(getMessage(), targetRegion.x, (inlay.getOffset()+editor.getAscent()));
+        g.drawString(getMessage(), targetRegion.x, (inlay.getOffset()));
         setWarningDisplayed();
     }
 

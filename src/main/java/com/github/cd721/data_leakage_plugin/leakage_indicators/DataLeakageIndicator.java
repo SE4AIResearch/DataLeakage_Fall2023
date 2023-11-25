@@ -23,10 +23,10 @@ public class DataLeakageIndicator implements InlayHintsCollector {
         if (!dataLeakageWarningRenderer.warningIsDisplayed()) {
             if (editor != null) {
                 int y = editor.visualLineToY(lineNumber);
-                int offset = y+editor.getLineHeight()*2;
-              //  editor.getInlayModel().addListener(new ClickListener(),);
-                editor.getInlayModel().addBlockElement(offset, true, true, 100, dataLeakageWarningRenderer);
-               // editor.getInlayModel().addAfterLineEndElement(offset, false, dataLeakageWarningRenderer);
+                int offset = y + editor.getLineHeight() * 2;
+                int startOffset = editor.getDocument().getLineStartOffset(lineNumber);
+                editor.getInlayModel().addBlockElement(startOffset, true, true, 100, dataLeakageWarningRenderer);
+                // editor.getInlayModel().addAfterLineEndElement(offset, false, dataLeakageWarningRenderer);
 
             }
         }
