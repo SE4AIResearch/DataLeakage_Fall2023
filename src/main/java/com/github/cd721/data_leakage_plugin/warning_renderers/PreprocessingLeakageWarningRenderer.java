@@ -13,10 +13,9 @@ import static javax.swing.UIManager.getFont;
 
 public class PreprocessingLeakageWarningRenderer extends DataLeakageWarningRenderer {
 
-
     @Override
     protected String getMessage() {
-        return null;
+        return "Your code may contain preprocessing leakage.";
     }
 
 
