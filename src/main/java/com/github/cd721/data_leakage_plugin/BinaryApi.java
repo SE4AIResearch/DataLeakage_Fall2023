@@ -16,7 +16,7 @@ public class BinaryApi {
     public int analysis() {
         try {
             // Run the leakage analysis code
-            String[] command = {"../bin/run-me", file_path};
+            String[] command = {"C:\\dev\\DataLeakage_Fall2023\\api\\bin\\run-me", file_path};
 
             // Create ProcessBuilder
             ProcessBuilder processBuilder = new ProcessBuilder(command);
