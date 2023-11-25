@@ -14,14 +14,6 @@ import static javax.swing.UIManager.getFont;
 public class OverlapLeakageWarningRenderer extends DataLeakageWarningRenderer {
 
 
-    private boolean blockInlayDisplayed;
-
-
-    @Override
-    public boolean warningIsDisplayed() {
-
-        return blockInlayDisplayed;
-    }
 
     @Override
     protected String getMessage() {
@@ -29,9 +21,7 @@ public class OverlapLeakageWarningRenderer extends DataLeakageWarningRenderer {
     }
 
 
-    @Override
-    protected void setWarningDisplayed(boolean inlayDisplayed) {
 
-        blockInlayDisplayed = inlayDisplayed;
-    }
+
+
 }

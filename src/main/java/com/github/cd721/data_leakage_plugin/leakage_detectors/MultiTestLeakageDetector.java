@@ -11,25 +11,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OverlapLeakageDetector extends LeakageDetector {
+public class MultiTestLeakageDetector extends LeakageDetector {
     private final List<LeakageInstance> leakageInstances;
 
-    public OverlapLeakageDetector() {
-        super();
-        this.leakageType = LeakageType.OverlapLeakage;
-        this.leakageInstances = new ArrayList<>();
-    }
-
-
     @Override
-    public boolean isLeakageDetected() {
-        return !this.leakageInstances.isEmpty();
+    public String getCsvFileName() {
+        return "MultiUseTestLeak.csv";
     }
-
 
     @Override
     public int getCsvInvocationColumn() {
-        return 2;
+        return 1;
     }
 
     @Override
@@ -42,8 +34,17 @@ public class OverlapLeakageDetector extends LeakageDetector {
         return leakageInstances;
     }
 
-    @Override
-    public String getCsvFileName() {
-        return "FinalOverlapLeak.csv";
+    public MultiTestLeakageDetector() {
+        super();
+        this.leakageType = LeakageType.MultiTestLeakage;
+        this.leakageInstances = new ArrayList<>();
     }
+
+
+    @Override
+    public boolean isLeakageDetected() {
+        return !this.leakageInstances.isEmpty();
+    }
+
+
 }

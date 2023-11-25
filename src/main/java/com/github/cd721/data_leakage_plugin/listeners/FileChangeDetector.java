@@ -1,7 +1,5 @@
 package com.github.cd721.data_leakage_plugin.listeners;
 
-import com.github.cd721.data_leakage_plugin.leakage_indicators.DataLeakageIndicator;
-import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.TextEditor;
@@ -18,36 +16,15 @@ import java.util.List;
 
 public class FileChangeDetector implements BulkFileListener {
 
-    private final LeakageAnalysisParser leakageAnalysisParser;
-
-
-    private final DataLeakageIndicator dataLeakageIndicator;
-
     public FileChangeDetector() {
 
-        leakageAnalysisParser = new LeakageAnalysisParser();
-        dataLeakageIndicator = new DataLeakageIndicator();
     }
 
     @Override
     public void after(@NotNull List<? extends @NotNull VFileEvent> events) {
         for (VFileEvent event : events) {
-            if ((theChangedFileIsInTheCurrentProject(event.getFile()) || theChangedFileIsCurrentlyBeingEdited(event)) && aPythonFileWasChanged(event)) {
-                var editor = getEditorForFileChanged(event);
+            //TODO: run leakage analysis
 
-                if (leakageAnalysisParser.isLeakageDetected()) {
-                    List<Integer> lineNumbers = leakageAnalysisParser.LeakageLineNumbers();
-                    var instances = leakageAnalysisParser.LeakageInstances();
-                    for (var instance : instances) {
-                        dataLeakageIndicator.renderDataLeakageWarning(editor, instance.lineNumber(), instance.type());
-
-                    }
-
-                } else {
-                    dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
-
-                }
-            }
         }
 
     }

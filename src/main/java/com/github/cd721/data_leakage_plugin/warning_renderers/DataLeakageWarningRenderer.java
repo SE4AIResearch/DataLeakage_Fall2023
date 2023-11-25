@@ -12,33 +12,25 @@ import java.awt.*;
 import static javax.swing.UIManager.getFont;
 
 public abstract class DataLeakageWarningRenderer implements EditorCustomElementRenderer {
-    public abstract boolean warningIsDisplayed();
-
 
     protected abstract String getMessage();
 
-    protected abstract void setWarningDisplayed(boolean inlayDisplayed);
+
+    @Override
+    public void paint(@NotNull Inlay inlay, @NotNull Graphics g, @NotNull Rectangle targetRegion, @NotNull TextAttributes textAttributes) {
+        Editor editor = inlay.getEditor();
+        g.setColor(JBColor.GRAY);
+        g.setFont(getFont(editor));
+
+        int lineNumber = inlay.getEditor().getDocument().getLineNumber(inlay.getOffset());
+
+        g.drawString(getMessage(), targetRegion.x, targetRegion.y+ editor.getAscent());
+    }
+
     @Override
     public int calcWidthInPixels(@NotNull Inlay inlay) {
         return 50;
     }
 
-    @Override
-    //this method is getting called every time the IDE is moved into focus
-    public void paint(@NotNull Inlay inlay, @NotNull Graphics g,
-                      @NotNull Rectangle targetRegion,
-                      @NotNull TextAttributes textAttributes) {
-        Editor editor = inlay.getEditor();
-        g.setColor(JBColor.GRAY);
-        g.setFont(getFont(editor));
 
-        int lineNumber = editor.yToVisualLine(inlay.getOffset());
-
-
-        g.drawString(getMessage(), targetRegion.x, targetRegion.y);
-
-        setWarningDisplayed(true);
-    }
-
-  
 }

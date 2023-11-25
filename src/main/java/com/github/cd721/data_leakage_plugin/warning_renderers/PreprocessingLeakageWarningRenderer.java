@@ -13,24 +13,13 @@ import static javax.swing.UIManager.getFont;
 
 public class PreprocessingLeakageWarningRenderer extends DataLeakageWarningRenderer {
 
-    private boolean blockInlayDisplayed;
-
-
-    @Override
-    public boolean warningIsDisplayed() {
-
-        return blockInlayDisplayed;
-    }
 
     @Override
     protected String getMessage() {
-        return "Your code may contain preprocessing leakage.";
+        return null;
     }
 
 
-    @Override
-    protected void setWarningDisplayed(boolean inlayDisplayed) {
 
-        blockInlayDisplayed = inlayDisplayed;
-    }
+
 }

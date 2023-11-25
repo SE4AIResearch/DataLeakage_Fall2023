@@ -16,11 +16,6 @@ public class MultiTestLeakageWarningRenderer extends DataLeakageWarningRenderer 
     private boolean blockInlayDisplayed;
 
 
-    @Override
-    public boolean warningIsDisplayed() {
-
-        return blockInlayDisplayed;
-    }
 
     @Override
     protected String getMessage() {
@@ -28,9 +23,5 @@ public class MultiTestLeakageWarningRenderer extends DataLeakageWarningRenderer 
     }
 
 
-    @Override
-    protected void setWarningDisplayed(boolean inlayDisplayed) {
 
-        blockInlayDisplayed = inlayDisplayed;
-    }
 }
