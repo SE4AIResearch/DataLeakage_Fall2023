@@ -18,19 +18,10 @@ public class MultiTestLeakageWarningRenderer extends DataLeakageWarningRenderer 
 
 
     @Override
-    public boolean warningIsDisplayed() {
-        return blockInlayDisplayed;
-    }
-
-    @Override
     protected String getMessage() {
         return "Your code may contain multi-test leakage.";
     }
 
-    @Override
-    protected void setWarningDisplayed() {
 
-        blockInlayDisplayed = true;
-    }
 
 }

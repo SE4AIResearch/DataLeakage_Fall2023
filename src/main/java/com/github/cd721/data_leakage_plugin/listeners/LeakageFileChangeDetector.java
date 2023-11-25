@@ -64,8 +64,6 @@ public class LeakageFileChangeDetector implements BulkFileListener {
                     var instances = LeakageInstances(leakageAnalysisToolOutputFolderPath);
 
                     if (!instances.isEmpty()) {
-
-
                         for (var instance : instances) {
                             dataLeakageIndicator.renderDataLeakageWarning(editor, instance.lineNumber(), instance.type());
                         }

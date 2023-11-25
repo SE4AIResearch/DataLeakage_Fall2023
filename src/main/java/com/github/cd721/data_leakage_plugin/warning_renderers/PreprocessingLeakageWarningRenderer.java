@@ -12,20 +12,13 @@ import java.awt.*;
 import static javax.swing.UIManager.getFont;
 
 public class PreprocessingLeakageWarningRenderer extends DataLeakageWarningRenderer {
-    @Override
-    public boolean warningIsDisplayed() {
-        return false;
-    }
+
 
     @Override
     protected String getMessage() {
         return null;
     }
 
-    @Override
-    protected void setWarningDisplayed() {
-
-    }
 
 
 

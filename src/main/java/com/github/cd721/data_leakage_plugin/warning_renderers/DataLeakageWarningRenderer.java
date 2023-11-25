@@ -12,11 +12,9 @@ import java.awt.*;
 import static javax.swing.UIManager.getFont;
 
 public abstract class DataLeakageWarningRenderer implements EditorCustomElementRenderer {
-    public abstract boolean warningIsDisplayed();
 
     protected abstract String getMessage();
 
-    protected abstract void setWarningDisplayed();
 
     @Override
     public void paint(@NotNull Inlay inlay, @NotNull Graphics g, @NotNull Rectangle targetRegion, @NotNull TextAttributes textAttributes) {
@@ -27,7 +25,6 @@ public abstract class DataLeakageWarningRenderer implements EditorCustomElementR
         int lineNumber = inlay.getEditor().getDocument().getLineNumber(inlay.getOffset());
 
         g.drawString(getMessage(), targetRegion.x, (inlay.getOffset()));
-        setWarningDisplayed();
     }
 
     @Override

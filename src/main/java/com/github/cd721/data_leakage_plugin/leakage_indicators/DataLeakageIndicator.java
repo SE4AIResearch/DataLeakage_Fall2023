@@ -10,7 +10,7 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
 
-public class DataLeakageIndicator implements InlayHintsCollector {
+public class DataLeakageIndicator {
     private final DataLeakageWarningRendererFactory dataLeakageWarningRendererFactory;
 
     public DataLeakageIndicator() {
@@ -20,21 +20,22 @@ public class DataLeakageIndicator implements InlayHintsCollector {
 
     public void renderDataLeakageWarning(Editor editor, int lineNumber, LeakageType leakageType) {
         DataLeakageWarningRenderer dataLeakageWarningRenderer = dataLeakageWarningRendererFactory.GetRendererForLeakageType(leakageType);
-        if (!dataLeakageWarningRenderer.warningIsDisplayed()) {
+     //   if (!dataLeakageWarningRenderer.warningIsDisplayed()) {
             if (editor != null) {
                 int y = editor.visualLineToY(lineNumber);
                 int offset = y + editor.getLineHeight() * 2;
                 int startOffset = editor.getDocument().getLineStartOffset(lineNumber);
-                editor.getInlayModel().addBlockElement(startOffset, true, true, 100, dataLeakageWarningRenderer);
+                editor.getInlayModel().addBlockElement(startOffset, true, true, 1, dataLeakageWarningRenderer);
                 // editor.getInlayModel().addAfterLineEndElement(offset, false, dataLeakageWarningRenderer);
 
-            }
+      //      }
         }
 
     }
 
     public void clearAllDataLeakageWarnings(Editor editor) {
         disposeInlays(editor);
+
     }
 
 
@@ -42,14 +43,12 @@ public class DataLeakageIndicator implements InlayHintsCollector {
         var inlayModel = editor.getInlayModel();
         for (var i : inlayModel.getBlockElementsInRange(0, editor.getDocument().getTextLength())) {
             i.dispose();
+
         }
     }
-
-
-    @Override
-    public boolean collect(@NotNull PsiElement psiElement, @NotNull Editor editor, @NotNull InlayHintsSink inlayHintsSink) {
-        return false;
-    }
 }
+
+
+
 
 
