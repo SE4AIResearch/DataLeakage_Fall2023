@@ -1,17 +1,13 @@
 package com.github.cd721.data_leakage_plugin.leakage_indicators;
 
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
-import com.github.cd721.data_leakage_plugin.listeners.ClickListener;
 import com.github.cd721.data_leakage_plugin.warning_renderers.DataLeakageWarningRenderer;
 import com.github.cd721.data_leakage_plugin.warning_renderers.DataLeakageWarningRendererFactory;
 import com.intellij.codeInsight.hints.InlayHintsCollector;
 import com.intellij.codeInsight.hints.InlayHintsSink;
-import com.intellij.codeInsight.hints.declarative.InlayHintsProvider;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 
 public class DataLeakageIndicator implements InlayHintsCollector {
@@ -43,7 +39,8 @@ public class DataLeakageIndicator implements InlayHintsCollector {
 
 
     private static void disposeInlays(Editor editor) {
-        for (var i : editor.getInlayModel().getBlockElementsInRange(0, editor.getDocument().getTextLength())) {
+        var inlayModel = editor.getInlayModel();
+        for (var i : inlayModel.getBlockElementsInRange(0, editor.getDocument().getTextLength())) {
             i.dispose();
         }
     }

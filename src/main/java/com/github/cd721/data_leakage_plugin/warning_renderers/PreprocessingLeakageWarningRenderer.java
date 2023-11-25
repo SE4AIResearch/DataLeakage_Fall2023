@@ -12,23 +12,21 @@ import java.awt.*;
 import static javax.swing.UIManager.getFont;
 
 public class PreprocessingLeakageWarningRenderer extends DataLeakageWarningRenderer {
-
-private boolean blockInlayDisplayed;
-    @Override
-    public void paint(@NotNull Inlay inlay, @NotNull Graphics g, @NotNull Rectangle targetRegion, @NotNull TextAttributes textAttributes) {
-        Editor editor = inlay.getEditor();
-        g.setColor(JBColor.GRAY);
-        g.setFont(getFont(editor));
-
-        int lineNumber = inlay.getEditor().getDocument().getLineNumber(inlay.getOffset());
-
-        g.drawString("Your code may contain preprocessing leakage.", targetRegion.x, (inlay.getOffset()));
-
-        blockInlayDisplayed = true;
-    }
     @Override
     public boolean warningIsDisplayed() {
-        return blockInlayDisplayed;
+        return false;
     }
+
+    @Override
+    protected String getMessage() {
+        return null;
+    }
+
+    @Override
+    protected void setWarningDisplayed() {
+
+    }
+
+
 
 }
