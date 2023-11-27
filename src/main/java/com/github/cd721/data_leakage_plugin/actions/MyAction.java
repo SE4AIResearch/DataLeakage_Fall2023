@@ -1,11 +1,19 @@
 package com.github.cd721.data_leakage_plugin.actions;
 
+import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
+import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.pom.Navigatable;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class MyAction extends AnAction {
     @Override
@@ -43,19 +51,47 @@ public class MyAction extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent event) {
         // Using the event, implement an action.
         // For example, create and show a dialog.
+
+
         Project currentProject = event.getProject();
-        StringBuilder message =
-                new StringBuilder(event.getPresentation().getText() + " Selected!");
+        StringBuilder message = new StringBuilder();
+//                new StringBuilder(event.getPresentation().getText() + " Selected!");
+
+        LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
+        leakageAnalysisParser.LeakageLineNumbers();
+        if (!leakageAnalysisParser.isLeakageDetected()) {
+            message.append("No Leakage Detected");
+            return;
+        }
+
+        List<LeakageInstance> instances = leakageAnalysisParser.LeakageInstances();
+        for (LeakageInstance instance : instances) {
+            message.append(instance.type() + " at line " + Integer.toString(instance.lineNumber())  + "\n");
+        }
+
         // If an element is selected in the editor, add info about it.
         Navigatable selectedElement = event.getData(CommonDataKeys.NAVIGATABLE);
-        if (selectedElement != null) {
-                message.append("\nRunning leakage analysis on: ").append(selectedElement);
+        Editor editor = event.getData(LangDataKeys.EDITOR);
+        VirtualFile editorFile = null;
+        String fileName = "";
+
+        if (editor != null) {
+            editorFile = editor.getVirtualFile();
         }
-        String title = event.getPresentation().getDescription();
+
+        if (editorFile != null) {
+            fileName = editorFile.getName();
+        }
+
+        if (selectedElement != null) {
+            fileName = selectedElement.toString();
+        }
+
+//        String title = event.getPresentation().getDescription();
         Messages.showMessageDialog(
                 currentProject,
                 message.toString(),
-                title,
+                "Analysis on " + fileName,
                 Messages.getInformationIcon());
     }
 
