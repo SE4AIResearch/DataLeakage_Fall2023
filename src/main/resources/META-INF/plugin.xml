@@ -20,8 +20,8 @@
     </extensions>
     
     <actions>
-        <action id="com.github.cd721.data_leakage_plugin.actions.MyAction"
-                class="com.github.cd721.data_leakage_plugin.actions.MyAction" text="Run Analysis Action"
+        <action id="com.github.cd721.data_leakage_plugin.actions.LeakageAnalysisAction"
+                class="com.github.cd721.data_leakage_plugin.actions.LeakageAnalysisAction" text="Run Leakage Analysis"
                 description="Runs leakage analysis on currently open file">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
