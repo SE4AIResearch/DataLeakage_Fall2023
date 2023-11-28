@@ -1,5 +1,6 @@
 package com.github.cd721.data_leakage_plugin.leakage_detectors;
 
+import com.github.cd721.data_leakage_plugin.data.Invocation;
 import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 
@@ -11,144 +12,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MultiTestLeakageDetector extends LeakageDetector {
+    private final List<LeakageInstance> leakageInstances;
 
-    public MultiTestLeakageDetector(){
+    @Override
+    public String getCsvFileName() {
+        return "MultiUseTestLeak.csv";
+    }
+
+    @Override
+    public int getCsvInvocationColumn() {
+        return 1;
+    }
+
+    @Override
+    public void addLeakageInstance(LeakageInstance instance) {
+        this.leakageInstances.add(instance);
+    }
+
+    @Override
+    public List<LeakageInstance> leakageInstances() {
+        return leakageInstances;
+    }
+
+    public MultiTestLeakageDetector() {
         super();
-        this.leakageType= LeakageType.MultiTestLeakage;
+        this.leakageType = LeakageType.MultiTestLeakage;
+        this.leakageInstances = new ArrayList<>();
     }
+
 
     @Override
-    public List<LeakageInstance> FindLeakageInstances() {
-        int count = 0;
-        List<LeakageInstance> instances = new ArrayList<>();
-        try {
-
-            File file = new File(folderPath + "MultiUseTestLeak.csv");
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-
-            String line ;
-            while ((line = reader.readLine()) != null) {
-                String[] columns = line.split(("\t"));
-                Invocation invocation = new Invocation(columns[2]);
-                int internalLineNumber = getInternalLineNumberFromInvocation(invocation);
-                int actualLineNumber = getActualLineNumberFromInternalLineNumber(internalLineNumber);
-
-                instances.add(new LeakageInstance(actualLineNumber,LeakageType.MultiTestLeakage));
-                count++;
-            }
-
-            return instances;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public boolean isLeakageDetected() {
+        return !this.leakageInstances.isEmpty();
     }
-
-    @Override
-    public int CountInstances() {
-        int count = 0;
-        try {
-
-            File file = new File(folderPath + "MultiUseTestLeak.csv");
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] columns = line.split(("\t"));
-                Invocation invocation = new Invocation(columns[2]);
-                int internalLineNumber = getInternalLineNumberFromInvocation(invocation);
-                int actualLineNumber = getActualLineNumberFromInternalLineNumber(internalLineNumber);
-                count++;
-            }
-
-            return count;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public List<Integer> FindLineNumbers(){
-        List<Integer> lineNumbers = new ArrayList<>();
-        try {
-
-            File file = new File(folderPath + "MultiUseTestLeak.csv");
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] columns = line.split(("\t"));
-                Invocation invocation = new Invocation(columns[2]);
-                int internalLineNumber = getInternalLineNumberFromInvocation(invocation);
-                int actualLineNumber = getActualLineNumberFromInternalLineNumber(internalLineNumber);
-                lineNumbers.add(actualLineNumber);
-            }
-
-            return lineNumbers;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private int getActualLineNumberFromInternalLineNumber(int internalLineNumber) {
-        File file = new File(this.folderPath + "LinenoMapping.facts");
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-
-            String line ;
-
-            while (((line = reader.readLine()) != null)) {
-
-                String[] columns = line.split(("\t"));
-
-                if (Integer.parseInt(columns[0]) == internalLineNumber) {
-
-                    return Integer.parseInt(columns[1]);
-                }
-
-
-            }
-
-            return 0;
-
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private int getInternalLineNumberFromInvocation(Invocation invocation) {
-        File file = new File(this.folderPath + "InvokeLineno.facts");
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            int lineNumber = invocation.getNumber() + 1;
-            String line = "";
-
-            for (int i = 1; i <= lineNumber; i++) {
-                line = reader.readLine();
-
-            }
-            String[] columns = line.split(("\t"));
-            return Integer.parseInt(columns[1]);
-
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    private static class Invocation {
-        private final int number;
-
-        public Invocation(String invocationString) {
-            number = Integer.parseInt(String.valueOf(invocationString.charAt(invocationString.length() - 1)));
-        }
-
-        public int getNumber() {
-            return number;
-        }
-    }
-
-
-
 }

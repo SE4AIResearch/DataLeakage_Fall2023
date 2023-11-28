@@ -13,24 +13,11 @@ import static javax.swing.UIManager.getFont;
 
 public class MultiTestLeakageWarningRenderer extends DataLeakageWarningRenderer {
 
-    private boolean blockInlayDisplayed;
-
     @Override
-    public void paint(@NotNull Inlay inlay, @NotNull Graphics g, @NotNull Rectangle targetRegion, @NotNull TextAttributes textAttributes) {
-        Editor editor = inlay.getEditor();
-        g.setColor(JBColor.GRAY);
-        g.setFont(getFont(editor));
-
-        int lineNumber = inlay.getEditor().getDocument().getLineNumber(inlay.getOffset());
-
-        g.drawString("Your code may contain multi-test leakage.", targetRegion.x, (inlay.getOffset()));
-
-        blockInlayDisplayed = true;
+    protected String getMessage() {
+        return "Your code may contain multi-test leakage.";
     }
 
-    @Override
-    public boolean warningIsDisplayed() {
-        return blockInlayDisplayed;
-    }
+
 
 }

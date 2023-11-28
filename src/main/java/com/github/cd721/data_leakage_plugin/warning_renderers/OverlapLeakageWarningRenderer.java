@@ -12,30 +12,9 @@ import java.awt.*;
 import static javax.swing.UIManager.getFont;
 
 public class OverlapLeakageWarningRenderer extends DataLeakageWarningRenderer {
-
-
-private boolean blockInlayDisplayed;
     @Override
-    //this method is getting called every time the IDE is moved into focus
-        public void paint(@NotNull Inlay inlay, @NotNull Graphics g,
-                          @NotNull Rectangle targetRegion,
-                          @NotNull TextAttributes textAttributes) {
-            Editor editor = inlay.getEditor();
-            g.setColor(JBColor.GRAY);
-            g.setFont(getFont(editor));
-
-        int lineNumber = editor.yToVisualLine(inlay.getOffset());
-
-
-        g.drawString("Your code may contain overlap leakage.", targetRegion.x, targetRegion.y+ editor.getAscent());
-
-        blockInlayDisplayed = true;
-        }
-
-
-    @Override
-    public boolean warningIsDisplayed() {
-
-        return blockInlayDisplayed;
+    protected String getMessage() {
+        return "Your code may contain overlap leakage.";
     }
+
 }
