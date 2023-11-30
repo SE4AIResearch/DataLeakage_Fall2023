@@ -1,9 +1,6 @@
 package com.github.cd721.data_leakage_plugin.listeners;
 
 import com.github.cd721.data_leakage_plugin.BinaryApi;
-import com.github.cd721.data_leakage_plugin.leakage_indicators.DataLeakageIndicator;
-import com.github.cd721.data_leakage_plugin.leakage_indicators.DataLeakageIndicatorFactory;
-import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.TextEditor;
@@ -19,13 +16,20 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class FileChangeDetector implements BulkFileListener {
-    
+
+
+    public FileChangeDetector() {
+
+    }
+
     @Override
     public void after(@NotNull List<? extends @NotNull VFileEvent> events) {
         for (VFileEvent event : events) {
             //TODO: run leakage analysis
+
             BinaryApi api = new BinaryApi("C:/dev/paper-sample-4.py");
             api.analysis();
+
         }
 
     }

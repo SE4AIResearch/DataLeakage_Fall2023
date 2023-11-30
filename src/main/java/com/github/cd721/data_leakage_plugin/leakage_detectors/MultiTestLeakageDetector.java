@@ -46,5 +46,4 @@ public class MultiTestLeakageDetector extends LeakageDetector {
         return !this.leakageInstances.isEmpty();
     }
 
-
 }

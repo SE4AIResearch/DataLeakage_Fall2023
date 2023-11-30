@@ -12,16 +12,9 @@ import java.awt.*;
 import static javax.swing.UIManager.getFont;
 
 public class OverlapLeakageWarningRenderer extends DataLeakageWarningRenderer {
-
-
-
     @Override
     protected String getMessage() {
         return "Your code may contain overlap leakage.";
     }
-
-
-
-
 
 }

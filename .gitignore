@@ -2,4 +2,8 @@
 .idea
 .qodana
 build
+<<<<<<< HEAD
 .DS_Store
+=======
+.class
+>>>>>>> cdemario-leakagereport

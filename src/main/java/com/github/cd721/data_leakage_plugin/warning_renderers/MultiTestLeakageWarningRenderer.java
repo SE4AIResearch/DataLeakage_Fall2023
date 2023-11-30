@@ -12,11 +12,7 @@ import java.awt.*;
 import static javax.swing.UIManager.getFont;
 
 public class MultiTestLeakageWarningRenderer extends DataLeakageWarningRenderer {
-
-    private boolean blockInlayDisplayed;
-
-
-
+    
     @Override
     protected String getMessage() {
         return "Your code may contain multi-test leakage.";
