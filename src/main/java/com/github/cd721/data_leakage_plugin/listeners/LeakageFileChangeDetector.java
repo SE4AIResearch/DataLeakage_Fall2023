@@ -71,7 +71,6 @@ public class LeakageFileChangeDetector implements BulkFileListener {
                     } else {
                         dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
 
-
                     }
                 }
             }
