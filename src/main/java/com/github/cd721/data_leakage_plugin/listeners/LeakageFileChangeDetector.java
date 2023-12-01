@@ -4,6 +4,7 @@ import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.LeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.MultiTestLeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.OverlapLeakageDetector;
+import com.github.cd721.data_leakage_plugin.leakage_detectors.PreProcessingLeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_indicators.DataLeakageIndicator;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
@@ -25,6 +26,7 @@ public class LeakageFileChangeDetector implements BulkFileListener {
         this.leakageDetectors = new ArrayList<>();
         leakageDetectors.add(new OverlapLeakageDetector());
         leakageDetectors.add(new MultiTestLeakageDetector());
+        leakageDetectors.add(new PreProcessingLeakageDetector());
         dataLeakageIndicator = new DataLeakageIndicator();
     }
 
@@ -55,12 +57,12 @@ public class LeakageFileChangeDetector implements BulkFileListener {
         for (VFileEvent event : events) {
             var editor = getEditorForFileChanged(event);
             if (editor != null) {
-                if (debug || (OverlapLeakageCSVFileWasChanged(event) || MultiTestLeakageCSVFileWasChanged(event))) {
+                if (debug || (OverlapLeakageCSVFileWasChanged(event) || MultiTestLeakageCSVFileWasChanged(event) || PreProcessingLeakageCSVFileWasChanged(event))) {
                     if (debug) {
                         dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
                     }
 
-                    String leakageAnalysisToolOutputFolderPath = "c:/dev/paper-sample-4-fact/";
+                    String leakageAnalysisToolOutputFolderPath = "c:/Users/cindy/sourcecode/test-fact/";
                     var instances = LeakageInstances(leakageAnalysisToolOutputFolderPath);
 
                     if (!instances.isEmpty()) {
@@ -85,6 +87,10 @@ public class LeakageFileChangeDetector implements BulkFileListener {
 
     private boolean OverlapLeakageCSVFileWasChanged(VFileEvent event) {
         return aCSVFileWasChanged(event) && event.getPath().endsWith("FinalOverlapLeak.csv");
+    }
+
+        private boolean PreProcessingLeakageCSVFileWasChanged(VFileEvent event) {
+        return aCSVFileWasChanged(event) && event.getPath().endsWith("PreProcessingLeak.csv");
     }
 
 
