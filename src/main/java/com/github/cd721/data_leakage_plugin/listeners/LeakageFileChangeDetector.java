@@ -5,6 +5,7 @@ import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.LeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.MultiTestLeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.OverlapLeakageDetector;
+import com.github.cd721.data_leakage_plugin.leakage_detectors.PreProcessingLeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_indicators.DataLeakageIndicator;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
@@ -56,12 +57,14 @@ public  class LeakageFileChangeDetector implements BulkFileListener {
         for (VFileEvent event : events) {
             var editor = getEditorForFileChanged(event);
             if (editor != null) {
-                if (debug || (OverlapLeakageCSVFileWasChanged(event) || MultiTestLeakageCSVFileWasChanged(event))) {
+                if (debug || (OverlapLeakageCSVFileWasChanged(event) || MultiTestLeakageCSVFileWasChanged(event) || PreProcessingLeakageCSVFileWasChanged(event))) {
                     if (debug) {
                         dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
                     }
 
                     var instances = leakageAnalysisParser.LeakageInstances(LeakageOutput.folderPath());
+                    String leakageAnalysisToolOutputFolderPath = "c:/Users/cindy/sourcecode/test-fact/";
+                    var instances = LeakageInstances(leakageAnalysisToolOutputFolderPath);
 
                     if (!instances.isEmpty()) {
                         for (var instance : instances) {
@@ -84,6 +87,10 @@ public  class LeakageFileChangeDetector implements BulkFileListener {
 
     private boolean OverlapLeakageCSVFileWasChanged(VFileEvent event) {
         return aCSVFileWasChanged(event) && event.getPath().endsWith("FinalOverlapLeak.csv");
+    }
+
+        private boolean PreProcessingLeakageCSVFileWasChanged(VFileEvent event) {
+        return aCSVFileWasChanged(event) && event.getPath().endsWith("PreProcessingLeak.csv");
     }
 
 
