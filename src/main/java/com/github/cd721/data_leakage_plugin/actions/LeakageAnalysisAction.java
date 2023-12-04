@@ -1,6 +1,9 @@
 package com.github.cd721.data_leakage_plugin.actions;
 
 import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
+import com.github.cd721.data_leakage_plugin.leakage_detectors.LeakageDetector;
+import com.github.cd721.data_leakage_plugin.listeners.LeakageFileChangeDetector;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.editor.Editor;
@@ -43,13 +46,14 @@ public class LeakageAnalysisAction extends AnAction {
         StringBuilder message = new StringBuilder();
 
         LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
-        leakageAnalysisParser.LeakageLineNumbers();
+
         if (!leakageAnalysisParser.isLeakageDetected()) {
             message.append("No Leakage Detected");
             return;
         }
 
-        List<LeakageInstance> instances = leakageAnalysisParser.LeakageInstances();
+
+        List<LeakageInstance> instances = leakageAnalysisParser.LeakageInstances(LeakageOutput.folderPath());
         for (LeakageInstance instance : instances) {
             message.append(instance.type() + " at line " + Integer.toString(instance.lineNumber()) + "\n");
         }

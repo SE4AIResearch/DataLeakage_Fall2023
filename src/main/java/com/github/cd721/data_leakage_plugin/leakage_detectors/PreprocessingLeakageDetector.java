@@ -1,18 +1,27 @@
 package com.github.cd721.data_leakage_plugin.leakage_detectors;
 
 import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
+import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PreprocessingLeakageDetector extends LeakageDetector{
+    private final List<LeakageInstance> leakageInstances;
+    public PreprocessingLeakageDetector() {
+        super();
+        this.leakageType = LeakageType.PreprocessingLeakage;
+        this.leakageInstances = new ArrayList<>();
+    }
+
     @Override
     public String getCsvFileName() {
-        return null;
+        return "PreProcessingLeak.csv";
     }
 
     @Override
     public int getCsvInvocationColumn() {
-        return 0;
+        return 1;
     }
 
     @Override
@@ -22,11 +31,11 @@ public class PreprocessingLeakageDetector extends LeakageDetector{
 
     @Override
     public List<LeakageInstance> leakageInstances() {
-        return null;
+        return leakageInstances;
     }
 
     @Override
     public boolean isLeakageDetected() {
-        return false;
+        return !this.leakageInstances.isEmpty();
     }
 }
