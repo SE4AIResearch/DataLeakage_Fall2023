@@ -29,7 +29,7 @@ public class PreProcessingLeakageDetector extends LeakageDetector {
 
     @Override
     public int getCsvInvocationColumn() {
-        return 2;
+        return 1;
     }
 
     @Override
