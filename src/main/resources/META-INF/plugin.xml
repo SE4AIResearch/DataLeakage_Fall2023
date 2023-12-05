@@ -15,8 +15,14 @@
 
     <resource-bundle>messages.MyBundle</resource-bundle>
     <extensions defaultExtensionNs="com.intellij">
-
-
+        <localInspection language="Python"
+                         groupPath="Python"
+                         groupName="Unittest"
+                         enabledByDefault="true"
+                         level="WEAK WARNING"
+                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.MyInspection"
+                         displayName="Overlap Leakage"
+                         shortName="MyInspection"/>
     </extensions>
     
     <actions>
