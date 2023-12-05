@@ -21,7 +21,7 @@
                          enabledByDefault="true"
                          level="WEAK WARNING"
                          implementationClass="com.github.cd721.data_leakage_plugin.inspections.MyInspection"
-                         displayName="Overlap Leakage"
+                         displayName="Overlap leakage"
                          shortName="MyInspection"/>
     </extensions>
     
