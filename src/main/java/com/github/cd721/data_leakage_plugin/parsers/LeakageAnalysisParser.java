@@ -29,10 +29,10 @@ public class LeakageAnalysisParser {
         return false;
     }
 
-    public List<LeakageInstance> LeakageInstances(String folderPath){
+    public List<LeakageInstance> LeakageInstances(){
         List<LeakageInstance> instances = new ArrayList<>();
         for (LeakageDetector detector : leakageDetectors) {
-            instances.addAll(detector.FindLeakageInstances(folderPath,detector.leakageType));
+            instances.addAll(detector.FindLeakageInstances(detector.leakageType));
         }
         return instances;
 
