@@ -45,4 +45,36 @@ public class MultiTestLeakageDetector extends LeakageDetector {
     public boolean isLeakageDetected() {
         return !this.leakageInstances.isEmpty();
     }
+
+    @Override
+    public List<LeakageInstance> FindLeakageInstances(String folderPath, LeakageType leakageType) {
+
+        try {
+
+            File file = new File(folderPath + this.getCsvFileName());
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] columns = line.split(("\t"));
+                Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
+                int internalLineNumber = Utils.getInternalLineNumberFromInvocation(folderPath, invocation);
+                int actualLineNumber = Utils.getActualLineNumberFromInternalLineNumber(folderPath, internalLineNumber);
+
+                var leakageInstance = new LeakageInstance(actualLineNumber, leakageType, invocation);
+
+                var existingInstances = leakageInstances();
+                if (!debug || !existingInstances.contains(leakageInstance)) {
+                    addLeakageInstance(leakageInstance);
+                }
+
+
+            }
+
+            return leakageInstances();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 }
