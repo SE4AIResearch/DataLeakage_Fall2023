@@ -33,7 +33,7 @@ public abstract class LeakageDetector {
 
         try {
 
-            File file = new File(folderPath + this.getCsvFileName());
+            File file = new File(folderPath + getCsvFileName());
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
             String line;

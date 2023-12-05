@@ -10,5 +10,4 @@ public record LeakageInstance(int lineNumber, LeakageType type) {
     public LeakageType type() {
         return this.type;
     }
-    
 }
