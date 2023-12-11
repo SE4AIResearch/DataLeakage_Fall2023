@@ -19,7 +19,6 @@ public abstract class LeakageDetector {
     public abstract String getCsvFileName();
 
     public abstract int getCsvInvocationColumn();
-
     public abstract void addLeakageInstance(LeakageInstance instance);
 
     public abstract List<LeakageInstance> leakageInstances();
