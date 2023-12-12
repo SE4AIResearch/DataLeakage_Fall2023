@@ -28,7 +28,12 @@ public abstract class LeakageDetector {
 
     }
 
-
+    /**
+     * Looks through the CSV files that provide information about the provided {@code leakageType}
+     * @param folderPath The location of the leakage analysis tool output.
+     * @param leakageType A {@code LeakageType}; the type of leakage we are looking for
+     * @return A {@code List<LeakageInstance>} that contain any instances of leakage matching the {@code leakageType}.
+     */
     public List<LeakageInstance> FindLeakageInstances(String folderPath, LeakageType leakageType) {
 
         try {
@@ -62,6 +67,14 @@ public abstract class LeakageDetector {
 
     public abstract boolean isLeakageDetected();
 
+    /**
+     * Looks through "LinenoMapping.facts" to find the actual line number that corresponds to an internal line number.
+     * The "actual line number" is the line number of the end user's code.
+     * The "internal line number" is meaningless to the end user.
+     * @param folderPath The location of the leakage analysis tool output that contains "InvokeLineno.facts".
+     * @param internalLineNumber A number used within and provided by the leakage analysis tool.
+     * @return An {@code int} representing an actual line number in the user's code. 
+     */
     private int getActualLineNumberFromInternalLineNumber(String folderPath, int internalLineNumber) {
         File file = new File(folderPath + "LinenoMapping.facts");
         try {
@@ -89,6 +102,13 @@ public abstract class LeakageDetector {
         }
     }
 
+    /**
+     * Looks through "InvokeLineno.facts" to find a number that corresponds to a particular invocation.
+     * The "internal line number" is provided by the leakage analysis tool and shall not be presented to the end user.
+     * @param folderPath The location of the leakage analysis tool output that contains "InvokeLineno.facts".
+     * @param invocation An {@code Invocation}. This would appear in the leakage analysis tool output as "$invo2", for example.
+     * @return An {@code int} representing a number provided by the leakage analysis tool. The number is meaningless to the end user, but may be used by other functions in the plugin code.
+     */
     private int getInternalLineNumberFromInvocation(String folderPath, Invocation invocation) {
         File file = new File(folderPath + "InvokeLineno.facts");
         try {
