@@ -16,12 +16,28 @@ public abstract class LeakageDetector {
     //TODO: remove debug
     private final boolean debug = true;
 
+    /**
+     * @return The name of the CSV file that contains relevant information
+     * about the leakage of {@link #leakageType} of this detector.
+     */
     public abstract String getCsvFileName();
 
+    /**
+     * @return The column of the CSV file (specified by {@link #getCsvFileName()}) that
+     * contains the {@link Invocation} associated with this detector's {@link #leakageType}.
+     */
     public abstract int getCsvInvocationColumn();
 
+    /**
+     * Adds a {@code LeakageInstance} to this detector's {@code leakageInstances()}.
+     * @param instance The {@link LeakageInstance} to add.
+     */
     public abstract void addLeakageInstance(LeakageInstance instance);
 
+    /**
+     * A {@link List<LeakageInstance>} representing containing the {@link LeakageInstance}s caught by this detector.
+     * @return
+     */
     public abstract List<LeakageInstance> leakageInstances();
 
     public LeakageDetector() {
@@ -31,8 +47,9 @@ public abstract class LeakageDetector {
     /**
      * Looks through the CSV files that provide information about the provided {@code leakageType}
      * @param folderPath The location of the leakage analysis tool output.
-     * @param leakageType A {@code LeakageType}; the type of leakage we are looking for
-     * @return A {@code List<LeakageInstance>} that contain any instances of leakage matching the {@code leakageType}.
+     * @param leakageType A {@code LeakageType}; the type of leakage we are looking for.
+     * @return A {@code List<LeakageInstance>} that contain any instances of leakage
+     * matching the {@code leakageType}.
      */
     public List<LeakageInstance> FindLeakageInstances(String folderPath, LeakageType leakageType) {
 
