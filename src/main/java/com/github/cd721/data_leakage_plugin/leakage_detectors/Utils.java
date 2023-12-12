@@ -8,6 +8,8 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class Utils {
+
+    //TODO: write better docs
     public static int getActualLineNumberFromInternalLineNumber(String folderPath, int internalLineNumber) {
         File file = new File(folderPath + "LinenoMapping.facts");
         try {

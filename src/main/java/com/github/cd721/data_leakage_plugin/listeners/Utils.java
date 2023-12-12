@@ -11,6 +11,8 @@ import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 
 public final class Utils {
+
+    //TODO: docs
     public static boolean aCSVFileWasChanged(VFileEvent event) {
         return event.getPath().endsWith(".csv") && (event instanceof VFileContentChangeEvent || event instanceof VFileCreateEvent);
     }
