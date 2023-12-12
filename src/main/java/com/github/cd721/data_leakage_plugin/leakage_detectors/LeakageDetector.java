@@ -35,8 +35,7 @@ public abstract class LeakageDetector {
     public abstract void addLeakageInstance(LeakageInstance instance);
 
     /**
-     * A {@link List<LeakageInstance>} representing containing the {@link LeakageInstance}s caught by this detector.
-     * @return
+     * @return A {@link List<LeakageInstance>} representing containing the {@link LeakageInstance}s caught by this detector.
      */
     public abstract List<LeakageInstance> leakageInstances();
 
