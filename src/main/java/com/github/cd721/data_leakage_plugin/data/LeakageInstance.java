@@ -2,7 +2,18 @@ package com.github.cd721.data_leakage_plugin.data;
 
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 
-public record LeakageInstance(int lineNumber, LeakageType type, Invocation invocation) {
+public class LeakageInstance {
+    private final int lineNumber;
+    private final LeakageType type;
+    private final Invocation invocation;
+
+    public LeakageInstance(int lineNumber, LeakageType type, Invocation invocation) {
+        this.lineNumber = lineNumber
+        ;
+        this.type = type;
+        this.invocation = invocation;
+    }
+
     public int lineNumber() {
         return this.lineNumber;
     }
@@ -11,8 +22,8 @@ public record LeakageInstance(int lineNumber, LeakageType type, Invocation invoc
         return this.type;
     }
 
-    public Invocation invocation(){
+    public Invocation invocation() {
         return this.invocation;
     }
-    
+
 }

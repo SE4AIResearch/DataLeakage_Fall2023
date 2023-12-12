@@ -28,7 +28,9 @@ public class MyInspection extends PyInspection {
         return new PyElementVisitor() {
             @Override
             public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {
-                if(Objects.equals(node.getName(), "X_test")) {
+                var offset = node.getTextOffset();
+                var lineNumber = document.getLineNumber(offset)+1; //getLineNumber is zero-based, must add 1
+                if(Objects.equals(node.getName(), "X_test") && lineNumber==14) {
                             holder.registerProblem(node,"This is a reference expression.");
                 }
             }

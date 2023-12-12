@@ -20,6 +20,14 @@ public class Utils {
                 String[] columns = line.split(("\t"));
                 var testModel = columns[0];
                 var test = columns[1];
+                var invo = columns[2];
+                var meth = columns[3];
+                var ctx1 = columns[4];
+                var testModel2 = columns[5];
+                var test2 = columns[6];
+                var invo2= columns[7];
+                var meth2 = columns[8];
+                var ctx2 = columns[9];
 
 
 
