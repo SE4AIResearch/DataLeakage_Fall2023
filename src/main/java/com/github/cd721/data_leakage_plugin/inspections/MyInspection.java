@@ -28,7 +28,7 @@ public class MyInspection extends PyInspection {
         return new PyElementVisitor() {
             @Override
             public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {
-                if(!Objects.equals(node.getName(), "")) {
+                if(Objects.equals(node.getName(), "X_test")) {
                             holder.registerProblem(node,"This is a reference expression.");
                 }
             }

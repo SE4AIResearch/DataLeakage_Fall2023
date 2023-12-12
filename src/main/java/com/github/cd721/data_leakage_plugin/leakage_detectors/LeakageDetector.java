@@ -25,7 +25,7 @@ public abstract class LeakageDetector {
 
     public abstract List<LeakageInstance> leakageInstances();
 
-    public List<LeakageInstance> FindLeakageInstances( LeakageType leakageType3) {
+    public List<LeakageInstance> FindLeakageInstances() {
 
 
 
