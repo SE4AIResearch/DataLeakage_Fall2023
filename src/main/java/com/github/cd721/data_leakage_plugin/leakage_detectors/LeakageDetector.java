@@ -3,6 +3,7 @@ package com.github.cd721.data_leakage_plugin.leakage_detectors;
 import com.github.cd721.data_leakage_plugin.data.Invocation;
 import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
 import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
+import com.github.cd721.data_leakage_plugin.data.MultiTestLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 
 import java.io.BufferedReader;
@@ -38,30 +39,7 @@ public abstract class LeakageDetector {
 
     }
 
-    private void findLeakageInstancesInFile(File file) {
-        try {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] columns = line.split(("\t"));
-            Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
-            int internalLineNumber = Utils.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
-            int actualLineNumber = Utils.getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
-
-            var leakageInstance = new LeakageInstance(actualLineNumber, leakageType, invocation);
-
-            var existingInstances = leakageInstances();
-            if (!debug || !existingInstances.contains(leakageInstance)) {
-                addLeakageInstance(leakageInstance);
-            }
-
-
-        }  } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+    public abstract void findLeakageInstancesInFile(File file) ;
 
     public LeakageDetector() {
 

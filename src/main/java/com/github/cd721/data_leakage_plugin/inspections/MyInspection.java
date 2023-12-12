@@ -1,5 +1,8 @@
 package com.github.cd721.data_leakage_plugin.inspections;
 
+import com.github.cd721.data_leakage_plugin.data.MultiTestLeakageInstance;
+import com.github.cd721.data_leakage_plugin.enums.LeakageType;
+import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.codeInspection.LocalInspectionToolSession;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.lang.injection.InjectedLanguageManager;
@@ -15,23 +18,31 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public class MyInspection extends PyInspection {
+    private final LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
+
     @Override
-    public @NotNull PyElementVisitor buildVisitor(@NotNull ProblemsHolder holder,
-                                                  boolean isOnTheFly,
-                                                  @NotNull LocalInspectionToolSession session) {
+    public @NotNull PyElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly, @NotNull LocalInspectionToolSession session) {
 
         final PsiFile file = holder.getFile();
-        if (InjectedLanguageManager.getInstance(file.getProject()).getInjectionHost(file) != null) return new PyElementVisitor();
+        if (InjectedLanguageManager.getInstance(file.getProject()).getInjectionHost(file) != null)
+            return new PyElementVisitor();
 
         final Document document = file.getViewProvider().getDocument();
         if (document == null) return new PyElementVisitor();
+
+        var leakageInstances = leakageAnalysisParser.LeakageInstances();
+        var multiTestLeakageInstances = leakageInstances.stream()
+                .filter(instance -> instance.type().equals(LeakageType.MultiTestLeakage))
+                .map(instance -> ((MultiTestLeakageInstance) (instance))).toList();
         return new PyElementVisitor() {
             @Override
             public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {
                 var offset = node.getTextOffset();
-                var lineNumber = document.getLineNumber(offset)+1; //getLineNumber is zero-based, must add 1
-                if(Objects.equals(node.getName(), "X_test") && lineNumber==14) {
-                            holder.registerProblem(node,"This is a reference expression.");
+                var nodeLineNumber = document.getLineNumber(offset) + 1; //getLineNumber is zero-based, must add 1
+
+                if (multiTestLeakageInstances.stream().anyMatch(instance -> (instance.lineNumber() == nodeLineNumber)
+                                                                    && Objects.equals(instance.test(), node.getName()))) {
+                    holder.registerProblem(node, "This is a reference expression.");
                 }
             }
         };

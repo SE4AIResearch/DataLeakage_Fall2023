@@ -1,4 +1,4 @@
-package com.github.cd721.data_leakage_plugin.inspections;
+package com.github.cd721.data_leakage_plugin.data;
 
 import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
 
@@ -8,7 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class Utils {
-    public static int myFunc( ) {
+    public static String getTestFromTelemetryFile() {
         File file = new File(LeakageOutput.folderPath() + "Telemetry_MultiUseTestLeak.csv");
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -25,11 +25,11 @@ public class Utils {
                 var ctx1 = columns[4];
                 var testModel2 = columns[5];
                 var test2 = columns[6];
-                var invo2= columns[7];
+                var invo2 = columns[7];
                 var meth2 = columns[8];
                 var ctx2 = columns[9];
 
-
+                return test;
 
             }
 
@@ -38,6 +38,6 @@ public class Utils {
             e.printStackTrace();
 
         }
-        return 0;
+        return "";
     }
 }
