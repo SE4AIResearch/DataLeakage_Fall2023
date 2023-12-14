@@ -2,13 +2,11 @@ package com.github.cd721.data_leakage_plugin.data;
 
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 
-public class MultiTestLeakageInstance extends LeakageInstance {
-
+public class OverlapLeakageInstance extends LeakageInstance{
     private final String test;
-
-    public MultiTestLeakageInstance(int lineNumber,  Invocation invocation) {
-        super(lineNumber, LeakageType.MultiTestLeakage, invocation);
-        this.test = Utils.getTestFromMultiUseTestLeakTelemetryFile();
+    public OverlapLeakageInstance(int lineNumber,  Invocation invocation) {
+        super(lineNumber, LeakageType.OverlapLeakage, invocation);
+        this.test = Utils.getTestFromOverlapLeakTelemetryFile();
     }
 
     public String test() {
@@ -17,7 +15,8 @@ public class MultiTestLeakageInstance extends LeakageInstance {
 
     @Override
     public boolean equals(Object obj) {
-        var leak = (MultiTestLeakageInstance)obj;
+        var leak = (OverlapLeakageInstance)obj;
         return this.lineNumber()==(leak.lineNumber())
                 && this.invocation().getNumber()==(leak.invocation().getNumber());    }
+
 }
