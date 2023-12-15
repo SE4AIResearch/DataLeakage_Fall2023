@@ -1,7 +1,6 @@
 package com.github.cd721.data_leakage_plugin.parsers;
 
 import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
-import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.LeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.MultiTestLeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.OverlapLeakageDetector;
@@ -30,17 +29,10 @@ public class LeakageAnalysisParser {
         return false;
     }
 
-//    public List<Integer> LeakageLineNumbers(String folderPath, LeakageType leakageType) {
-//        List<Integer> lineNumbers = new ArrayList<>();
-//        for (LeakageDetector detector : leakageDetectors) {
-//            lineNumbers.addAll(detector.FindLineNumbers(folderPath, leakageType));
-//        }
-//        return lineNumbers;
-//    }
-    public List<LeakageInstance> LeakageInstances(String folderPath){
+    public List<LeakageInstance> LeakageInstances(){
         List<LeakageInstance> instances = new ArrayList<>();
         for (LeakageDetector detector : leakageDetectors) {
-            instances.addAll(detector.FindLeakageInstances(folderPath,detector.leakageType));
+            instances.addAll(detector.FindLeakageInstances());
         }
         return instances;
 

@@ -1,10 +1,5 @@
 package com.github.cd721.data_leakage_plugin.listeners;
 
-import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
-import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
-import com.github.cd721.data_leakage_plugin.leakage_detectors.LeakageDetector;
-import com.github.cd721.data_leakage_plugin.leakage_detectors.MultiTestLeakageDetector;
-import com.github.cd721.data_leakage_plugin.leakage_detectors.OverlapLeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_indicators.DataLeakageIndicator;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
@@ -25,31 +20,10 @@ public  class LeakageFileChangeDetector implements BulkFileListener {
     private final boolean debug = true;
 
     public LeakageFileChangeDetector() {
-//        this.leakageDetectors = new ArrayList<>();
-//        leakageDetectors.add(new OverlapLeakageDetector());
-//        leakageDetectors.add(new MultiTestLeakageDetector());
         leakageAnalysisParser = new LeakageAnalysisParser();
         dataLeakageIndicator = new DataLeakageIndicator();
     }
 
-//    public boolean isLeakageDetected() {
-//        for (LeakageDetector detector : leakageDetectors) {
-//            if (detector.isLeakageDetected()) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
-
-//    public List<LeakageInstance> LeakageInstances(String folderPath) {
-//        List<LeakageInstance> instances = new ArrayList<>();
-//        for (LeakageDetector detector : leakageDetectors) {
-//            instances.addAll(detector.FindLeakageInstances(folderPath, detector.leakageType));
-//        }
-//        return instances;
-//
-//    }
 
     @Override
     public void after(@NotNull List<? extends @NotNull VFileEvent> events) {
@@ -61,7 +35,7 @@ public  class LeakageFileChangeDetector implements BulkFileListener {
                         dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
                     }
 
-                    var instances = leakageAnalysisParser.LeakageInstances(LeakageOutput.folderPath());
+                    var instances = leakageAnalysisParser.LeakageInstances();
 
                     if (!instances.isEmpty()) {
                         for (var instance : instances) {
