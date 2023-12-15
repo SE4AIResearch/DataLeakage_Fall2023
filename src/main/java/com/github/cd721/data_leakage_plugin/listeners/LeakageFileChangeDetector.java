@@ -1,10 +1,5 @@
 package com.github.cd721.data_leakage_plugin.listeners;
 
-import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
-import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
-import com.github.cd721.data_leakage_plugin.leakage_detectors.LeakageDetector;
-import com.github.cd721.data_leakage_plugin.leakage_detectors.MultiTestLeakageDetector;
-import com.github.cd721.data_leakage_plugin.leakage_detectors.OverlapLeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_indicators.DataLeakageIndicator;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
@@ -40,7 +35,7 @@ public  class LeakageFileChangeDetector implements BulkFileListener {
                         dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
                     }
 
-                    var instances = leakageAnalysisParser.LeakageInstances(LeakageOutput.folderPath());
+                    var instances = leakageAnalysisParser.LeakageInstances();
 
                     if (!instances.isEmpty()) {
                         for (var instance : instances) {

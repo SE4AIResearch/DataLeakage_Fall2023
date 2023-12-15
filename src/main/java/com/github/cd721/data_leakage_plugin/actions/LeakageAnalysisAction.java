@@ -53,7 +53,7 @@ public class LeakageAnalysisAction extends AnAction {
         }
 
 
-        List<LeakageInstance> instances = leakageAnalysisParser.LeakageInstances(LeakageOutput.folderPath());
+        List<LeakageInstance> instances = leakageAnalysisParser.LeakageInstances();
         for (LeakageInstance instance : instances) {
             message.append(instance.type() + " at line " + Integer.toString(instance.lineNumber()) + "\n");
         }
