@@ -1,8 +1,6 @@
 package com.github.cd721.data_leakage_plugin.inspections;
 
 import com.github.cd721.data_leakage_plugin.data.MultiTestLeakageInstance;
-import com.github.cd721.data_leakage_plugin.data.OverlapLeakageInstance;
-import com.github.cd721.data_leakage_plugin.data.PreprocessingLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.codeInspection.LocalInspectionToolSession;
@@ -36,15 +34,6 @@ public class MyInspection extends PyInspection {
         var multiTestLeakageInstances = leakageInstances.stream()
                 .filter(instance -> instance.type().equals(LeakageType.MultiTestLeakage))
                 .map(instance -> ((MultiTestLeakageInstance) (instance))).toList();
-
-        var overlapLeakageInstances = leakageInstances.stream()
-                .filter(instance -> instance.type().equals(LeakageType.OverlapLeakage))
-                .map(instance -> ((OverlapLeakageInstance) (instance))).toList();
-
-        var preprocessingLeakageInstances = leakageInstances.stream()
-                .filter(instance -> instance.type().equals(LeakageType.PreprocessingLeakage))
-                .map(instance -> ((PreprocessingLeakageInstance) (instance))).toList();
-
         return new PyElementVisitor() {
             @Override
             public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {
@@ -53,21 +42,8 @@ public class MyInspection extends PyInspection {
 
                 if (multiTestLeakageInstances.stream().anyMatch(instance -> (instance.lineNumber() == nodeLineNumber)
                                                                     && Objects.equals(instance.test(), node.getName()))) {
-                    holder.registerProblem(node, "Potential multi-test leakage associated with this variable.");
+                    holder.registerProblem(node, "This is a reference expression.");
                 }
-
-                if (overlapLeakageInstances.stream().anyMatch(instance -> (instance.lineNumber() == nodeLineNumber)
-                        && Objects.equals(instance.test(), node.getName()))) {
-                    holder.registerProblem(node, "Potential overlap leakage associated with this variable.");
-                }
-
-
-                if (preprocessingLeakageInstances.stream().anyMatch(instance -> (instance.lineNumber() == nodeLineNumber)
-                        && Objects.equals(instance.test(), node.getName()))) {
-                    holder.registerProblem(node, "Potential preprocessing leakage associated with this variable.");
-                }
-
-
             }
         };
 

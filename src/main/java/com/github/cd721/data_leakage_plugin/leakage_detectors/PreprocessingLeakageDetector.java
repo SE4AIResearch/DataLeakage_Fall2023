@@ -1,6 +1,9 @@
 package com.github.cd721.data_leakage_plugin.leakage_detectors;
 
-import com.github.cd721.data_leakage_plugin.data.*;
+import com.github.cd721.data_leakage_plugin.data.Invocation;
+import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
+import com.github.cd721.data_leakage_plugin.data.MultiTestLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 
 import java.io.BufferedReader;
@@ -31,7 +34,7 @@ public class PreprocessingLeakageDetector extends LeakageDetector {
 
     @Override
     public void addLeakageInstance(LeakageInstance instance) {
-        this.leakageInstances.add(instance);
+
     }
 
     @Override
@@ -52,7 +55,7 @@ public class PreprocessingLeakageDetector extends LeakageDetector {
                 int internalLineNumber = Utils.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
                 int actualLineNumber = Utils.getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
 
-                var leakageInstance = new PreprocessingLeakageInstance(actualLineNumber, invocation);
+                var leakageInstance = new LeakageInstance(actualLineNumber, LeakageType.PreprocessingLeakage, invocation);
 
                 var existingInstances = leakageInstances();
                 if (!debug || !existingInstances.contains(leakageInstance)) {
