@@ -7,6 +7,7 @@ import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.codeInspection.LocalInspectionToolSession;
 import com.intellij.codeInspection.ProblemsHolder;
+import com.intellij.inspectopedia.extractor.data.Inspection;
 import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.psi.PsiBinaryFile;
@@ -46,7 +47,7 @@ public class MultiTestLeakageInspection extends PyInspection {
 
                 if (multiTestLeakageInstances.stream().anyMatch(instance -> (instance.lineNumber() == nodeLineNumber)
                         && Objects.equals(instance.test(), node.getName()))) {
-                    holder.registerProblem(node, "Potential multi-test leakage associated with this variable.");
+                    holder.registerProblem(node, InspectionBundle.get("inspectionText.multiTestLeakage.text"));
                 }
 
             }

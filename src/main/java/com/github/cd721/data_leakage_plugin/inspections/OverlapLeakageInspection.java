@@ -48,7 +48,7 @@ public class OverlapLeakageInspection extends PyInspection {
 
                 if (overlapLeakageInstances.stream().anyMatch(instance -> (instance.lineNumber() == nodeLineNumber)
                         && Objects.equals(instance.test(), node.getName()))) {
-                    holder.registerProblem(node, "Potential overlap leakage associated with this variable.");
+                    holder.registerProblem(node, InspectionBundle.get("inspectionText.overlapLeakage.text"));
                 }
 
 

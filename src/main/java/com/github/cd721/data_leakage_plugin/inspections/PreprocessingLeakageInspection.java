@@ -47,7 +47,7 @@ public class PreprocessingLeakageInspection extends PyInspection {
 
                 if (preprocessingLeakageInstances.stream().anyMatch(instance -> (instance.lineNumber() == nodeLineNumber)
                         && Objects.equals(instance.test(), node.getName()))) {
-                    holder.registerProblem(node, "Potential preprocessing leakage associated with this variable.");
+                    holder.registerProblem(node, InspectionBundle.get("inspectionText.preprocessingLeakage.text"));
                 }
 
 
