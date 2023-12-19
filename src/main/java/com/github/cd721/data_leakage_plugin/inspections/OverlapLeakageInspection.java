@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class MyInspection extends PyInspection {
+public class OverlapLeakageInspection extends PyInspection {
     private final LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
 
     @Override
@@ -33,17 +33,11 @@ public class MyInspection extends PyInspection {
         if (document == null) return new PyElementVisitor();
 
         var leakageInstances = leakageAnalysisParser.LeakageInstances();
-        var multiTestLeakageInstances = leakageInstances.stream()
-                .filter(instance -> instance.type().equals(LeakageType.MultiTestLeakage))
-                .map(instance -> ((MultiTestLeakageInstance) (instance))).toList();
 
         var overlapLeakageInstances = leakageInstances.stream()
                 .filter(instance -> instance.type().equals(LeakageType.OverlapLeakage))
                 .map(instance -> ((OverlapLeakageInstance) (instance))).toList();
 
-        var preprocessingLeakageInstances = leakageInstances.stream()
-                .filter(instance -> instance.type().equals(LeakageType.PreprocessingLeakage))
-                .map(instance -> ((PreprocessingLeakageInstance) (instance))).toList();
 
         return new PyElementVisitor() {
             @Override
@@ -51,20 +45,10 @@ public class MyInspection extends PyInspection {
                 var offset = node.getTextOffset();
                 var nodeLineNumber = document.getLineNumber(offset) + 1; //getLineNumber is zero-based, must add 1
 
-                if (multiTestLeakageInstances.stream().anyMatch(instance -> (instance.lineNumber() == nodeLineNumber)
-                                                                    && Objects.equals(instance.test(), node.getName()))) {
-                    holder.registerProblem(node, "Potential multi-test leakage associated with this variable.");
-                }
 
                 if (overlapLeakageInstances.stream().anyMatch(instance -> (instance.lineNumber() == nodeLineNumber)
                         && Objects.equals(instance.test(), node.getName()))) {
-                    holder.registerProblem(node, "Potential overlap leakage associated with this variable.");
-                }
-
-
-                if (preprocessingLeakageInstances.stream().anyMatch(instance -> (instance.lineNumber() == nodeLineNumber)
-                        && Objects.equals(instance.test(), node.getName()))) {
-                    holder.registerProblem(node, "Potential preprocessing leakage associated with this variable.");
+                    holder.registerProblem(node, InspectionBundle.get("inspectionText.overlapLeakage.text"));
                 }
 
 
