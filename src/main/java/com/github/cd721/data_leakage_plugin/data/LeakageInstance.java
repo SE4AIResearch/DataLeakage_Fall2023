@@ -8,8 +8,7 @@ public class LeakageInstance {
     private final Invocation invocation;
 
     public LeakageInstance(int lineNumber, LeakageType type, Invocation invocation) {
-        this.lineNumber = lineNumber
-        ;
+        this.lineNumber = lineNumber;
         this.type = type;
         this.invocation = invocation;
     }
@@ -25,7 +24,6 @@ public class LeakageInstance {
     public Invocation invocation() {
         return this.invocation;
     }
-
 
 
 }

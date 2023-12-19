@@ -5,6 +5,7 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.roots.ModuleRootManager;
 
 import com.intellij.openapi.roots.ProjectFileIndex;
+import com.intellij.openapi.util.io.FileUtilRt;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -59,7 +60,7 @@ public class BinaryApi {
         Path directory = Paths.get(pyrightPath);
 
         // Pyright does not exist so build it
-        if(!Files.exists(directory)) {
+        if (!Files.exists(directory)) {
             return this.buildPyright();
         }
 
@@ -72,6 +73,11 @@ public class BinaryApi {
             // Clean the directory, in case the user has run an analysis without cleaning
 //            this.clean();
 
+            int pyrightExitCode = this.conditionalBuildPyright();
+            if (pyrightExitCode < 0) {
+                return -1;
+            }
+
             // make out path, add file to be processed to it
             File f = new File(output_path);
             if (!f.exists()) {
@@ -83,7 +89,7 @@ public class BinaryApi {
             }
 
             // Clean the output directory
-
+            this.clean();
 
             String newPath = output_path + "/runme.py";
             File source = new File(file_path_inclusive);
@@ -108,8 +114,6 @@ public class BinaryApi {
 
             // Start the process
             Process process = processBuilder.start();
-            //Process process = Runtime.getRuntime().exec(command+ args);
-
 
             // Read the output of the process
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
