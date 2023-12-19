@@ -1,6 +1,7 @@
 package com.github.cd721.data_leakage_plugin.data;
 
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
+import com.github.cd721.data_leakage_plugin.inspections.LeakageInspection;
 
 public class LeakageInstance {
     private final int lineNumber;
@@ -26,6 +27,24 @@ public class LeakageInstance {
         return this.invocation;
     }
 
+    public static Class<? extends LeakageInstance> getInstanceTypeForLeakageType(LeakageType leakageType) {
+        switch (leakageType) {
+            case OverlapLeakage -> {
+                return OverlapLeakageInstance.class;
+            }
+            case MultiTestLeakage -> {
+                return MultiTestLeakageInstance.class;
+            }
+            case PreprocessingLeakage -> {
+                return PreprocessingLeakageInstance.class;
+            }
+            default -> {
+                return OverlapLeakageInstance.class;
+
+            }
+        }
+
+    }
 
 
 }
