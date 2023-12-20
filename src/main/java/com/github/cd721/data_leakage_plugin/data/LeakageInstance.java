@@ -1,7 +1,6 @@
 package com.github.cd721.data_leakage_plugin.data;
 
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
-import com.github.cd721.data_leakage_plugin.inspections.LeakageInspection;
 
 public class LeakageInstance {
     private final int lineNumber;
