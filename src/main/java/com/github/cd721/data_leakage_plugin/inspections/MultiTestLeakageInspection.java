@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class MultiTestLeakageInspection extends ILeakageInspection {
+public class MultiTestLeakageInspection extends LeakageInspection {
     private final LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
 
     @Override
