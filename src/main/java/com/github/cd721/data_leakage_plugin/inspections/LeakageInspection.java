@@ -2,21 +2,39 @@ package com.github.cd721.data_leakage_plugin.inspections;
 
 import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
+import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.codeInspection.LocalInspectionToolSession;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.openapi.editor.Document;
 import com.jetbrains.python.inspections.PyInspection;
 import com.jetbrains.python.psi.PyElementVisitor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.Predicate;
 
-public abstract class LeakageInspection<T> extends PyInspection {
+public abstract class LeakageInspection<T extends LeakageInstance> extends PyInspection {
     public abstract LeakageType getLeakageType();
-    public abstract ElementVisitor getElementVisitor(Document document, @NotNull ProblemsHolder holder, List<LeakageInstance> leakageInstances);
+    public final LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
+
+    public List<T> getLeakageInstancesForType(List<LeakageInstance> leakageInstances){
+        return leakageInstances.stream()
+                .filter(instance -> instance.type().equals(getLeakageType()))
+                .map(instance -> (((T) instance))).toList();
+    }
+
+    public abstract ElementVisitor getElementVisitor(@NotNull ProblemsHolder holder);
     @Override
-    public abstract @NotNull PyElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly, @NotNull LocalInspectionToolSession session);
+    public  @NotNull PyElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly, @NotNull LocalInspectionToolSession session){
+        if (Utils.getInjectionHost(holder) != null) {
+            return new PyElementVisitor();
+        }
+
+        var document = Utils.getDocument(holder);
+        if (document == null) return new PyElementVisitor();
+
+
+
+        return getElementVisitor( holder);
+    }
 
 ;
 
