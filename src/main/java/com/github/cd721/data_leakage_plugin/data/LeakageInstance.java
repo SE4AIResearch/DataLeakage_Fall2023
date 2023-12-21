@@ -26,6 +26,24 @@ public class LeakageInstance {
         return this.invocation;
     }
 
+    public static Class<? extends LeakageInstance> getInstanceTypeForLeakageType(LeakageType leakageType) {
+        switch (leakageType) {
+            case OverlapLeakage -> {
+                return OverlapLeakageInstance.class;
+            }
+            case MultiTestLeakage -> {
+                return MultiTestLeakageInstance.class;
+            }
+            case PreprocessingLeakage -> {
+                return PreprocessingLeakageInstance.class;
+            }
+            default -> {
+                return OverlapLeakageInstance.class;
+
+            }
+        }
+
+    }
 
 
 }

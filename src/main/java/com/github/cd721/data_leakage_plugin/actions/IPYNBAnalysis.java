@@ -7,8 +7,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.pom.Navigatable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-
 public class IPYNBAnalysis extends AnAction {
     @Override
     public @NotNull ActionUpdateThread getActionUpdateThread() {
