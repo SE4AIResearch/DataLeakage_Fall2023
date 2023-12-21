@@ -10,10 +10,10 @@ import com.jetbrains.python.psi.PyElementVisitor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.function.Predicate;
 
-public abstract class LeakageInspection extends PyInspection {
+public abstract class LeakageInspection<T> extends PyInspection {
     public abstract LeakageType getLeakageType();
-
     public abstract ElementVisitor getElementVisitor(Document document, @NotNull ProblemsHolder holder, List<LeakageInstance> leakageInstances);
     @Override
     public abstract @NotNull PyElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly, @NotNull LocalInspectionToolSession session);

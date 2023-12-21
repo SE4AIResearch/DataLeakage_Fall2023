@@ -13,14 +13,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
-public class PreprocessingLeakageInspection extends LeakageInspection {
+public class PreprocessingLeakageInspection extends LeakageInspection<PreprocessingLeakageInstance> {
     private final LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
 
     @Override
     public LeakageType getLeakageType() {
         return LeakageType.PreprocessingLeakage;
     }
+
+
 
     @Override
     public ElementVisitor getElementVisitor(Document document, @NotNull ProblemsHolder holder, List<LeakageInstance> leakageInstances) {
@@ -35,9 +38,9 @@ public class PreprocessingLeakageInspection extends LeakageInspection {
                 var offset = node.getTextOffset();
                 var nodeLineNumber = document.getLineNumber(offset) + 1; //getLineNumber is zero-based, must add 1
 
-
-                if (preprocessingLeakageInstances.stream().anyMatch(instance -> (instance.lineNumber() == nodeLineNumber)
-                        && Objects.equals(instance.test(), node.getName()))) {
+                Predicate<PreprocessingLeakageInstance> predicate = instance -> (instance.lineNumber() == nodeLineNumber)
+                        && Objects.equals(instance.test(), node.getName());
+                if (preprocessingLeakageInstances.stream().anyMatch(predicate)) {
                     holder.registerProblem(node, InspectionBundle.get("inspectionText.preprocessingLeakage.text"));
                 }
 

@@ -15,13 +15,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class MultiTestLeakageInspection extends LeakageInspection {
+public class MultiTestLeakageInspection extends LeakageInspection<MultiTestLeakageInstance> {
     private final LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
 
     @Override
     public LeakageType getLeakageType() {
         return LeakageType.MultiTestLeakage;
     }
+
+
 
     @Override
     public ElementVisitor getElementVisitor(Document document, @NotNull ProblemsHolder holder, List<LeakageInstance> leakageInstances) {
@@ -34,11 +36,9 @@ public class MultiTestLeakageInspection extends LeakageInspection {
                 var offset = node.getTextOffset();
                 var nodeLineNumber = document.getLineNumber(offset) + 1; //getLineNumber is zero-based, must add 1
 
-                Predicate<MultiTestLeakageInstance> predicate =
-
-                        instance -> (instance.lineNumber() == nodeLineNumber)
-                                && Objects.equals(instance.test(), node.getName()
-                        );
+                Predicate<MultiTestLeakageInstance> predicate = instance -> (instance.lineNumber() == nodeLineNumber)
+                        && Objects.equals(instance.test(), node.getName()
+                );
 
                 if (multiTestLeakageInstances.stream().anyMatch(predicate)) {
                     holder.registerProblem(node, InspectionBundle.get("inspectionText.multiTestLeakage.text"));
@@ -59,7 +59,6 @@ public class MultiTestLeakageInspection extends LeakageInspection {
         if (document == null) return new PyElementVisitor();
 
         var leakageInstances = leakageAnalysisParser.LeakageInstances();
-
 
 
         return getElementVisitor(document, holder, leakageInstances);

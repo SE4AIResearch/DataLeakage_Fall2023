@@ -13,14 +13,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
-public class OverlapLeakageInspection extends LeakageInspection {
+public class OverlapLeakageInspection extends LeakageInspection<OverlapLeakageInstance> {
     private final LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
 
     @Override
     public LeakageType getLeakageType() {
         return LeakageType.OverlapLeakage;
     }
+
 
     @Override
     public ElementVisitor getElementVisitor(Document document, @NotNull ProblemsHolder holder, List<LeakageInstance> leakageInstances) {
