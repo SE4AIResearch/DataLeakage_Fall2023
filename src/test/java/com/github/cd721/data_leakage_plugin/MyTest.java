@@ -1,13 +1,17 @@
 package com.github.cd721.data_leakage_plugin;
 
+import com.github.cd721.data_leakage_plugin.data.Invocation;
 import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.LeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.MultiTestLeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.PreprocessingLeakageDetector;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
+
 import com.github.cd721.data_leakage_plugin.leakage_detectors.OverlapLeakageDetector;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,7 +27,7 @@ public class MyTest {
         // Testing the listener developed and checking if it correctly listens for file changes
         // Creating a mock test by instantiating the detector class
         LeakageDetector lc = new MultiTestLeakageDetector();
-        lc.FindLeakageInstances("C:\\Users\\phant\\OneDrive\\Documents\\sample-fact\\", LeakageType.MultiTestLeakage);
+        lc.FindLeakageInstances();
         Assert.assertTrue(lc.isLeakageDetected());
         //test if leakage detected comes out be t
     }
@@ -32,18 +36,17 @@ public class MyTest {
     //only run this test if the leakage is detected to verify that the correct line numbers are being printed out
     public void MultiTestVerify() {
         LeakageDetector lc = new MultiTestLeakageDetector();
-        List<LeakageInstance> test_list = lc.FindLeakageInstances("C:\\Users\\phant\\OneDrive\\Documents\\sample-fact\\", LeakageType.MultiTestLeakage);
+        List<LeakageInstance> test_list = lc.FindLeakageInstances();
         LeakageInstance li1 = new LeakageInstance(14, LeakageType.MultiTestLeakage);
         LeakageInstance li2 = new LeakageInstance(4, LeakageType.MultiTestLeakage);
         List<LeakageInstance> cmp_list = new ArrayList<LeakageInstance>();
         cmp_list.add(li1);
         cmp_list.add(li2);
         System.out.print(test_list.size());
-        for(int i = 0; i < test_list.size(); i++){
+        for (int i = 0; i < test_list.size(); i++) {
             boolean is_true = test_list.get(i).equals(cmp_list.get(i));
             Assert.assertTrue(is_true);
         }
-
 
 
     }
@@ -54,7 +57,7 @@ public class MyTest {
         // Testing the listener developed and checking if it correctly listens for file changes
         // Creating a mock test by instantiating the detector class
         LeakageDetector lc = new OverlapLeakageDetector();
-        lc.FindLeakageInstances("C:\\Users\\phant\\OneDrive\\Documents\\sample-fact\\", LeakageType.OverlapLeakage);
+        lc.FindLeakageInstances();
         Assert.assertFalse(lc.isLeakageDetected());
         //test if leakage detected comes out be t
     }
@@ -65,8 +68,8 @@ public class MyTest {
     public void isPreprocessingDetector() {
         // Testing the listener developed and checking if it correctly listens for file changes
         // Creating a mock test by instantiating the detector class
-        LeakageDetector lc = new PreprocessingLeakageDetector();
-        lc.FindLeakageInstances("C:\\Users\\phant\\OneDrive\\Documents\\sample-fact\\", LeakageType.PreprocessingLeakage);
+        PreprocessingLeakageDetector lc = new PreprocessingLeakageDetector();
+        lc.FindLeakageInstances();
         Assert.assertFalse(lc.isLeakageDetected());
         //test if leakage detected comes out be t
     }

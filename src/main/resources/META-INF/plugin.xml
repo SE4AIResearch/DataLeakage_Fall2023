@@ -15,8 +15,30 @@
 
     <resource-bundle>messages.MyBundle</resource-bundle>
     <extensions defaultExtensionNs="com.intellij">
-
-
+        <localInspection language="Python"
+                         groupPath="Python"
+                         groupName="LeakageInspections"
+                         enabledByDefault="true"
+                         level="WEAK WARNING"
+                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.OverlapLeakageInspection"
+                         displayName="Overlap leakage"
+                         shortName="OverlapLeakageInspection"/>
+        <localInspection language="Python"
+                         groupPath="Python"
+                         groupName="LeakageInspections"
+                         enabledByDefault="true"
+                         level="WEAK WARNING"
+                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.PreprocessingLeakageInspection"
+                         displayName="Preprocessing Leakage"
+                         shortName="PreprocessingLeakageInspection"/>
+        <localInspection language="Python"
+                         groupPath="Python"
+                         groupName="LeakageInspections"
+                         enabledByDefault="true"
+                         level="WEAK WARNING"
+                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.MultiTestLeakageInspection"
+                         displayName="Multi-test Leakage"
+                         shortName="MultiTestLeakageInspection"/>
     </extensions>
     
     <actions>

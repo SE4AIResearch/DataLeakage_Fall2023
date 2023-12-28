@@ -3,11 +3,7 @@ package com.github.cd721.data_leakage_plugin.leakage_indicators;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.github.cd721.data_leakage_plugin.warning_renderers.DataLeakageWarningRenderer;
 import com.github.cd721.data_leakage_plugin.warning_renderers.DataLeakageWarningRendererFactory;
-import com.intellij.codeInsight.hints.InlayHintsCollector;
-import com.intellij.codeInsight.hints.InlayHintsSink;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.psi.PsiElement;
-import org.jetbrains.annotations.NotNull;
 
 
 public class DataLeakageIndicator {

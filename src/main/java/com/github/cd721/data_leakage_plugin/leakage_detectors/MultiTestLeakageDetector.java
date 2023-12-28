@@ -2,6 +2,8 @@ package com.github.cd721.data_leakage_plugin.leakage_detectors;
 
 import com.github.cd721.data_leakage_plugin.data.Invocation;
 import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
+import com.github.cd721.data_leakage_plugin.data.MultiTestLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 
 import java.io.BufferedReader;
@@ -34,6 +36,35 @@ public class MultiTestLeakageDetector extends LeakageDetector {
         return leakageInstances;
     }
 
+    /**
+     * Looks through the CSV files that provide information about the provided {@code leakageType}.
+     * Adds leakage instances to the field {@link #leakageInstances}.
+     */
+    @Override
+    public void findLeakageInstancesInFile(File file) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] columns = line.split(("\t"));
+                Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
+                int internalLineNumber = Utils.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
+                int actualLineNumber = Utils.getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
+
+                var leakageInstance = new MultiTestLeakageInstance(actualLineNumber,  invocation);
+
+                var existingInstances = leakageInstances();
+                if (!debug || !existingInstances.contains(leakageInstance)) {
+                    addLeakageInstance(leakageInstance);
+                }
+
+
+            }  } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public MultiTestLeakageDetector() {
         super();
         this.leakageType = LeakageType.MultiTestLeakage;
@@ -45,4 +76,7 @@ public class MultiTestLeakageDetector extends LeakageDetector {
     public boolean isLeakageDetected() {
         return !this.leakageInstances.isEmpty();
     }
+
+
+
 }
