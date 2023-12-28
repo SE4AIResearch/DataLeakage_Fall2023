@@ -29,9 +29,8 @@ public class MultiTestLeakageInspection extends LeakageInspection<MultiTestLeaka
                         && Objects.equals(instance.test(), node.getName()
                 );
                 var leakageInstances = leakageAnalysisParser.LeakageInstances();
-                var multiTestLeakageInstances = getLeakageInstancesForType(leakageInstances);
 
-                if (multiTestLeakageInstances.stream().anyMatch(predicate)) {
+                if (getLeakageInstancesForType(leakageInstances).stream().anyMatch(predicate)) {
                     holder.registerProblem(node, InspectionBundle.get("inspectionText.multiTestLeakage.text"));
                 }
 
