@@ -31,9 +31,7 @@ public abstract class LeakageInspection<T extends LeakageInstance> extends PyIns
         var document = Utils.getDocument(holder);
         if (document == null) return new PyElementVisitor();
 
-
-
-        return getElementVisitor( holder);
+        return getElementVisitor(holder);
     }
 
 ;
