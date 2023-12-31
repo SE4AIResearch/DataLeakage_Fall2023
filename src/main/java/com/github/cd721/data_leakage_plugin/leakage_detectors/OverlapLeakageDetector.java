@@ -3,6 +3,7 @@ package com.github.cd721.data_leakage_plugin.leakage_detectors;
 import com.github.cd721.data_leakage_plugin.data.Invocation;
 import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
 import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
+import com.github.cd721.data_leakage_plugin.data.OverlapLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 
 import java.io.BufferedReader;
@@ -55,7 +56,7 @@ public class OverlapLeakageDetector extends LeakageDetector {
                 int internalLineNumber = Utils.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
                 int actualLineNumber = Utils.getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
 
-                var leakageInstance = new LeakageInstance(actualLineNumber, LeakageType.OverlapLeakage, invocation);
+                var leakageInstance = new OverlapLeakageInstance(actualLineNumber, invocation);
 
                 var existingInstances = leakageInstances();
                 if (!debug || !existingInstances.contains(leakageInstance)) {

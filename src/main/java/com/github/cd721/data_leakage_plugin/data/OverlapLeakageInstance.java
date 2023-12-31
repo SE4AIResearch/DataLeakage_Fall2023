@@ -2,21 +2,44 @@ package com.github.cd721.data_leakage_plugin.data;
 
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 
-public class OverlapLeakageInstance extends LeakageInstance{
+public class OverlapLeakageInstance implements LeakageInstance {
     private final String test;
-    public OverlapLeakageInstance(int lineNumber,  Invocation invocation) {
-        super(lineNumber, LeakageType.OverlapLeakage, invocation);
+    private final int lineNumber;
+    private final LeakageType type;
+
+    private final Invocation invocation;
+    private final LeakageSource leakageSource;
+
+    public OverlapLeakageInstance(int lineNumber, Invocation invocation) {
+        this.lineNumber = lineNumber;
+        this.type = LeakageType.OverlapLeakage;
+        this.invocation = invocation;
         this.test = Utils.getTestFromOverlapLeakTelemetryFile();
+        this.leakageSource = new LeakageSource();
     }
 
     public String test() {
         return test;
     }
 
-//    @Override
-//    public boolean equals(Object obj) {
-//        var leak = (OverlapLeakageInstance)obj;
-//        return this.lineNumber()==(leak.lineNumber())
-//                && this.invocation().getNumber()==(leak.invocation().getNumber());    }
+    public LeakageSource getLeakageSource() {
+        return leakageSource;
+    }
+
+
+    @Override
+    public int lineNumber() {
+        return lineNumber;
+    }
+
+    @Override
+    public Invocation invocation() {
+        return invocation;
+    }
+
+    @Override
+    public LeakageType type() {
+        return type;
+    }
 
 }

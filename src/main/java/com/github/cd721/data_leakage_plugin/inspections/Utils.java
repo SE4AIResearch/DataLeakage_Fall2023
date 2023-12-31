@@ -5,6 +5,7 @@ import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiLanguageInjectionHost;
+import com.jetbrains.python.psi.PyExpression;
 import com.jetbrains.python.psi.PyReferenceExpression;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +24,7 @@ public class Utils {
         return getFile(holder).getViewProvider().getDocument();
     }
 
-    public static int getNodeLineNumber(PyReferenceExpression node, @NotNull ProblemsHolder holder) {
+    public static int getNodeLineNumber(PyExpression node, @NotNull ProblemsHolder holder) {
         var offset = node.getTextOffset();
         return getDocument(holder).getLineNumber(offset) + 1; //getLineNumber is zero-based, must add 1
     }

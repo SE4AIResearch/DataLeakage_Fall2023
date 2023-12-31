@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class Utils {
 
-    //TODO: write better docs
+    //TODO: write better docs, remove circular dependency
     /**
      * Looks through "LinenoMapping.facts" to find the actual line number that corresponds to an internal line number.
      * The "actual line number" is the line number of the end user's code.

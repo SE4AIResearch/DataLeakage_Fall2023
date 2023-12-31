@@ -4,6 +4,7 @@ import com.github.cd721.data_leakage_plugin.data.PreprocessingLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.codeInspection.ProblemsHolder;
+import com.jetbrains.python.psi.PyCallExpression;
 import com.jetbrains.python.psi.PyReferenceExpression;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,6 +34,11 @@ public class PreprocessingLeakageInspection extends LeakageInspection<Preprocess
                 if (preprocessingLeakageInstances.stream().anyMatch(predicate)) {
                     holder.registerProblem(node, InspectionBundle.get("inspectionText.preprocessingLeakage.text"));
                 }
+
+            }
+
+            @Override
+            public void visitPyCallExpression(@NotNull PyCallExpression node) {
 
             }
         };

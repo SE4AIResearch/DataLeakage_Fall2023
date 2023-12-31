@@ -4,6 +4,7 @@ import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
 import com.github.cd721.data_leakage_plugin.data.MultiTestLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.intellij.codeInspection.ProblemsHolder;
+import com.jetbrains.python.psi.PyCallExpression;
 import com.jetbrains.python.psi.PyReferenceExpression;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,6 +34,11 @@ public class MultiTestLeakageInspection extends LeakageInspection<MultiTestLeaka
                 if (getLeakageInstancesForType(leakageInstances).stream().anyMatch(predicate)) {
                     holder.registerProblem(node, InspectionBundle.get("inspectionText.multiTestLeakage.text"));
                 }
+
+            }
+
+            @Override
+            public void visitPyCallExpression(@NotNull PyCallExpression node) {
 
             }
         };

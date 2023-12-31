@@ -2,12 +2,18 @@ package com.github.cd721.data_leakage_plugin.data;
 
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 
-public class MultiTestLeakageInstance extends LeakageInstance {
+public class MultiTestLeakageInstance implements LeakageInstance {
 
     private final String test;
+    private final int lineNumber;
+    private final LeakageType type;
+
+    private final Invocation invocation;
 
     public MultiTestLeakageInstance(int lineNumber,  Invocation invocation) {
-        super(lineNumber, LeakageType.MultiTestLeakage, invocation);
+        this.lineNumber = lineNumber;
+        this.type = LeakageType.MultiTestLeakage;
+        this.invocation = invocation;
         this.test = Utils.getTestFromMultiUseTestLeakTelemetryFile();
     }
 
@@ -15,9 +21,18 @@ public class MultiTestLeakageInstance extends LeakageInstance {
         return test;
     }
 
-//    @Override
-//    public boolean equals(Object obj) {
-//        var leak = (MultiTestLeakageInstance)obj;
-//        return this.lineNumber()==(leak.lineNumber())
-//                && this.invocation().getNumber()==(leak.invocation().getNumber());    }
+    @Override
+    public int lineNumber() {
+        return lineNumber;
+    }
+
+    @Override
+    public LeakageType type() {
+        return type;
+    }
+
+    @Override
+    public Invocation invocation() {
+        return invocation;
+    }
 }
