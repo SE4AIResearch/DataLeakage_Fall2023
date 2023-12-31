@@ -3,6 +3,7 @@ package com.github.cd721.data_leakage_plugin;
 import com.github.cd721.data_leakage_plugin.data.Invocation;
 import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
 import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
+import com.github.cd721.data_leakage_plugin.data.MultiTestLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.LeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.MultiTestLeakageDetector;
@@ -37,8 +38,9 @@ public class MyTest {
     public void MultiTestVerify() {
         LeakageDetector lc = new MultiTestLeakageDetector();
         List<LeakageInstance> test_list = lc.FindLeakageInstances();
-        LeakageInstance li1 = new LeakageInstance(14, LeakageType.MultiTestLeakage);
-        LeakageInstance li2 = new LeakageInstance(4, LeakageType.MultiTestLeakage);
+        Invocation arbitraryInvocation = new Invocation("$invo0");
+        LeakageInstance li1 = new MultiTestLeakageInstance(14, arbitraryInvocation);
+        LeakageInstance li2 = new MultiTestLeakageInstance(4, arbitraryInvocation);
         List<LeakageInstance> cmp_list = new ArrayList<LeakageInstance>();
         cmp_list.add(li1);
         cmp_list.add(li2);
