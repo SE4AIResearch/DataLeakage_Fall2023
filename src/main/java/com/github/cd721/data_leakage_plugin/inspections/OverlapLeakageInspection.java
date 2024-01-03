@@ -44,7 +44,7 @@ public class OverlapLeakageInspection extends LeakageInspection<OverlapLeakageIn
 
 
                 if (overlapLeakageInstances.stream().anyMatch(leakageAssociatedWithNode)) {
-                    holder.registerProblem(node, "Potential source of overlap leakage.");
+                    holder.registerProblem(node, InspectionBundle.get("inspectionText.overlapLeakageSource.text"));
                 }
 
 
