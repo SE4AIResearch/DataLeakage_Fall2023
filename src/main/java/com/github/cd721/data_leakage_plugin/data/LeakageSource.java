@@ -1,14 +1,16 @@
 package com.github.cd721.data_leakage_plugin.data;
 
 import com.github.cd721.data_leakage_plugin.leakage_detectors.Utils;
-import com.intellij.psi.PsiFile;
-import com.jetbrains.python.psi.PyCallExpression;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Objects;
+
+/**
+ * The source of particular instance of data leakage exists on a {@link #lineNumber} and is associated with
+ * both an {@link #invocation} and a {@link #pyCallExpression}.
+ */
 
 public class LeakageSource {
     private final Invocation invocation;

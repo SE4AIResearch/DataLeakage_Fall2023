@@ -7,6 +7,12 @@ import org.jetbrains.annotations.PropertyKey;
 public class InspectionBundle extends DynamicBundle {
     public static final InspectionBundle INSTANCE = new InspectionBundle();
 
+    /**
+     * Gets inspection text from a .properties file within the resources folder.
+     * @param key The identifier for the inspection text
+     * @param params
+     * @return The inspection text as a String.
+     */
     @NotNull
     public static String get(@NotNull
                              @PropertyKey(resourceBundle = "messages.InspectionText")

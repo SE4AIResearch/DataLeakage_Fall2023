@@ -15,6 +15,10 @@ public abstract class LeakageInspection<T extends LeakageInstance> extends PyIns
     public abstract LeakageType getLeakageType();
     public final LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
 
+    /**
+     * @return A list of {@link LeakageInstance}s having the same type as this {@link LeakageInspection}.
+     * //TODO: remove unchecked cast
+     */
     public List<T> getLeakageInstancesForType(List<LeakageInstance> leakageInstances){
         return leakageInstances.stream()
                 .filter(instance -> instance.type().equals(getLeakageType()))

@@ -5,6 +5,11 @@ import com.jetbrains.python.psi.PyElementVisitor;
 import com.jetbrains.python.psi.PyReferenceExpression;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A type of {@link PyElementVisitor} that visits different types of elements within the PSI tree,
+ * such as {@link PyReferenceExpression}s.
+ *
+ */
 public abstract class ElementVisitor extends PyElementVisitor {
 
     @Override
