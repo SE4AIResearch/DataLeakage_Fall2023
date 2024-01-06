@@ -1,20 +1,15 @@
 package com.github.cd721.data_leakage_plugin.actions;
 
 import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
-import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
-import com.github.cd721.data_leakage_plugin.leakage_detectors.LeakageDetector;
-import com.github.cd721.data_leakage_plugin.listeners.LeakageFileChangeDetector;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
-import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.pom.Navigatable;
 import com.intellij.psi.PsiFile;
 import com.jetbrains.python.PythonLanguage;
-import com.jetbrains.python.sdk.PythonEnvUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

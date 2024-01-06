@@ -1,16 +1,10 @@
 package com.github.cd721.data_leakage_plugin.leakage_detectors;
 
-import com.github.cd721.data_leakage_plugin.data.Invocation;
 import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
 import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
-import com.github.cd721.data_leakage_plugin.data.MultiTestLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
-
-import java.io.BufferedReader;
+import com.github.cd721.data_leakage_plugin.data.Invocation;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class LeakageDetector {
