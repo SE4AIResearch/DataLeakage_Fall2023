@@ -40,7 +40,10 @@ public class OverlapLeakageInspection extends LeakageInspection<OverlapLeakageIn
             @Override
             public void visitPyCallExpression(@NotNull PyCallExpression node) {
                 var nodeLineNumber = Utils.getNodeLineNumber(node, holder);
-                Predicate<OverlapLeakageInstance> leakageAssociatedWithNode = instance -> (instance.getLeakageSource().getLineNumber() == nodeLineNumber);
+
+                Predicate<OverlapLeakageInstance> leakageAssociatedWithNode =
+                        instance -> (instance.getLeakageSource().getLineNumbers().stream().anyMatch(leakageSourceLineNumber ->
+                                leakageSourceLineNumber == nodeLineNumber));
 
 
                 if (overlapLeakageInstances.stream().anyMatch(leakageAssociatedWithNode)) {

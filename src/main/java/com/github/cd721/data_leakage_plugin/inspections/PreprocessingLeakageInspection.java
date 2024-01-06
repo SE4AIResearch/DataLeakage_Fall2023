@@ -1,5 +1,6 @@
 package com.github.cd721.data_leakage_plugin.inspections;
 
+import com.github.cd721.data_leakage_plugin.data.leakage_data.OverlapLeakageInstance;
 import com.github.cd721.data_leakage_plugin.data.leakage_data.PreprocessingLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
@@ -37,8 +38,20 @@ public class PreprocessingLeakageInspection extends LeakageInspection<Preprocess
 
             }
 
+            //TODO: test
             @Override
             public void visitPyCallExpression(@NotNull PyCallExpression node) {
+                var nodeLineNumber = Utils.getNodeLineNumber(node, holder);
+
+                Predicate<PreprocessingLeakageInstance> leakageAssociatedWithNode =
+                        instance -> (instance.getLeakageSource().getLineNumbers().stream().anyMatch(leakageSourceLineNumber ->
+                                leakageSourceLineNumber == nodeLineNumber));
+
+
+                if (preprocessingLeakageInstances.stream().anyMatch(leakageAssociatedWithNode)) {
+                    holder.registerProblem(node, InspectionBundle.get("inspectionText.overlapLeakageSource.text"));
+                }
+
 
             }
         };

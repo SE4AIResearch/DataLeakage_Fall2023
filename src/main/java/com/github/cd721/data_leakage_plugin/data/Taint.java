@@ -1,11 +1,14 @@
 package com.github.cd721.data_leakage_plugin.data;
 
 import com.github.cd721.data_leakage_plugin.data.leakage_data.LeakageOutput;
+import com.github.cd721.data_leakage_plugin.enums.TaintLabel;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -15,9 +18,10 @@ public class Taint {
 
     private final Invocation invocation;
     private final String pyCallExpression;
+    private final TaintLabel taintType;
 
-    public Taint() {
-        String taintString = getTaintFromFile();
+    public Taint(String taintString, TaintLabel taintType) {
+        this.taintType = taintType;
         this.invocation = getInvoFromTaint(taintString);
         this.pyCallExpression = getPyCallExpressionFromTaint(taintString);
     }
@@ -32,29 +36,7 @@ public class Taint {
         return new Invocation(taintSplit[4]);
     }
 
-    private String getTaintFromFile() {
-        File file = new File(LeakageOutput.folderPath() + "TaintStartsTarget.csv");
 
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-
-            String line;
-
-            while (((line = reader.readLine()) != null)) {
-                String[] columns = line.split(("\t"));
-                if (Objects.equals(columns[6], "dup")) {
-                    return line;
-                }
-
-            }
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        }
-        return "";
-    }
 
     private String getPyCallExpressionFromTaint(String taint) {
         String[] taintSplit = taint.split("\t");

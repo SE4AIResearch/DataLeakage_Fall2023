@@ -17,7 +17,7 @@ public class OverlapLeakageInstance implements LeakageInstance {
         this.type = LeakageType.OverlapLeakage;
         this.invocation = invocation;
         this.test = Utils.getTestFromOverlapLeakTelemetryFile();
-        this.leakageSource = new LeakageSource();
+        this.leakageSource = new LeakageSource(this.type);
     }
 
     public String test() {
