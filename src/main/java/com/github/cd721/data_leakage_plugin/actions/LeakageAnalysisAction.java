@@ -1,6 +1,6 @@
 package com.github.cd721.data_leakage_plugin.actions;
 
-import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.leakage_data.LeakageInstance;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;

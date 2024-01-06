@@ -1,4 +1,4 @@
-package com.github.cd721.data_leakage_plugin.data;
+package com.github.cd721.data_leakage_plugin.data.leakage_data;
 
 /**
  * This record contains the absolute path to the output of the leakage analysis tool. Currently, this path

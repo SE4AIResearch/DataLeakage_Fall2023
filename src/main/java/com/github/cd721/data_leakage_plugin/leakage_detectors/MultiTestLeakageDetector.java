@@ -1,9 +1,10 @@
 package com.github.cd721.data_leakage_plugin.leakage_detectors;
 
+import com.github.cd721.data_leakage_plugin.common_utils.Utils;
 import com.github.cd721.data_leakage_plugin.data.Invocation;
-import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
-import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
-import com.github.cd721.data_leakage_plugin.data.MultiTestLeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.leakage_data.LeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.leakage_data.LeakageOutput;
+import com.github.cd721.data_leakage_plugin.data.leakage_data.MultiTestLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 
 import java.io.BufferedReader;
@@ -12,6 +13,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.github.cd721.data_leakage_plugin.common_utils.Utils.*;
 
 public class MultiTestLeakageDetector extends LeakageDetector {
     private final List<LeakageInstance> leakageInstances;
@@ -49,8 +52,8 @@ public class MultiTestLeakageDetector extends LeakageDetector {
             while ((line = reader.readLine()) != null) {
                 String[] columns = line.split(("\t"));
                 Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
-                int internalLineNumber = Utils.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
-                int actualLineNumber = Utils.getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
+                int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
+                int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
 
                 var leakageInstance = new MultiTestLeakageInstance(actualLineNumber,  invocation);
 

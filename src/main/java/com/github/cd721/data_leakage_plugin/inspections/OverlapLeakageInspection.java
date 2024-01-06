@@ -1,6 +1,6 @@
 package com.github.cd721.data_leakage_plugin.inspections;
 
-import com.github.cd721.data_leakage_plugin.data.OverlapLeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.leakage_data.OverlapLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.jetbrains.python.psi.PyCallExpression;

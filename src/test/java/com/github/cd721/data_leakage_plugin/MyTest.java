@@ -1,25 +1,19 @@
 package com.github.cd721.data_leakage_plugin;
 
 import com.github.cd721.data_leakage_plugin.data.Invocation;
-import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
-import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
-import com.github.cd721.data_leakage_plugin.data.MultiTestLeakageInstance;
-import com.github.cd721.data_leakage_plugin.enums.LeakageType;
+import com.github.cd721.data_leakage_plugin.data.leakage_data.LeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.leakage_data.MultiTestLeakageInstance;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.LeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.MultiTestLeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.PreprocessingLeakageDetector;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 import com.github.cd721.data_leakage_plugin.leakage_detectors.OverlapLeakageDetector;
 import org.junit.Assert;
-import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 public class MyTest {

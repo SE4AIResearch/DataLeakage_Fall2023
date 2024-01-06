@@ -1,9 +1,10 @@
 package com.github.cd721.data_leakage_plugin.leakage_detectors;
 
-import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
-import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
-import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.github.cd721.data_leakage_plugin.data.Invocation;
+import com.github.cd721.data_leakage_plugin.data.leakage_data.LeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.leakage_data.LeakageOutput;
+import com.github.cd721.data_leakage_plugin.enums.LeakageType;
+
 import java.io.File;
 import java.util.List;
 

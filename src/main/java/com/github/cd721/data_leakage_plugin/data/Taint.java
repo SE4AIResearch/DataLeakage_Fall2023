@@ -1,6 +1,7 @@
 package com.github.cd721.data_leakage_plugin.data;
 
-import com.github.cd721.data_leakage_plugin.leakage_detectors.Utils;
+import com.github.cd721.data_leakage_plugin.data.leakage_data.LeakageOutput;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -8,39 +9,23 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * The source of particular instance of data leakage exists on a {@link #lineNumber} and is associated with
- * both an {@link #invocation} and a {@link #pyCallExpression}.
+ * Very roughly speaking, taints correspond to sources of data leakage.
  */
+public class Taint {
 
-public class LeakageSource {
     private final Invocation invocation;
     private final String pyCallExpression;
 
-    private final int lineNumber;
-
-    public LeakageSource() {
-        String taint = getTaintFromFile();
-
-        this.invocation = getInvoFromTaint(taint);
-        this.pyCallExpression = getPyCallExpressionFromTaint(taint);
-        this.lineNumber =
-                com.github.cd721.data_leakage_plugin.leakage_detectors.Utils.getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), Utils.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), this.invocation));
-
-
-    }
-
-    private String getPyCallExpressionFromTaint(String taint) {
-        String[] taintSplit = taint.split("\t");
-        if (taintSplit.length < 6) {
-            return "";
-        }
-
-        return (taintSplit[5]);
+    public Taint() {
+        String taintString = getTaintFromFile();
+        this.invocation = getInvoFromTaint(taintString);
+        this.pyCallExpression = getPyCallExpressionFromTaint(taintString);
     }
 
     private Invocation getInvoFromTaint(String taint) {
         String[] taintSplit = taint.split("\t");
         if (taintSplit.length < 6) {
+            //TODO: how to handle this case?
             return new Invocation("$invo0");
         }
 
@@ -71,6 +56,15 @@ public class LeakageSource {
         return "";
     }
 
+    private String getPyCallExpressionFromTaint(String taint) {
+        String[] taintSplit = taint.split("\t");
+        if (taintSplit.length < 6) {
+            return "";
+        }
+
+        return (taintSplit[5]);
+    }
+
     public Invocation getInvocation() {
         return invocation;
     }
@@ -79,7 +73,4 @@ public class LeakageSource {
         return pyCallExpression;
     }
 
-    public int getLineNumber() {
-        return lineNumber;
-    }
 }

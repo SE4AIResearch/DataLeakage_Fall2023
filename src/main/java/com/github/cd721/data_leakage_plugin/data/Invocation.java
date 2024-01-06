@@ -1,5 +1,9 @@
 package com.github.cd721.data_leakage_plugin.data;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,13 +19,14 @@ public class Invocation {
     /**
      * Checks whether a String is of the form "$invo{number}". If the String is of this form, the {@link  #number} field is
      * set accordingly. If the String is not of the form "$invo{number}", the {@link #number} field is set to 0.
+     *
      * @param invocationString A string believed to be of the form "$invo{number}".
      */
     public Invocation(String invocationString) {
         Matcher matcher = invocationPattern.matcher(invocationString);
         boolean matchFound = matcher.find();
 
-        if(matchFound) {
+        if (matchFound) {
             String numbersPortion = matcher.group(3);
             number = Integer.parseInt(numbersPortion);
 
@@ -34,5 +39,34 @@ public class Invocation {
 
     public int getNumber() {
         return number;
+    }
+
+    /**
+     * Looks through "InvokeLineno.facts" to find a number that corresponds to a particular invocation.
+     * The "internal line number" is provided by the leakage analysis tool and shall not be presented to the end user.
+     *
+     * @param folderPath The location of the leakage analysis tool output that contains "InvokeLineno.facts".
+     * @param invocation An {@code Invocation}. This would appear in the leakage analysis tool output as "$invo2", for example.
+     * @return An {@code int} representing a number provided by the leakage analysis tool. The number is meaningless to the end user, but may be used by other functions in the plugin code.
+     */
+    public static int getInternalLineNumberFromInvocation(String folderPath, Invocation invocation) {
+        File file = new File(folderPath + "InvokeLineno.facts");
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            int lineNumber = invocation.getNumber() + 1;
+            String line = "";
+
+            for (int i = 1; i <= lineNumber; i++) {
+                line = reader.readLine();
+
+            }
+            String[] columns = line.split(("\t"));
+            return Integer.parseInt(columns[1]);
+
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

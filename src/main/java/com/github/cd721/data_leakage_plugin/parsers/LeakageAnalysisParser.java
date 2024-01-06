@@ -1,6 +1,6 @@
 package com.github.cd721.data_leakage_plugin.parsers;
 
-import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.leakage_data.LeakageInstance;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.LeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.MultiTestLeakageDetector;
 import com.github.cd721.data_leakage_plugin.leakage_detectors.OverlapLeakageDetector;
