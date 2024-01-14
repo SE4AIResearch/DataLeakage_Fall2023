@@ -1,7 +1,6 @@
 package com.github.cd721.data_leakage_plugin.inspections;
 
-import com.github.cd721.data_leakage_plugin.data.leakage_data.OverlapLeakageInstance;
-import com.github.cd721.data_leakage_plugin.data.leakage_data.PreprocessingLeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.PreprocessingLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.codeInspection.ProblemsHolder;

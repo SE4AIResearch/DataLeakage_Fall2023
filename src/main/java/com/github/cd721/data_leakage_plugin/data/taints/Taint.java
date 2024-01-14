@@ -1,15 +1,8 @@
-package com.github.cd721.data_leakage_plugin.data;
+package com.github.cd721.data_leakage_plugin.data.taints;
 
-import com.github.cd721.data_leakage_plugin.data.leakage_data.LeakageOutput;
+import com.github.cd721.data_leakage_plugin.data.Invocation;
 import com.github.cd721.data_leakage_plugin.enums.TaintLabel;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Very roughly speaking, taints correspond to sources of data leakage.

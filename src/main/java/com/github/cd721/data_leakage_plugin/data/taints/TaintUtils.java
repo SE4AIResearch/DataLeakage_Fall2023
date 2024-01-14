@@ -1,5 +1,6 @@
-package com.github.cd721.data_leakage_plugin.data.leakage_data;
+package com.github.cd721.data_leakage_plugin.data.taints;
 
+import com.github.cd721.data_leakage_plugin.data.LeakageOutput;
 import com.github.cd721.data_leakage_plugin.enums.TaintLabel;
 
 import java.io.BufferedReader;

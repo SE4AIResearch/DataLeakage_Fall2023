@@ -1,7 +1,7 @@
 package com.github.cd721.data_leakage_plugin.inspections;
 
-import com.github.cd721.data_leakage_plugin.data.leakage_data.LeakageInstance;
-import com.github.cd721.data_leakage_plugin.data.leakage_data.MultiTestLeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.MultiTestLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.jetbrains.python.psi.PyCallExpression;

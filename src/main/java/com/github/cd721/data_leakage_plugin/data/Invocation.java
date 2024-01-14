@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
  */
 public class Invocation {
 
+    private String pyCallExpression;
     private final int number;
     private final Pattern invocationPattern = Pattern.compile("(\\$)(invo)([0-9]+)");
     //TODO: test
@@ -23,6 +24,7 @@ public class Invocation {
      * @param invocationString A string believed to be of the form "$invo{number}".
      */
     public Invocation(String invocationString) {
+        this.pyCallExpression = getFunctionCallFromInvocation();
         Matcher matcher = invocationPattern.matcher(invocationString);
         boolean matchFound = matcher.find();
 
@@ -68,5 +70,30 @@ public class Invocation {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private  String getFunctionCallFromInvocation( ){
+        File file = new File(LeakageOutput.folderPath() + "Invoke.facts");
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            int lineNumber = this.getNumber() + 1;
+            String line = "";
+
+            for (int i = 1; i <= lineNumber; i++) {
+                line = reader.readLine();
+
+            }
+            String[] columns = line.split(("\t"));
+            return columns[1];
+
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public String getPyCallExpression() {
+        return pyCallExpression;
     }
 }

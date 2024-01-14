@@ -1,7 +1,9 @@
 package com.github.cd721.data_leakage_plugin.inspections;
 
-import com.github.cd721.data_leakage_plugin.data.leakage_data.OverlapLeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.OverlapLeakageInstance;
+import com.github.cd721.data_leakage_plugin.data.taints.Taint;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
+import com.github.cd721.data_leakage_plugin.enums.TaintLabel;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.jetbrains.python.psi.PyCallExpression;
 import com.jetbrains.python.psi.PyReferenceExpression;
@@ -46,8 +48,21 @@ public class OverlapLeakageInspection extends LeakageInspection<OverlapLeakageIn
                                 leakageSourceLineNumber == nodeLineNumber));
 
 
+
                 if (overlapLeakageInstances.stream().anyMatch(leakageAssociatedWithNode)) {
-                    holder.registerProblem(node, InspectionBundle.get("inspectionText.overlapLeakageSource.text"));
+                    //TODO: refactor
+                    OverlapLeakageInstance leakageInstance = overlapLeakageInstances.stream().filter(leakageAssociatedWithNode).findFirst().get();
+
+
+                    Taint matchingTaint = leakageInstance.getLeakageSource().getTaints().stream().filter(taint ->taint.getPyCallExpression().equalsIgnoreCase(node.getCallee().getText()) //equalsIgnoreCase MUST be used here
+                    ).findFirst().orElse(new Taint("", TaintLabel.dup));
+
+                    String appendmsg = "";
+                    if(matchingTaint.getPyCallExpression().contains("resample")){
+                        appendmsg = "Ensure that sampling is done after splitting.";
+
+                    }
+                    holder.registerProblem(node, InspectionBundle.get("inspectionText.overlapLeakageSource.text") + " " +appendmsg);
                 }
 
 
