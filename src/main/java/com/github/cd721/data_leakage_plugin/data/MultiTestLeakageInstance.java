@@ -10,7 +10,7 @@ public class MultiTestLeakageInstance implements LeakageInstance {
 
     private final Invocation invocation;
 
-    public MultiTestLeakageInstance(int lineNumber,  Invocation invocation) {
+    public MultiTestLeakageInstance(int lineNumber, Invocation invocation) {
         this.lineNumber = lineNumber;
         this.type = LeakageType.MultiTestLeakage;
         this.invocation = invocation;
@@ -34,5 +34,10 @@ public class MultiTestLeakageInstance implements LeakageInstance {
     @Override
     public Invocation invocation() {
         return invocation;
+    }
+
+    @Override
+    public LeakageSource getLeakageSource() {
+       return null;
     }
 }

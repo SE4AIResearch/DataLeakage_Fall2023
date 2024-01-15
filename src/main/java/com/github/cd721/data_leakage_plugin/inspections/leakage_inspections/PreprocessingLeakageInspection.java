@@ -8,6 +8,7 @@ import com.github.cd721.data_leakage_plugin.inspections.PsiUtils;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.jetbrains.python.psi.PyCallExpression;
+import com.jetbrains.python.psi.PyElementVisitor;
 import com.jetbrains.python.psi.PyReferenceExpression;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,12 +24,12 @@ public class PreprocessingLeakageInspection extends LeakageInspection<Preprocess
     }
 
     @Override
-    public ElementVisitor getElementVisitor(@NotNull ProblemsHolder holder) {
+    public PyElementVisitor getElementVisitor(@NotNull ProblemsHolder holder) {
         var leakageInstances = leakageAnalysisParser.LeakageInstances();
 
         var preprocessingLeakageInstances = getLeakageInstancesForType(leakageInstances);
 
-        return new ElementVisitor() {
+        return new PyElementVisitor() {
             @Override
             public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {
                 var nodeLineNumber = PsiUtils.getNodeLineNumber(node, holder);

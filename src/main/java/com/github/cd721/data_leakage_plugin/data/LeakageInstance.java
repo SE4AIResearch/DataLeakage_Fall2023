@@ -9,5 +9,6 @@ public interface LeakageInstance {
 
     Invocation invocation();
 
+    LeakageSource getLeakageSource();
 
 }

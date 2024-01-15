@@ -4,6 +4,7 @@ import com.github.cd721.data_leakage_plugin.data.OverlapLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.github.cd721.data_leakage_plugin.inspections.ElementVisitor;
 import com.github.cd721.data_leakage_plugin.inspections.InspectionBundle;
+import com.github.cd721.data_leakage_plugin.inspections.OverlapLeakageElementVisitor;
 import com.github.cd721.data_leakage_plugin.inspections.PsiUtils;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.jetbrains.python.psi.PyCallExpression;
@@ -26,7 +27,7 @@ public class OverlapLeakageInspection extends LeakageInspection<OverlapLeakageIn
         var leakageInstances = leakageAnalysisParser.LeakageInstances();
 
         var overlapLeakageInstances = getLeakageInstancesForType(leakageInstances);
-        return new ElementVisitor(overlapLeakageInstances, holder);
+        return new OverlapLeakageElementVisitor(overlapLeakageInstances, holder);
     }
 
 

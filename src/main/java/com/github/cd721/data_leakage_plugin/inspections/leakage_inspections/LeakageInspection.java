@@ -27,7 +27,7 @@ public abstract class LeakageInspection<T extends LeakageInstance> extends PyIns
                 .map(instance -> (((T) instance))).toList();
     }
 
-    public abstract ElementVisitor getElementVisitor(@NotNull ProblemsHolder holder);
+    public abstract PyElementVisitor getElementVisitor(@NotNull ProblemsHolder holder);
     @Override
     public  @NotNull PyElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly, @NotNull LocalInspectionToolSession session){
         if (PsiUtils.getInjectionHost(holder) != null) {
