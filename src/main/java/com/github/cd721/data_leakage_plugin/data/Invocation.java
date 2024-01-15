@@ -12,10 +12,8 @@ import java.util.regex.Pattern;
  */
 public class Invocation {
 
-    private String pyCallExpression;
+    private final String pyCallExpression;
     private final int number;
-    private final Pattern invocationPattern = Pattern.compile("(\\$)(invo)([0-9]+)");
-    //TODO: test
 
     /**
      * Checks whether a String is of the form "$invo{number}". If the String is of this form, the {@link  #number} field is
@@ -25,6 +23,8 @@ public class Invocation {
      */
     public Invocation(String invocationString) {
         this.pyCallExpression = getFunctionCallFromInvocation();
+        //TODO: test
+        Pattern invocationPattern = Pattern.compile("(\\$)(invo)([0-9]+)");
         Matcher matcher = invocationPattern.matcher(invocationString);
         boolean matchFound = matcher.find();
 

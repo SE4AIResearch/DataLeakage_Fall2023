@@ -3,7 +3,6 @@ package com.github.cd721.data_leakage_plugin.inspections.leakage_inspections;
 import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
 import com.github.cd721.data_leakage_plugin.data.MultiTestLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
-import com.github.cd721.data_leakage_plugin.inspections.ElementVisitor;
 import com.github.cd721.data_leakage_plugin.inspections.InspectionBundle;
 import com.github.cd721.data_leakage_plugin.inspections.PsiUtils;
 import com.intellij.codeInspection.ProblemsHolder;

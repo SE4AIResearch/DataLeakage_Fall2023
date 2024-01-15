@@ -44,4 +44,8 @@ public abstract class ElementVisitor<T extends LeakageInstance> extends PyElemen
         }
     }
 
+    public abstract void renderInspectionOnLeakageInstance(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances);
+
+    public abstract void renderInspectionOnLeakageSources(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances);
+
 }

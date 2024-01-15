@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.cd721.data_leakage_plugin.common_utils.Utils.*;
+import static com.github.cd721.data_leakage_plugin.common_utils.Utils.getActualLineNumberFromInternalLineNumber;
 
 public class MultiTestLeakageDetector extends LeakageDetector {
     private final List<LeakageInstance> leakageInstances;

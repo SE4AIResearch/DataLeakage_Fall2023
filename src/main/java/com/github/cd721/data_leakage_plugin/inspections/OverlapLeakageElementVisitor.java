@@ -1,6 +1,7 @@
 package com.github.cd721.data_leakage_plugin.inspections;
 
 import com.github.cd721.data_leakage_plugin.data.OverlapLeakageInstance;
+import com.github.cd721.data_leakage_plugin.enums.OverlapLeakMethodKeyword;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.jetbrains.python.psi.PyCallExpression;
 import com.jetbrains.python.psi.PyElementVisitor;
@@ -16,7 +17,7 @@ import java.util.function.Predicate;
  * such as {@link PyReferenceExpression}s.
  */
 public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageInstance> {
-    private List<OverlapLeakageInstance> overlapLeakageInstances;
+    private final List<OverlapLeakageInstance> overlapLeakageInstances;
 
 
     @Override
@@ -60,6 +61,7 @@ public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageI
     }
 
 
+    @Override
     public void renderInspectionOnLeakageInstance(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances) {
 
         //TODO: refactor
@@ -70,24 +72,29 @@ public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageI
         var matchingTaint = leakageInstance.findTaintThatMatchesText(node.getCallee().getText());
 
         String appendmsg = "";
-        if (matchingTaint.containsText("sample")) {
+        if (matchingTaint.containsText(OverlapLeakMethodKeyword.sample.toString())) {
             appendmsg = InspectionBundle.get("inspectionText.sampleAfterSplitReminder.text");
-        } else if (matchingTaint.containsText("flow")) {//TODO: should just be the text on the right side of the period, not the whole thing
+        } else if (matchingTaint.containsText(OverlapLeakMethodKeyword.flow.toString())) {//TODO: should just be the text on the right side of the period, not the whole thing
             appendmsg = InspectionBundle.get("inspectionText.dataAugmentationWarning.text");
         }
 
         holder.registerProblem(node, InspectionBundle.get("inspectionText.overlapLeakageSource.text") + " " + appendmsg);
     }
 
-    private void renderInspectionOnLeakageSources(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances) {
-        List<OverlapLeakageInstance> instancesWhoseSourcesHaveSampling = getTaintsThatContainText(overlapLeakageInstances, "sample");
+    @Override
+    public void renderInspectionOnLeakageSources(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances) {
+        List<OverlapLeakageInstance> instancesWhoseSourcesHaveSampling = getTaintsThatContainText(overlapLeakageInstances, OverlapLeakMethodKeyword.sample.getTaintKeyword());
 
-        renderInspectionOnLeakageSource(instancesWhoseSourcesHaveSampling, node, "split", holder, "inspectionText.splitBeforeSampleReminder.text");
+        renderInspectionOnLeakageSource(instancesWhoseSourcesHaveSampling, node, OverlapLeakMethodKeyword.sample.getTaintKeyword(), holder, "inspectionText.splitBeforeSampleReminder.text");
 
-        List<OverlapLeakageInstance> instancesWhoseSourcesHaveDataAugmentation = getTaintsThatContainText(overlapLeakageInstances, "flow");
+        extracted(node, holder, overlapLeakageInstances);
 
-        renderInspectionOnLeakageSource(instancesWhoseSourcesHaveDataAugmentation, node, "flow", holder, "inspectionText.dataAugmentationWarning.text");
+    }
 
+    private void extracted(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances) {
+        List<OverlapLeakageInstance> instancesWhoseSourcesHaveDataAugmentation = getTaintsThatContainText(overlapLeakageInstances, OverlapLeakMethodKeyword.flow.toString());
+
+        renderInspectionOnLeakageSource(instancesWhoseSourcesHaveDataAugmentation, node, OverlapLeakMethodKeyword.flow.getTaintKeyword(), holder, "inspectionText.dataAugmentationWarning.text");
     }
 
 
