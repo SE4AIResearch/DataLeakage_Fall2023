@@ -1,7 +1,9 @@
-package com.github.cd721.data_leakage_plugin.inspections;
+package com.github.cd721.data_leakage_plugin.inspections.leakage_inspections;
 
 import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
+import com.github.cd721.data_leakage_plugin.inspections.ElementVisitor;
+import com.github.cd721.data_leakage_plugin.inspections.PsiUtils;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.codeInspection.LocalInspectionToolSession;
 import com.intellij.codeInspection.ProblemsHolder;
@@ -28,11 +30,11 @@ public abstract class LeakageInspection<T extends LeakageInstance> extends PyIns
     public abstract ElementVisitor getElementVisitor(@NotNull ProblemsHolder holder);
     @Override
     public  @NotNull PyElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly, @NotNull LocalInspectionToolSession session){
-        if (Utils.getInjectionHost(holder) != null) {
+        if (PsiUtils.getInjectionHost(holder) != null) {
             return new PyElementVisitor();
         }
 
-        var document = Utils.getDocument(holder);
+        var document = PsiUtils.getDocument(holder);
         if (document == null) return new PyElementVisitor();
 
         return getElementVisitor(holder);

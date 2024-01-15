@@ -1,7 +1,10 @@
-package com.github.cd721.data_leakage_plugin.inspections;
+package com.github.cd721.data_leakage_plugin.inspections.leakage_inspections;
 
 import com.github.cd721.data_leakage_plugin.data.PreprocessingLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
+import com.github.cd721.data_leakage_plugin.inspections.ElementVisitor;
+import com.github.cd721.data_leakage_plugin.inspections.InspectionBundle;
+import com.github.cd721.data_leakage_plugin.inspections.PsiUtils;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.jetbrains.python.psi.PyCallExpression;
@@ -28,7 +31,7 @@ public class PreprocessingLeakageInspection extends LeakageInspection<Preprocess
         return new ElementVisitor() {
             @Override
             public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {
-                var nodeLineNumber =Utils.getNodeLineNumber(node, holder);
+                var nodeLineNumber = PsiUtils.getNodeLineNumber(node, holder);
                 Predicate<PreprocessingLeakageInstance> predicate = instance -> (instance.lineNumber() == nodeLineNumber)
                         && Objects.equals(instance.test(), node.getName());
                 if (preprocessingLeakageInstances.stream().anyMatch(predicate)) {
@@ -40,7 +43,7 @@ public class PreprocessingLeakageInspection extends LeakageInspection<Preprocess
             //TODO: test
             @Override
             public void visitPyCallExpression(@NotNull PyCallExpression node) {
-                var nodeLineNumber = Utils.getNodeLineNumber(node, holder);
+                var nodeLineNumber = PsiUtils.getNodeLineNumber(node, holder);
 
                 Predicate<PreprocessingLeakageInstance> leakageAssociatedWithNode =
                         instance -> (instance.getLeakageSource().getLineNumbers().stream().anyMatch(leakageSourceLineNumber ->

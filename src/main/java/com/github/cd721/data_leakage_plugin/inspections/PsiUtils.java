@@ -8,7 +8,7 @@ import com.intellij.psi.PsiLanguageInjectionHost;
 import com.jetbrains.python.psi.PyExpression;
 import org.jetbrains.annotations.NotNull;
 
-public class Utils {
+public class PsiUtils {
 
     public static PsiFile getFile(@NotNull ProblemsHolder holder) {
         return holder.getFile();
@@ -27,6 +27,5 @@ public class Utils {
         var offset = node.getTextOffset();
         return getDocument(holder).getLineNumber(offset) + 1; //getLineNumber is zero-based, must add 1
     }
-
 
 }

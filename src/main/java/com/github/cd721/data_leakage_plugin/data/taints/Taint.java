@@ -48,4 +48,8 @@ public class Taint {
         return pyCallExpression;
     }
 
+    public boolean containsText(String text){
+        return this.getPyCallExpression().toLowerCase().contains(text);
+    }
+
 }
