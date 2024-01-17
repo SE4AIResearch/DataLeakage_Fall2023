@@ -50,4 +50,10 @@ public class OverlapLeakageInstance implements LeakageInstance {
         ).findFirst().orElse(new Taint("", TaintLabel.dup));//TODO: better error handling
     }
 
+    @Override
+    public boolean equals(Object obj){
+        return this.lineNumber() == ((OverlapLeakageInstance)obj).lineNumber()
+                &&this.invocation.getNumber() == ((OverlapLeakageInstance)obj).invocation().getNumber();
+    }
+
 }

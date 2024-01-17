@@ -2,6 +2,7 @@ package com.github.cd721.data_leakage_plugin.inspections;
 
 import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
 import com.github.cd721.data_leakage_plugin.data.OverlapLeakageInstance;
+import com.github.cd721.data_leakage_plugin.enums.OverlapLeakageSourceKeyword;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.jetbrains.python.psi.PyCallExpression;
 import com.jetbrains.python.psi.PyElementVisitor;
@@ -33,15 +34,23 @@ public abstract class ElementVisitor<T extends LeakageInstance> extends PyElemen
     }
 
     @NotNull
-    public List<T> getTaintsThatContainText(List<T> leakageInstances, String text) {
+    public List<T> getLeakageInstancesWhoseTaintsContainText(List<T> leakageInstances, String text) {
         return leakageInstances.stream().filter(instance -> instance.getLeakageSource().getTaints().stream().anyMatch(taint -> taint.containsText(text))).toList();
     }
 
-    public void renderInspectionOnLeakageSource(List<OverlapLeakageInstance> instances, @NotNull PyCallExpression node, String text, @NotNull ProblemsHolder holder, String key) {
-        if (!instances.isEmpty() && node.getText().toLowerCase().contains(text)) {//TODO: not the whole node text, just the method itself
+    private void renderInspectionOnLeakageSource(List<T> instances, @NotNull PyCallExpression node, String cause, @NotNull ProblemsHolder holder, String key) {
+        if (!instances.isEmpty() && node.getText().toLowerCase().contains(cause)) {//TODO: not the whole node text, just the method itself
             holder.registerProblem(node, InspectionBundle.get(key));
 
         }
+    }
+
+    public void renderInspectionOnLeakageSourceForInstanceWithKeyword(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder,
+                                                                      List<T> leakageInstances,
+                                                                      OverlapLeakageSourceKeyword keyword) {
+        var leakageInstancesWithCertainCause = getLeakageInstancesWhoseTaintsContainText(leakageInstances, keyword.toString());
+
+        renderInspectionOnLeakageSource(leakageInstancesWithCertainCause, node, keyword.getTaintKeyword(), holder, keyword.getCause().getInspectionTextKey());
     }
 
     public abstract void renderInspectionOnLeakageInstance(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances);
