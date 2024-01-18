@@ -39,7 +39,6 @@ public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageI
     @Override
     public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {
 
-
         if (leakageIsAssociatedWithNode(overlapLeakageInstances, node)) {
             holder.registerProblem(node, InspectionBundle.get(LeakageType.OverlapLeakage.getInspectionTextKey()));
 
@@ -54,13 +53,18 @@ public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageI
 
 
         //TODO: extract
-        if (leakageSourceIsAssociatedWithNode(overlapLeakageInstances, node)) {
 
-            renderInspectionOnLeakageInstance(node, holder, overlapLeakageInstances);
+        if (!overlapLeakageInstances.isEmpty()) {
+            if (leakageSourceIsAssociatedWithNode(overlapLeakageInstances, node)) {
+
+                renderInspectionOnLeakageInstance(node, holder, overlapLeakageInstances);
+            }
+
+            //instancesWhoseSourcesHaveDataAugmentation
+            //   instancesWhoseSourcesHaveSampling
+
+            renderInspectionOnLeakageSources(node, holder, overlapLeakageInstances, Arrays.stream(OverlapLeakageSourceKeyword.values()).toList());
         }
-
-        renderInspectionOnLeakageSources(node, holder, overlapLeakageInstances);
-
     }
 
 
@@ -89,11 +93,22 @@ public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageI
 
     @Override
     public void renderInspectionOnLeakageSources(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances) {
-        renderInspectionOnLeakageSourceForInstanceWithKeyword(node, holder, overlapLeakageInstances, OverlapLeakageSourceKeyword.sample);
+        renderInspectionOnLeakageSourceForInstanceWithKeyword(node, holder, OverlapLeakageSourceKeyword.sample);
         //   instancesWhoseSourcesHaveSampling
 
-        renderInspectionOnLeakageSourceForInstanceWithKeyword(node, holder, overlapLeakageInstances, OverlapLeakageSourceKeyword.flow);
+        renderInspectionOnLeakageSourceForInstanceWithKeyword(node, holder, OverlapLeakageSourceKeyword.flow);
 //instancesWhoseSourcesHaveDataAugmentation
+    }
+
+
+    public void renderInspectionOnLeakageSources(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder,
+                                                 List<OverlapLeakageInstance> overlapLeakageInstances,
+                                                 List<OverlapLeakageSourceKeyword> keywords) {
+
+        keywords.forEach(keyword ->
+                renderInspectionOnLeakageSourceForInstanceWithKeyword(node, holder, keyword)
+        );
+
     }
 
 

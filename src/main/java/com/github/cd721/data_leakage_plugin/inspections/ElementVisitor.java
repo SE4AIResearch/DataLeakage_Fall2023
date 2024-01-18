@@ -38,19 +38,24 @@ public abstract class ElementVisitor<T extends LeakageInstance> extends PyElemen
         return leakageInstances.stream().filter(instance -> instance.getLeakageSource().getTaints().stream().anyMatch(taint -> taint.containsText(text))).toList();
     }
 
-    private void renderInspectionOnLeakageSource(List<T> instances, @NotNull PyCallExpression node, String cause, @NotNull ProblemsHolder holder, String key) {
-        if (!instances.isEmpty() && node.getText().toLowerCase().contains(cause)) {//TODO: not the whole node text, just the method itself
-            holder.registerProblem(node, InspectionBundle.get(key));
+    private void renderInspectionOnLeakageSource(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, String cause, String key) {
+        if (node.getText().toLowerCase().contains(cause)) {//TODO: not the whole node text, just the method itself
+            renderInspectionOnLeakageSource(node, holder, InspectionBundle.get(key));
 
         }
     }
+    private void renderInspectionOnLeakageSource(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder,String text) {
+            holder.registerProblem(node, text);
+
+
+    }
 
     public void renderInspectionOnLeakageSourceForInstanceWithKeyword(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder,
-                                                                      List<T> leakageInstances,
-                                                                      OverlapLeakageSourceKeyword keyword) {
-        var leakageInstancesWithCertainCause = getLeakageInstancesWhoseTaintsContainText(leakageInstances, keyword.toString());
 
-        renderInspectionOnLeakageSource(leakageInstancesWithCertainCause, node, keyword.getTaintKeyword(), holder, keyword.getCause().getInspectionTextKey());
+                                                                      OverlapLeakageSourceKeyword keyword) {
+    //    var leakageInstancesWithCertainCause = getLeakageInstancesWhoseTaintsContainText(leakageInstances, keyword.toString());
+
+        renderInspectionOnLeakageSource(node, holder,  keyword.getTaintKeyword(), keyword.getCause().getInspectionTextKey());
     }
 
     public abstract void renderInspectionOnLeakageInstance(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances);
