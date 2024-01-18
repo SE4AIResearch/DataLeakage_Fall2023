@@ -1,8 +1,9 @@
 package com.github.cd721.data_leakage_plugin.enums;
+
 /**
  * Corresponds to a source of overlap leakage
  */
-public enum OverlapLeakageSourceKeyword {
+public enum OverlapLeakageSourceKeyword implements LeakageSourceKeyword {
     sample("sample"),
     flow("flow");
 
@@ -13,6 +14,7 @@ public enum OverlapLeakageSourceKeyword {
     }
 
 
+    @Override
     public String getTaintKeyword() {
         return switch (this) {
             case flow -> "TODO";
@@ -21,6 +23,7 @@ public enum OverlapLeakageSourceKeyword {
     }
 
 
+    @Override
     public LeakageCause getCause() {
         return switch (this) {
             case flow -> LeakageCause.DataAugmentation;
@@ -32,4 +35,6 @@ public enum OverlapLeakageSourceKeyword {
     public String toString() {
         return methodKeyword;
     }
+
+
 }

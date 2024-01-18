@@ -19,16 +19,9 @@ import java.util.function.Predicate;
  * A type of {@link PyElementVisitor} that visits different types of elements within the PSI tree,
  * such as {@link PyReferenceExpression}s.
  */
-public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageInstance> {
+public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageInstance, OverlapLeakageSourceKeyword> {
     private final List<OverlapLeakageInstance> overlapLeakageInstances;
 
-
-    @Override
-    public Predicate<OverlapLeakageInstance> leakageAssociatedWithNode(@NotNull PyReferenceExpression node) {
-        var nodeLineNumber = PsiUtils.getNodeLineNumber(node, holder);
-
-        return instance -> (instance.lineNumber() == nodeLineNumber) && Objects.equals(instance.test(), node.getName());
-    }
 
     public OverlapLeakageElementVisitor(List<OverlapLeakageInstance> overlapLeakageInstances, @NotNull ProblemsHolder holder) {
         this.overlapLeakageInstances = overlapLeakageInstances;
@@ -37,11 +30,17 @@ public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageI
 
 
     @Override
+    public Predicate<OverlapLeakageInstance> leakageInstanceIsAssociatedWithNode(@NotNull PyReferenceExpression node) {
+        var nodeLineNumber = PsiUtils.getNodeLineNumber(node, holder);
+
+        return instance -> (instance.lineNumber() == nodeLineNumber) && Objects.equals(instance.test(), node.getName());
+    }
+
+    @Override
     public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {
 
         if (leakageIsAssociatedWithNode(overlapLeakageInstances, node)) {
             holder.registerProblem(node, InspectionBundle.get(LeakageType.OverlapLeakage.getInspectionTextKey()));
-
 
         }
     }
@@ -51,7 +50,6 @@ public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageI
     @Override
     public void visitPyCallExpression(@NotNull PyCallExpression node) {//TODO: consider moving this into visitPyReferenceExpression.. will require some refactoring.
 
-
         //TODO: extract
 
         if (!overlapLeakageInstances.isEmpty()) {
@@ -60,10 +58,7 @@ public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageI
                 renderInspectionOnLeakageInstance(node, holder, overlapLeakageInstances);
             }
 
-            //instancesWhoseSourcesHaveDataAugmentation
-            //   instancesWhoseSourcesHaveSampling
-
-            renderInspectionOnLeakageSources(node, holder, overlapLeakageInstances, Arrays.stream(OverlapLeakageSourceKeyword.values()).toList());
+            renderInspectionOnLeakageSources(node, holder, Arrays.stream(OverlapLeakageSourceKeyword.values()).toList());
         }
     }
 
@@ -91,25 +86,6 @@ public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageI
         return inspectionMessage.toString();
     }
 
-    @Override
-    public void renderInspectionOnLeakageSources(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances) {
-        renderInspectionOnLeakageSourceForInstanceWithKeyword(node, holder, OverlapLeakageSourceKeyword.sample);
-        //   instancesWhoseSourcesHaveSampling
-
-        renderInspectionOnLeakageSourceForInstanceWithKeyword(node, holder, OverlapLeakageSourceKeyword.flow);
-//instancesWhoseSourcesHaveDataAugmentation
-    }
-
-
-    public void renderInspectionOnLeakageSources(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder,
-                                                 List<OverlapLeakageInstance> overlapLeakageInstances,
-                                                 List<OverlapLeakageSourceKeyword> keywords) {
-
-        keywords.forEach(keyword ->
-                renderInspectionOnLeakageSourceForInstanceWithKeyword(node, holder, keyword)
-        );
-
-    }
 
 
 }
