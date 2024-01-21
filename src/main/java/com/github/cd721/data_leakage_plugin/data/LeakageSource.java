@@ -3,6 +3,7 @@ package com.github.cd721.data_leakage_plugin.data;
 import com.github.cd721.data_leakage_plugin.common_utils.Utils;
 import com.github.cd721.data_leakage_plugin.data.taints.Taint;
 import com.github.cd721.data_leakage_plugin.data.taints.TaintUtils;
+import com.github.cd721.data_leakage_plugin.enums.LeakageCause;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.github.cd721.data_leakage_plugin.enums.TaintLabel;
 
@@ -19,12 +20,29 @@ public class LeakageSource {
 
     private final List<Taint> taints;
     private final List<Integer> lineNumbers;
+    private final LeakageCause cause;
 
     public LeakageSource(LeakageType leakageType) {
         this.taints = setTaints(leakageType);
+        this.cause = setCause();
         this.lineNumbers = setLineNumbers();
 
 
+    }
+
+    public LeakageCause getCause() {
+        return cause;
+    }
+    private LeakageCause setCause() {
+        //TODO: revise
+        if(taints.stream().anyMatch(taint -> taint.getPyCallExpression().contains("vector"))){
+            return LeakageCause.VectorizingTextData;
+        } else if(taints.stream().allMatch(taint -> taint.getPyCallExpression().contains("split"))){
+            return LeakageCause.SplitBeforeSample;
+        } else if (taints.stream().allMatch(taint -> taint.getPyCallExpression().contains("TODO"))) {
+        return LeakageCause.DataAugmentation;
+        }
+        return LeakageCause.unknown;
     }
 
     private List<Integer> setLineNumbers() {
@@ -55,8 +73,16 @@ public class LeakageSource {
         };
     }
 
+    public Taint findTaintThatMatchesText(String text) {
+        return this.getTaints().stream().filter(
+                taint -> taint.getPyCallExpression().equalsIgnoreCase(text) //equalsIgnoreCase MUST be used here
+        ).findFirst().orElse(new Taint("", TaintLabel.dup));//TODO: better error handling
+    }
+
 
     public List<Integer> getLineNumbers() {
         return lineNumbers;
     }
+
+
 }

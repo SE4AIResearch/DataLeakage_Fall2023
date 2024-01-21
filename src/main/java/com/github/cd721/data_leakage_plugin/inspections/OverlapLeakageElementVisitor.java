@@ -7,6 +7,7 @@ import com.github.cd721.data_leakage_plugin.enums.OverlapLeakageSourceKeyword;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.jetbrains.python.psi.PyCallExpression;
 import com.jetbrains.python.psi.PyElementVisitor;
+import com.jetbrains.python.psi.PyExpression;
 import com.jetbrains.python.psi.PyReferenceExpression;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +31,7 @@ public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageI
 
 
     @Override
-    public Predicate<OverlapLeakageInstance> leakageInstanceIsAssociatedWithNode(@NotNull PyReferenceExpression node) {
+    public Predicate<OverlapLeakageInstance> leakageInstanceIsAssociatedWithNode(@NotNull PyExpression node) {
         var nodeLineNumber = PsiUtils.getNodeLineNumber(node, holder);
 
         return instance -> (instance.lineNumber() == nodeLineNumber) && Objects.equals(instance.test(), node.getName());
@@ -55,33 +56,33 @@ public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageI
         if (!overlapLeakageInstances.isEmpty()) {
             if (leakageSourceIsAssociatedWithNode(overlapLeakageInstances, node)) {
 
-                renderInspectionOnLeakageInstance(node, holder, overlapLeakageInstances);
+                renderInspectionOnLeakageSource(node, holder, overlapLeakageInstances);
             }
 
-            renderInspectionOnLeakageSources(node, holder, Arrays.stream(OverlapLeakageSourceKeyword.values()).toList());
+            renderInspectionOnTaints(node, holder, Arrays.stream(OverlapLeakageSourceKeyword.values()).toList());
         }
     }
 
 
     @Override
-    public void renderInspectionOnLeakageInstance(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances) {
+    public void renderInspectionOnLeakageSource(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances) {
 //TODO: change name?
         OverlapLeakageInstance leakageInstance = overlapLeakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().get();
 
         //TODO: what can we use besides getCallee?
-        var taintAssociatedWithLeakageInstance = leakageInstance.findTaintThatMatchesText(node.getCallee().getText());
+        var taintAssociatedWithLeakageInstance = leakageInstance.getLeakageSource().findTaintThatMatchesText(node.getCallee().getText());
 
-        holder.registerProblem(node, getInspectionMessageForLeakageInstance(taintAssociatedWithLeakageInstance));
+        holder.registerProblem(node, getInspectionMessageForLeakageSource(taintAssociatedWithLeakageInstance));
     }
 
     @NotNull
-    private static String getInspectionMessageForLeakageInstance(Taint taintAssociatedWithLeakageInstance) {
+    private static String getInspectionMessageForLeakageSource(Taint taintAssociatedWithLeakageInstance) {
         StringBuilder inspectionMessage = new StringBuilder(InspectionBundle.get(LeakageType.OverlapLeakage.getInspectionTextKey()));
         inspectionMessage.append(" ");
 
         //get method keyword associated with taint
         Arrays.stream(OverlapLeakageSourceKeyword.values()).filter(value -> taintAssociatedWithLeakageInstance.containsText(value.toString()))//TODO: should just be the text on the right side of the period, not the whole thing
-                .findFirst().ifPresent(keyword -> inspectionMessage.append(InspectionBundle.get(keyword.getCause().getInspectionTextKey())));
+                .findFirst().ifPresent(keyword -> inspectionMessage.append(InspectionBundle.get(keyword.getPotentialCauses().get(0).getInspectionTextKey())));//TODO: refactor?
 
         return inspectionMessage.toString();
     }

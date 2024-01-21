@@ -1,8 +1,6 @@
 package com.github.cd721.data_leakage_plugin.data;
 
-import com.github.cd721.data_leakage_plugin.data.taints.Taint;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
-import com.github.cd721.data_leakage_plugin.enums.TaintLabel;
 
 public class OverlapLeakageInstance implements LeakageInstance {
     private final String test;
@@ -44,11 +42,7 @@ public class OverlapLeakageInstance implements LeakageInstance {
         return type;
     }
 
-    public Taint findTaintThatMatchesText(String text) {
-        return this.getLeakageSource().getTaints().stream().filter(
-                taint ->taint.getPyCallExpression().equalsIgnoreCase(text) //equalsIgnoreCase MUST be used here
-        ).findFirst().orElse(new Taint("", TaintLabel.dup));//TODO: better error handling
-    }
+
 
     @Override
     public boolean equals(Object obj){

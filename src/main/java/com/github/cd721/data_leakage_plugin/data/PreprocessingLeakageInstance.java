@@ -1,6 +1,8 @@
 package com.github.cd721.data_leakage_plugin.data;
 
+import com.github.cd721.data_leakage_plugin.data.taints.Taint;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
+import com.github.cd721.data_leakage_plugin.enums.TaintLabel;
 
 public class PreprocessingLeakageInstance implements LeakageInstance {
     private final String test;
@@ -38,5 +40,17 @@ public class PreprocessingLeakageInstance implements LeakageInstance {
 
     public LeakageSource getLeakageSource() {
         return leakageSource;
+    }
+
+    public Taint findTaintThatMatchesText(String text) {
+        return this.getLeakageSource().getTaints().stream().filter(
+                taint ->taint.getPyCallExpression().equalsIgnoreCase(text) //equalsIgnoreCase MUST be used here
+        ).findFirst().orElse(new Taint("", TaintLabel.rowset));//TODO: better error handling
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        return this.lineNumber() == ((PreprocessingLeakageInstance)obj).lineNumber()
+                &&this.invocation.getNumber() == ((PreprocessingLeakageInstance)obj).invocation().getNumber();
     }
 }
