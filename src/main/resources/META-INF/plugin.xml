@@ -19,7 +19,7 @@
                          groupPath="Python"
                          groupName="LeakageInspections"
                          enabledByDefault="true"
-                         level="WEAK WARNING"
+                         level="WARNING"
                          implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.OverlapLeakageInspection"
                          displayName="Overlap leakage"
                          shortName="OverlapLeakageInspection"/>
@@ -27,7 +27,7 @@
                          groupPath="Python"
                          groupName="LeakageInspections"
                          enabledByDefault="true"
-                         level="WEAK WARNING"
+                         level="WARNING"
                          implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.PreprocessingLeakageInspection"
                          displayName="Preprocessing Leakage"
                          shortName="PreprocessingLeakageInspection"/>
@@ -35,7 +35,7 @@
                          groupPath="Python"
                          groupName="LeakageInspections"
                          enabledByDefault="true"
-                         level="WEAK WARNING"
+                         level="WARNING"
                          implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.MultiTestLeakageInspection"
                          displayName="Multi-test Leakage"
                          shortName="MultiTestLeakageInspection"/>
