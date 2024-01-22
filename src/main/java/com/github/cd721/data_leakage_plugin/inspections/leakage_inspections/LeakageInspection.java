@@ -6,6 +6,7 @@ import com.github.cd721.data_leakage_plugin.inspections.PsiUtils;
 import com.github.cd721.data_leakage_plugin.parsers.LeakageAnalysisParser;
 import com.intellij.codeInspection.LocalInspectionToolSession;
 import com.intellij.codeInspection.ProblemsHolder;
+import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.jetbrains.python.inspections.PyInspection;
 import com.jetbrains.python.psi.PyElementVisitor;
 import org.jetbrains.annotations.NotNull;

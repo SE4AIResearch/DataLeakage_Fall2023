@@ -4,6 +4,8 @@ import com.github.cd721.data_leakage_plugin.data.LeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageCause;
 import com.github.cd721.data_leakage_plugin.enums.LeakageSourceKeyword;
 import com.intellij.codeInspection.ProblemsHolder;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.jetbrains.python.psi.PyCallExpression;
 import com.jetbrains.python.psi.PyElementVisitor;
 import com.jetbrains.python.psi.PyExpression;
@@ -16,12 +18,12 @@ import java.util.function.Predicate;
 public abstract class ElementVisitor<T extends LeakageInstance, U extends LeakageSourceKeyword> extends PyElementVisitor {
     public ProblemsHolder holder;
 
-    public abstract Predicate<T> leakageInstanceIsAssociatedWithNode(@NotNull PyExpression node);
+    public abstract Predicate<T> leakageInstanceIsAssociatedWithNode(@NotNull PsiElement node);
 
     public abstract void renderInspectionOnLeakageSource(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<T> leakageInstances);
 
 
-    public boolean leakageIsAssociatedWithNode(List<T> leakageInstances, @NotNull PyExpression node) {
+    public boolean leakageIsAssociatedWithNode(List<T> leakageInstances, @NotNull PsiElement node) {
         return leakageInstances.stream().anyMatch(leakageInstanceIsAssociatedWithNode(node));
     }
 

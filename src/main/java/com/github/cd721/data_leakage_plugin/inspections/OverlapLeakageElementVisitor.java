@@ -5,10 +5,9 @@ import com.github.cd721.data_leakage_plugin.data.taints.Taint;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.github.cd721.data_leakage_plugin.enums.OverlapLeakageSourceKeyword;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.jetbrains.python.psi.PyCallExpression;
-import com.jetbrains.python.psi.PyElementVisitor;
-import com.jetbrains.python.psi.PyExpression;
-import com.jetbrains.python.psi.PyReferenceExpression;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiRecursiveElementVisitor;
+import com.jetbrains.python.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -22,19 +21,30 @@ import java.util.function.Predicate;
  */
 public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageInstance, OverlapLeakageSourceKeyword> {
     private final List<OverlapLeakageInstance> overlapLeakageInstances;
+    private final PsiRecursiveElementVisitor recursiveElementVisitor;
 
 
     public OverlapLeakageElementVisitor(List<OverlapLeakageInstance> overlapLeakageInstances, @NotNull ProblemsHolder holder) {
         this.overlapLeakageInstances = overlapLeakageInstances;
         this.holder = holder;
+        this.recursiveElementVisitor = new PsiRecursiveElementVisitor() {
+            @Override
+            public void visitElement(@NotNull PsiElement element) {
+              //  super.visitElement(element);//TODO:
+                if (leakageIsAssociatedWithNode(overlapLeakageInstances, element)) {
+                    holder.registerProblem(element, InspectionBundle.get(LeakageType.PreprocessingLeakage.getInspectionTextKey()));
+
+                }
+            }
+        };
     }
 
 
     @Override
-    public Predicate<OverlapLeakageInstance> leakageInstanceIsAssociatedWithNode(@NotNull PyExpression node) {
+    public Predicate<OverlapLeakageInstance> leakageInstanceIsAssociatedWithNode(@NotNull PsiElement node) {
         var nodeLineNumber = PsiUtils.getNodeLineNumber(node, holder);
 
-        return instance -> (instance.lineNumber() == nodeLineNumber) && Objects.equals(instance.test(), node.getName());
+        return instance -> (instance.lineNumber() == nodeLineNumber) && Objects.equals(instance.test(), node.getText()); //TODO: make sure it's ok to have text and not name
     }
 
     @Override
@@ -45,7 +55,11 @@ public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageI
 
         }
     }
+    @Override
+    public void visitPyFunction(@NotNull PyFunction node){
+        this.recursiveElementVisitor.visitElement(node);
 
+    }
 
     //TODO: consider different making different visitors for performance
     @Override
@@ -86,7 +100,6 @@ public class OverlapLeakageElementVisitor extends ElementVisitor<OverlapLeakageI
 
         return inspectionMessage.toString();
     }
-
 
 
 }

@@ -3,6 +3,7 @@ package com.github.cd721.data_leakage_plugin.inspections;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.editor.Document;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiLanguageInjectionHost;
 import com.jetbrains.python.psi.PyExpression;
@@ -23,7 +24,7 @@ public class PsiUtils {
         return getFile(holder).getViewProvider().getDocument();
     }
 
-    public static int getNodeLineNumber(PyExpression node, @NotNull ProblemsHolder holder) {
+    public static int getNodeLineNumber(PsiElement node, @NotNull ProblemsHolder holder) {
         var offset = node.getTextOffset();
         return getDocument(holder).getLineNumber(offset) + 1; //getLineNumber is zero-based, must add 1
     }

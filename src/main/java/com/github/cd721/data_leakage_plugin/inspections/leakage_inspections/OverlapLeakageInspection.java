@@ -5,6 +5,8 @@ import com.github.cd721.data_leakage_plugin.enums.LeakageType;
 import com.github.cd721.data_leakage_plugin.inspections.ElementVisitor;
 import com.github.cd721.data_leakage_plugin.inspections.OverlapLeakageElementVisitor;
 import com.intellij.codeInspection.ProblemsHolder;
+import com.intellij.psi.PsiRecursiveElementVisitor;
+import com.jetbrains.python.psi.PyElementVisitor;
 import org.jetbrains.annotations.NotNull;
 
 public class OverlapLeakageInspection extends LeakageInspection<OverlapLeakageInstance> {
@@ -15,7 +17,7 @@ public class OverlapLeakageInspection extends LeakageInspection<OverlapLeakageIn
     }
 
     @Override
-    public ElementVisitor getElementVisitor(@NotNull ProblemsHolder holder) {
+    public PyElementVisitor getElementVisitor(@NotNull ProblemsHolder holder) {
         var leakageInstances = leakageAnalysisParser.LeakageInstances();
 
         var overlapLeakageInstances = getLeakageInstancesForType(leakageInstances);
