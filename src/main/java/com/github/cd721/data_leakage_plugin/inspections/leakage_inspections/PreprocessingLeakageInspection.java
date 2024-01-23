@@ -2,15 +2,10 @@ package com.github.cd721.data_leakage_plugin.inspections.leakage_inspections;
 
 import com.github.cd721.data_leakage_plugin.data.PreprocessingLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
-import com.github.cd721.data_leakage_plugin.inspections.*;
+import com.github.cd721.data_leakage_plugin.inspections.visitors.leakage_instances.PreprocessingLeakageInstanceVisitor;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.jetbrains.python.psi.PyElementVisitor;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
-import java.util.function.Predicate;
 
 public class PreprocessingLeakageInspection extends LeakageInspection<PreprocessingLeakageInstance> {
 
@@ -24,7 +19,7 @@ public class PreprocessingLeakageInspection extends LeakageInspection<Preprocess
         var leakageInstances = leakageAnalysisParser.LeakageInstances();
 
         var preprocessingLeakageInstances = getLeakageInstancesForType(leakageInstances);
-        return new PreprocessingLeakageElementVisitor(preprocessingLeakageInstances, holder);
+        return new PreprocessingLeakageInstanceVisitor(preprocessingLeakageInstances, holder);
     }
 //
 //

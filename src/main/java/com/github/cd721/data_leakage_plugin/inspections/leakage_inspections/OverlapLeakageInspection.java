@@ -2,10 +2,9 @@ package com.github.cd721.data_leakage_plugin.inspections.leakage_inspections;
 
 import com.github.cd721.data_leakage_plugin.data.OverlapLeakageInstance;
 import com.github.cd721.data_leakage_plugin.enums.LeakageType;
-import com.github.cd721.data_leakage_plugin.inspections.ElementVisitor;
-import com.github.cd721.data_leakage_plugin.inspections.OverlapLeakageElementVisitor;
+import com.github.cd721.data_leakage_plugin.inspections.visitors.OverlapLeakageElementVisitor;
+import com.github.cd721.data_leakage_plugin.inspections.visitors.leakage_instances.OverlapLeakageInstanceVisitor;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.jetbrains.python.psi.PyElementVisitor;
 import org.jetbrains.annotations.NotNull;
 
