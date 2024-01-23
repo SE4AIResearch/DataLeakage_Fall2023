@@ -14,6 +14,7 @@ import java.util.List;
 public abstract class InstanceInspection<T extends LeakageInstance> extends LeakageInspection<T> {
 
     public abstract InstanceElementVisitor<T> instanceElementVisitor(List<T> leakageInstances, @NotNull ProblemsHolder holder);
+
     @Override
     public LeakageType getLeakageType() {
         return null;
@@ -21,9 +22,7 @@ public abstract class InstanceInspection<T extends LeakageInstance> extends Leak
 
     @Override
     public PyElementVisitor getElementVisitor(@NotNull ProblemsHolder holder) {
-        var leakageInstances = leakageAnalysisParser.LeakageInstances();
-
-        var overlapLeakageInstances = getLeakageInstancesForType(leakageInstances);
-        return instanceElementVisitor(overlapLeakageInstances,holder);
+        var leakageInstances = getLeakageInstancesForType(leakageAnalysisParser.LeakageInstances());
+        return instanceElementVisitor(leakageInstances, holder);
     }
 }
