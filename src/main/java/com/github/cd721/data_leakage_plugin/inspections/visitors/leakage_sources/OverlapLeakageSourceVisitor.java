@@ -34,10 +34,11 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
         this.overlapLeakageInstances = overlapLeakageInstances;
         this.holder = holder;
         this.recursiveElementVisitor = new PsiRecursiveElementVisitor() {
+
             @Override
             public void visitElement(@NotNull PsiElement element) {
                 //  super.visitElement(element);//TODO:
-
+                renderInspectionOnLeakageSource(element,holder,overlapLeakageInstances);
             }
         };
     }
@@ -47,9 +48,6 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
     public LeakageType getLeakageType() {
         return LeakageType.OverlapLeakage;
     }
-
-
-
 
 
     //TODO: consider different making different visitors for performance
@@ -70,13 +68,13 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
 
     @Override
-    public void renderInspectionOnLeakageSource(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances) {
+    public void renderInspectionOnLeakageSource(@NotNull PsiElement node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances) {
 //TODO: change name?
-        OverlapLeakageInstance leakageInstance = overlapLeakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().get();
+        overlapLeakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().ifPresent(
+                instance -> holder.registerProblem(node, getInspectionMessageForLeakageSource(instance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText())))
+        );
 
-        var taintAssociatedWithLeakageInstance = leakageInstance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText());
 
-        holder.registerProblem(node, getInspectionMessageForLeakageSource(taintAssociatedWithLeakageInstance));
     }
 
     @NotNull
@@ -89,6 +87,11 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
                 .findFirst().ifPresent(keyword -> inspectionMessage.append(InspectionBundle.get(keyword.getPotentialCauses().get(0).getInspectionTextKey())));//TODO: refactor?
 
         return inspectionMessage.toString();
+    }
+    @Override
+    public void visitPyFunction(@NotNull PyFunction node) {
+        this.recursiveElementVisitor.visitElement(node);
+
     }
 
 

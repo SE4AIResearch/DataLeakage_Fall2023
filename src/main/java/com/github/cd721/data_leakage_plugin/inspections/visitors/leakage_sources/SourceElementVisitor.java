@@ -25,7 +25,7 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
 
 
 
-    public Predicate<T> leakageSourceAssociatedWithNode(@NotNull PyCallExpression node) {
+    public Predicate<T> leakageSourceAssociatedWithNode(@NotNull PsiElement node) {
         var nodeLineNumber = PsiUtils.getNodeLineNumber(node, holder);
 
         return instance -> (instance.getLeakageSource().getLineNumbers().stream()

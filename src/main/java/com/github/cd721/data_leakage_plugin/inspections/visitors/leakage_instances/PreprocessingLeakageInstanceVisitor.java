@@ -22,11 +22,19 @@ import java.util.function.Predicate;
 
 public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<PreprocessingLeakageInstance> {
     private final List<PreprocessingLeakageInstance> preprocessingLeakageInstances;
+    private final PsiRecursiveElementVisitor recursiveElementVisitor;
 
     public PreprocessingLeakageInstanceVisitor(List<PreprocessingLeakageInstance> preprocessingLeakageInstances, @NotNull ProblemsHolder holder) {
         this.preprocessingLeakageInstances = preprocessingLeakageInstances;
         this.holder = holder;
+        this.recursiveElementVisitor = new PsiRecursiveElementVisitor() {
 
+            @Override
+            public void visitElement(@NotNull PsiElement element) {
+                //  super.visitElement(element);//TODO:
+                renderInspectionOnLeakageInstance(preprocessingLeakageInstances,element);
+            }
+        };
     }
 
     @Override
@@ -58,5 +66,10 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
         }
     }
 
+    @Override
+    public void visitPyFunction(@NotNull PyFunction node) {
+        this.recursiveElementVisitor.visitElement(node);
+
+    }
 
 }

@@ -20,25 +20,50 @@
                          groupName="LeakageInspections"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.OverlapLeakageInspection"
+                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.leakage_instances.OverlapLeakageInstanceInspection"
                          displayName="Overlap leakage"
-                         shortName="OverlapLeakageInspection"/>
+                         shortName="OverlapLeakageInstanceInspection"/>
         <localInspection language="Python"
                          groupPath="Python"
                          groupName="LeakageInspections"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.PreprocessingLeakageInspection"
+                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.leakage_sources.OverlapLeakageSourceInspection"
+                         displayName="Overlap leakage"
+                         shortName="OverlapLeakageSourceInspection"/>
+        <localInspection language="Python"
+                         groupPath="Python"
+                         groupName="LeakageInspections"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.leakage_instances.PreprocessingLeakageInstanceInspection"
                          displayName="Preprocessing Leakage"
-                         shortName="PreprocessingLeakageInspection"/>
+                         shortName="PreprocessingLeakageInstanceInspection"/>
         <localInspection language="Python"
                          groupPath="Python"
                          groupName="LeakageInspections"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.MultiTestLeakageInspection"
+                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.leakage_sources.PreprocessingLeakageSourceInspection"
+                         displayName="Preprocessing Leakage"
+                         shortName="PreprocessingLeakageSourceInspection"/>
+        <localInspection language="Python"
+                         groupPath="Python"
+                         groupName="LeakageInspections"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.leakage_instances.MultiTestLeakageInstanceInspection"
                          displayName="Multi-test Leakage"
-                         shortName="MultiTestLeakageInspection"/>
+                         shortName="MultiTestLeakageInstanceInspection"/>
+        <localInspection language="Python"
+                         groupPath="Python"
+                         groupName="LeakageInspections"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.leakage_sources.MultiTestLeakageSourceInspection"
+                         displayName="Multi-test Leakage"
+                         shortName="MultiTestLeakageSourceInspection"/>
+
     </extensions>
     
     <actions>

@@ -31,6 +31,7 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
             @Override
             public void visitElement(@NotNull PsiElement element) {
                 // super.visitElement(element);//TODO: do we need this?
+                renderInspectionOnLeakageSource(element,holder, preprocessingLeakageInstances);
             }
         };
     }
@@ -46,7 +47,6 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
         this.recursiveElementVisitor.visitElement(node);
 
     }
-
 
 
     //TODO: consider different making different visitors for performance
@@ -76,15 +76,17 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
     public void renderInspectionOnLeakageSource(@NotNull PsiElement node, @NotNull ProblemsHolder holder, List<PreprocessingLeakageInstance> leakageInstances) {
 
         //TODO: change name?
-        PreprocessingLeakageInstance leakageInstance = preprocessingLeakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().get();
+        preprocessingLeakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().ifPresent(
+                instance -> holder.registerProblem(node, getInspectionMessageForLeakageSource(instance, node))
+        );
 
 
-        holder.registerProblem(node, getInspectionMessageForLeakageSource(leakageInstance, node));//TODO: rendering multiple messages on some leakage sources sometimes
+        //TODO: rendering multiple messages on some leakage sources sometimes
 
     }
 
     @NotNull
-    private static String getInspectionMessageForLeakageSource(PreprocessingLeakageInstance leakageInstance, @NotNull PyCallExpression node) {
+    private static String getInspectionMessageForLeakageSource(PreprocessingLeakageInstance leakageInstance, @NotNull PsiElement node) {
         StringBuilder inspectionMessage = new StringBuilder(InspectionBundle.get(LeakageType.PreprocessingLeakage.getInspectionTextKey()));
         inspectionMessage.append(" ");
 
@@ -93,5 +95,6 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
 
         return inspectionMessage.toString();
     }
+
 
 }

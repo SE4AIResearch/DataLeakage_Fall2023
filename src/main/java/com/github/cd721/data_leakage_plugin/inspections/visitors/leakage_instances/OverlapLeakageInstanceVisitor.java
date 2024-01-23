@@ -7,6 +7,8 @@ import com.github.cd721.data_leakage_plugin.enums.OverlapLeakageSourceKeyword;
 import com.github.cd721.data_leakage_plugin.inspections.InspectionBundle;
 import com.github.cd721.data_leakage_plugin.inspections.PsiUtils;
 import com.github.cd721.data_leakage_plugin.inspections.visitors.ElementVisitor;
+import com.github.cd721.data_leakage_plugin.inspections.visitors.leakage_sources.OverlapLeakageSourceVisitor;
+import com.github.cd721.data_leakage_plugin.inspections.visitors.leakage_sources.SourceElementVisitor;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
@@ -24,12 +26,19 @@ import java.util.function.Predicate;
  */
 public class OverlapLeakageInstanceVisitor extends InstanceElementVisitor<OverlapLeakageInstance> {
     private final List<OverlapLeakageInstance> overlapLeakageInstances;
-
+private final PsiRecursiveElementVisitor recursiveElementVisitor;
 
     public OverlapLeakageInstanceVisitor(List<OverlapLeakageInstance> overlapLeakageInstances, @NotNull ProblemsHolder holder) {
         this.overlapLeakageInstances = overlapLeakageInstances;
         this.holder = holder;
+        this.recursiveElementVisitor = new PsiRecursiveElementVisitor() {
 
+            @Override
+            public void visitElement(@NotNull PsiElement element) {
+                //  super.visitElement(element);//TODO:
+                renderInspectionOnLeakageInstance(overlapLeakageInstances,element);
+            }
+        };
     }
 
 
@@ -50,6 +59,10 @@ public class OverlapLeakageInstanceVisitor extends InstanceElementVisitor<Overla
 
         renderInspectionOnLeakageInstance(overlapLeakageInstances, node);
     }
+    @Override
+    public void visitPyFunction(@NotNull PyFunction node) {
+        this.recursiveElementVisitor.visitElement(node);
 
+    }
 
 }
