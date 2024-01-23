@@ -74,8 +74,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 //TODO: change name?
         OverlapLeakageInstance leakageInstance = overlapLeakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().get();
 
-        //TODO: what can we use besides getCallee?
-        var taintAssociatedWithLeakageInstance = leakageInstance.getLeakageSource().findTaintThatMatchesText(node.getCallee().getText());
+        var taintAssociatedWithLeakageInstance = leakageInstance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText());
 
         holder.registerProblem(node, getInspectionMessageForLeakageSource(taintAssociatedWithLeakageInstance));
     }

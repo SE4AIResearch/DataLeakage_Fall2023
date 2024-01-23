@@ -88,9 +88,6 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
         StringBuilder inspectionMessage = new StringBuilder(InspectionBundle.get(LeakageType.PreprocessingLeakage.getInspectionTextKey()));
         inspectionMessage.append(" ");
 
-        //TODO: what can we use besides getCallee?
-        var taintAssociatedWithLeakageInstance = leakageInstance.findTaintThatMatchesText(node.getCallee().getText());
-
         var cause = leakageInstance.getLeakageSource().getCause();
         inspectionMessage.append(InspectionBundle.get(cause.getInspectionTextKey()));
 
