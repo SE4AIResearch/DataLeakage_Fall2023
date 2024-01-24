@@ -1,4 +1,4 @@
-# data_leakage_plugin
+# DataLeakage_Fall2023
 
 ![Build](https://github.com/cd721/data_leakage_plugin/workflows/Build/badge.svg)
 [![Version](https://img.shields.io/jetbrains/plugin/v/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)

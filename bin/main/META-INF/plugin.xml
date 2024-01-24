@@ -22,7 +22,7 @@
     <applicationListeners>
 
         <listener
-                class="com.github.cd721.data_leakage_plugin.listeners.FileChangeDetector"
+                class="listeners.com.github.SE4AIResearch.data_leakage_plugin.FileChangeDetector"
                 topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
     </applicationListeners>
 </idea-plugin>

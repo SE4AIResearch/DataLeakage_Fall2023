@@ -2,11 +2,11 @@
 <idea-plugin>
     <!--    See https://github.com/JetBrains/intellij-sdk-code-samples/blob/main/product_specific/pycharm_basics/src/main/resources/META-INF/plugin.xml-->
     <!--Unique id for this plugin. Must stay constant for the life of the plugin. -->-->
-    <id>com.github.cd721.data_leakage_plugin</id>
+    <id>com.github.SE4AIResearch.DataLeakage_Fall2023</id>
     <name>Data Leakage Detector</name>
 
     <!-- Text to display as company information on Settings | Plugin page -->
-    <vendor>cd721</vendor>
+    <vendor>SE4AIResearch</vendor>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
@@ -20,7 +20,7 @@
                          groupName="LeakageInspections"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.leakage_instances.OverlapLeakageInstanceInspection"
+                         implementationClass="com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_instances.OverlapLeakageInstanceInspection"
                          displayName="Overlap leakage"
                          shortName="OverlapLeakageInstanceInspection"/>
         <localInspection language="Python"
@@ -28,7 +28,7 @@
                          groupName="LeakageInspections"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.leakage_sources.OverlapLeakageSourceInspection"
+                         implementationClass="com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_sources.OverlapLeakageSourceInspection"
                          displayName="Overlap leakage"
                          shortName="OverlapLeakageSourceInspection"/>
         <localInspection language="Python"
@@ -36,7 +36,7 @@
                          groupName="LeakageInspections"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.leakage_instances.PreprocessingLeakageInstanceInspection"
+                         implementationClass="com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_instances.PreprocessingLeakageInstanceInspection"
                          displayName="Preprocessing Leakage"
                          shortName="PreprocessingLeakageInstanceInspection"/>
         <localInspection language="Python"
@@ -44,7 +44,7 @@
                          groupName="LeakageInspections"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.leakage_sources.PreprocessingLeakageSourceInspection"
+                         implementationClass="com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_sources.PreprocessingLeakageSourceInspection"
                          displayName="Preprocessing Leakage"
                          shortName="PreprocessingLeakageSourceInspection"/>
         <localInspection language="Python"
@@ -52,7 +52,7 @@
                          groupName="LeakageInspections"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.leakage_instances.MultiTestLeakageInstanceInspection"
+                         implementationClass="com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_instances.MultiTestLeakageInstanceInspection"
                          displayName="Multi-test Leakage"
                          shortName="MultiTestLeakageInstanceInspection"/>
         <localInspection language="Python"
@@ -60,20 +60,20 @@
                          groupName="LeakageInspections"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.cd721.data_leakage_plugin.inspections.leakage_inspections.leakage_sources.MultiTestLeakageSourceInspection"
+                         implementationClass="com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_sources.MultiTestLeakageSourceInspection"
                          displayName="Multi-test Leakage"
                          shortName="MultiTestLeakageSourceInspection"/>
 
     </extensions>
     
     <actions>
-        <action id="com.github.cd721.data_leakage_plugin.actions.LeakageAnalysisAction"
-                class="com.github.cd721.data_leakage_plugin.actions.LeakageAnalysisAction" text="Run Leakage Analysis"
+        <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.LeakageAnalysisAction"
+                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.LeakageAnalysisAction" text="Run Leakage Analysis"
                 description="Runs leakage analysis on currently open file">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
-        <action id="com.github.cd721.data_leakage_plugin.actions.IPYNBAnalysis"
-                class="com.github.cd721.data_leakage_plugin.actions.IPYNBAnalysis" text="IPYNB Analysis"
+        <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.IPYNBAnalysis"
+                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.IPYNBAnalysis" text="IPYNB Analysis"
                 description="Run leakage analysis for IPYNB File">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
@@ -82,11 +82,11 @@
     <applicationListeners>
 
         <listener
-                class="com.github.cd721.data_leakage_plugin.listeners.FileChangeDetector"
+                class="com.github.SE4AIResearch.DataLeakage_Fall2023.listeners.FileChangeDetector"
                 topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
 
         <listener
-                class="com.github.cd721.data_leakage_plugin.listeners.LeakageFileChangeDetector"
+                class="com.github.SE4AIResearch.DataLeakage_Fall2023.listeners.LeakageFileChangeDetector"
                 topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
     </applicationListeners>
 </idea-plugin>
