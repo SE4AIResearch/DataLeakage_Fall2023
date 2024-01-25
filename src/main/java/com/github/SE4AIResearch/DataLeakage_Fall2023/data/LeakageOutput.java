@@ -7,6 +7,6 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
  */
 public record LeakageOutput() {
     public static String folderPath() {
-       return"C:\\dev\\yogmoh_news-category-fact\\";
+       return"C:\\dev\\paper-sample-4-fact\\";
     }
 }

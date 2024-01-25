@@ -55,14 +55,7 @@
                          implementationClass="com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_instances.MultiTestLeakageInstanceInspection"
                          displayName="Multi-test Leakage"
                          shortName="MultiTestLeakageInstanceInspection"/>
-        <localInspection language="Python"
-                         groupPath="Python"
-                         groupName="LeakageInspections"
-                         enabledByDefault="true"
-                         level="WARNING"
-                         implementationClass="com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_sources.MultiTestLeakageSourceInspection"
-                         displayName="Multi-test Leakage"
-                         shortName="MultiTestLeakageSourceInspection"/>
+
 
     </extensions>
     
