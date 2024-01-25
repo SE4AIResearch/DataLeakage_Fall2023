@@ -19,7 +19,7 @@ import java.util.function.Predicate;
  */
 public class OverlapLeakageInstanceVisitor extends InstanceElementVisitor<OverlapLeakageInstance> {
     private final List<OverlapLeakageInstance> overlapLeakageInstances;
-private final PsiRecursiveElementVisitor recursiveElementVisitor;
+    private final PsiRecursiveElementVisitor recursiveElementVisitor;
 
     public OverlapLeakageInstanceVisitor(List<OverlapLeakageInstance> overlapLeakageInstances, @NotNull ProblemsHolder holder) {
         this.overlapLeakageInstances = overlapLeakageInstances;
@@ -29,7 +29,7 @@ private final PsiRecursiveElementVisitor recursiveElementVisitor;
             @Override
             public void visitElement(@NotNull PsiElement element) {
                 //  super.visitElement(element);//TODO:
-                renderInspectionOnLeakageInstance(overlapLeakageInstances,element);
+                renderInspectionOnLeakageInstance(overlapLeakageInstances, element);
             }
         };
     }

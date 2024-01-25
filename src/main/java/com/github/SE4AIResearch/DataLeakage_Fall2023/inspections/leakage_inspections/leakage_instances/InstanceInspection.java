@@ -15,11 +15,6 @@ public abstract class InstanceInspection<T extends LeakageInstance> extends Leak
     public abstract InstanceElementVisitor<T> instanceElementVisitor(List<T> leakageInstances, @NotNull ProblemsHolder holder);
 
     @Override
-    public LeakageType getLeakageType() {
-        return null;
-    }
-
-    @Override
     public PyElementVisitor getElementVisitor(@NotNull ProblemsHolder holder) {
         var leakageInstances = getLeakageInstancesForType(leakageAnalysisParser.LeakageInstances());
         return instanceElementVisitor(leakageInstances, holder);
