@@ -24,6 +24,7 @@ public class TaintUtils {
             while (((line = reader.readLine()) != null)) {
                 String[] columns = line.split(("\t"));
                 if (Objects.equals(columns[6], taintType.toString())) {
+
                     taints.add( line);
                 }
 

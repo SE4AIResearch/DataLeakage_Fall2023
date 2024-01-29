@@ -7,6 +7,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.TaintLabel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ public class LeakageSource {
     private final LeakageCause cause;
 
     public LeakageSource(LeakageType leakageType) {
-        this.taints = setTaints(leakageType);
+        this.taints = setTaints(leakageType).stream().distinct().toList();
         this.cause = setCause();
         this.lineNumbers = setLineNumbers();
 
@@ -61,16 +62,24 @@ public class LeakageSource {
     }
 
     private List<Taint> setTaints(LeakageType leakageType) {
-        return switch (leakageType) {
-            case OverlapLeakage -> TaintUtils.getTaintsFromFile(TaintLabel.dup).stream()
+        List<Taint> taints;
+         switch (leakageType) {
+            case OverlapLeakage -> taints= TaintUtils.getTaintsFromFile(TaintLabel.dup).stream()
                     .map(taintString -> new Taint(taintString, TaintLabel.dup))
                     .collect(Collectors.toList());
-            case PreprocessingLeakage -> TaintUtils.getTaintsFromFile(TaintLabel.rowset).stream()
+            case PreprocessingLeakage -> taints=TaintUtils.getTaintsFromFile(TaintLabel.rowset).stream()
                     .map(taintString -> new Taint(taintString, TaintLabel.rowset))
                     .collect(Collectors.toList());
 
             default -> throw new IllegalStateException("Unexpected value: " + leakageType);
-        };
+        }
+        List<Taint> rtn = new ArrayList<>();//TODO: .distinct() method doesn't work for taints
+        for(var taint : taints) {
+            if(!rtn.contains(taint)){
+                rtn.add(taint);
+            }
+        }
+        return  rtn;
     }
 
     public Taint findTaintThatMatchesText(String text) {

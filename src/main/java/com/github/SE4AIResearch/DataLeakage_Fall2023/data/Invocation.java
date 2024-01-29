@@ -38,6 +38,10 @@ public class Invocation {
 
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return this.number == ((Invocation)obj).number;
+    }
 
     public int getNumber() {
         return number;

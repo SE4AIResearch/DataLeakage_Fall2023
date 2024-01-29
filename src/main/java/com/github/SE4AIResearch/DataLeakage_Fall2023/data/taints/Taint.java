@@ -19,6 +19,16 @@ public class Taint {
         this.pyCallExpression = getPyCallExpressionFromTaint(taintString);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        var t = (Taint)(obj);
+        return// this.taintType.equals(t.taintType) && this.invocation.equals(t.invocation) &&
+                this.pyCallExpression.equals(t.pyCallExpression);
+
+    }
+
+
+
     private Invocation getInvoFromTaint(String taint) {
         String[] taintSplit = taint.split("\t");
         if (taintSplit.length < 6) {
