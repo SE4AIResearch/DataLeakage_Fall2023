@@ -85,6 +85,7 @@ public class LeakageSource {
     public Taint findTaintThatMatchesText(String text) {
         return this.getTaints().stream().filter(
                 taint -> taint.getPyCallExpression().equalsIgnoreCase(text) //equalsIgnoreCase MUST be used here
+                //TODO: the pycall expression in the leakage analysis tool does not match what is actually in the test file
         ).findFirst().orElse(new Taint("", TaintLabel.dup));//TODO: better error handling
     }
 

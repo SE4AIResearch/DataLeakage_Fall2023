@@ -4,6 +4,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.PreprocessingLeakageIn
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.PreprocessingLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
@@ -25,7 +26,7 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
             @Override
             public void visitElement(@NotNull PsiElement element) {
                 // super.visitElement(element);//TODO: do we need this?
-                renderInspectionOnLeakageSource(element,holder, preprocessingLeakageInstances);
+                renderInspectionOnLeakageSource(element, holder, preprocessingLeakageInstances);
             }
         };
     }
@@ -51,8 +52,9 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
 
         if (!preprocessingLeakageInstances.isEmpty()) {
             if (leakageSourceIsAssociatedWithNode(preprocessingLeakageInstances, node)) {
-
-                renderInspectionOnLeakageSource(node, holder, preprocessingLeakageInstances);
+                if ( holder.getResults().stream().noneMatch(problemDescriptor -> problemDescriptor.getLineNumber()+1/*need plus one to account for zero based line number*/ == PsiUtils.getNodeLineNumber(node, holder))) {//TODO: naive solution, should refactor to look more closely at method calls. need to check if the correct psi element is being highlighted
+                    renderInspectionOnLeakageSource(node, holder, preprocessingLeakageInstances);
+                }
             }
 
 
