@@ -1,6 +1,7 @@
 [versions]
 # libraries
 annotations = "24.0.1"
+docker = "3.3.4"
 
 # plugins
 kotlin = "1.9.0"
@@ -11,6 +12,7 @@ kover = "0.7.3"
 
 [libraries]
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
+docker = {group = "com.github.docker-java", name = "docker-java", version.ref = "docker"}
 
 [plugins]
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }

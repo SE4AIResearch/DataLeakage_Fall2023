@@ -26,7 +26,10 @@ dependencies {
 //    implementation(libs.annotations)
 
     // https://mvnrepository.com/artifact/com.github.docker-java/docker-java
-    implementation("com.github.docker-java:docker-java:3.3.4")
+    implementation(libs.docker)
+
+    // https://mvnrepository.com/artifact/com.github.docker-java/docker-java-transport-httpclient5
+    implementation("com.github.docker-java:docker-java-transport-httpclient5:3.3.4")
 
 }
 
