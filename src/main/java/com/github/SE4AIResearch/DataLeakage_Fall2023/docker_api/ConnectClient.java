@@ -1,9 +1,12 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api;
 
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.PullImageResultCallback;
+import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.Image;
+import com.github.dockerjava.api.model.SearchItem;
 import com.github.dockerjava.core.DockerClientBuilder;
 
 import java.util.List;
@@ -38,33 +41,52 @@ public class ConnectClient {
         return imagesSB.toString();
     }
 
-    public int checkImageAvailable() throws InterruptedException {
-
-        return -1;
-    }
-
-    public int checkImageOnMachine() {
-        // list the images and check that it matches bkreiser
-        return -1;
-    }
-
-    public int pullImage() throws InterruptedException {
-        try {
-            dockerClient.pullImageCmd("bkreiser01/leakage-analysis")
-                    .withTag("git")
-                    .exec(new PullImageResultCallback())
-                    .awaitCompletion(30, TimeUnit.SECONDS);
-        } catch (Error e) {
-            // TODO Probably want to log this error
-            return -1;
+    /**
+     * Checks if the bkreiser/leakage-analysis image is available in docker
+     * @return boolean true if the image is on the machine false otherwise
+     */
+    public boolean checkImageOnMachine() {
+        List<Image> images = dockerClient.listImagesCmd().exec();
+        for(Image i : images) {
+            if(i.getRepoTags()[0].equals("bkreiser01/leakage-analysis:latest"))
+                return true;
         }
-        return 1;
+        return false;
+    }
+
+    public boolean pullImage() throws InterruptedException {
+        List<SearchItem> items = dockerClient.searchImagesCmd("bkreiser01/leakage-analysis").exec();
+        return dockerClient.pullImageCmd("bkreiser01/leakage-analysis")
+                    .withTag("latest")
+                    .exec(new PullImageResultCallback())
+                    .awaitCompletion(180, TimeUnit.SECONDS);
+    }
+
+    public boolean runLeakage() {
+        return false;
+    }
+
+    public boolean createVolume(String projectPath) {
+        //Should probably return the volume path?
+        return false;
     }
 
     //Input should be file location
-    public int runLeakageAnalysis() {
-
+    public int runLeakageAnalysis(String filePath) {
+        //should only run leakage on active python file
+        CreateContainerResponse createContainerResponse = dockerClient.createContainerCmd("leakage")
+                .withImage("bkreiser01/leakage-analysis")
+                .withBinds(Bind.parse(filePath+":/dev")).exec();
+        String containerId = createContainerResponse.getId();
+        dockerClient.startContainerCmd(containerId).exec();
         return -1;
+    }
+
+    public boolean x () throws InterruptedException {
+        if(!this.checkImageOnMachine()){
+            this.pullImage();
+        }
+        return true;
     }
 
     /**

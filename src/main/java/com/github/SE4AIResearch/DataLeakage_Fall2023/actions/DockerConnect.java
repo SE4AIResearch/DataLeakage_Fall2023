@@ -11,8 +11,10 @@ import com.github.dockerjava.transport.DockerHttpClient;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
@@ -53,11 +55,24 @@ public class DockerConnect extends AnAction {
 //            message.append(e.toString());
 //        }
 
+        String projectPath = currentProject.getBasePath();
+        PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
+//        String filePath = psiFile.getVirtualFile().getPath();
+
+        ConnectClient connectClient = new ConnectClient();
         try {
-            ConnectClient connectClient = new ConnectClient();
+            message.append("Before:");
+            message.append(connectClient.checkImageOnMachine());
+            message.append("\nPulling:");
+            message.append(connectClient.pullImage());
+            message.append("\nAfter:");
+            message.append(connectClient.checkImageOnMachine());
             message.append(connectClient.listImages());
+//            connectClient.runLeakageAnalysis(filePath);
         } catch(Error e) {
             message.append(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
         Messages.showMessageDialog(
