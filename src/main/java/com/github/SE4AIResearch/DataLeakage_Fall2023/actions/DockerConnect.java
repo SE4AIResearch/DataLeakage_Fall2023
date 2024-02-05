@@ -1,5 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.actions;
 
+import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.ConnectClient;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.core.DockerClientConfig;
@@ -29,31 +30,35 @@ public class DockerConnect extends AnAction {
     }
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-        DockerClient dockerClient;
-
+//        DockerClient dockerClient;
+//
         Project currentProject = event.getProject();
         StringBuilder message = new StringBuilder();
+//
+//        try {
+//            DockerClientConfig standard = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
+//            DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
+//                    .dockerHost(standard.getDockerHost())
+//                    .sslConfig(standard.getSSLConfig())
+//                    .maxConnections(100)
+//                    .connectionTimeout(Duration.ofSeconds(30))
+//                    .responseTimeout(Duration.ofSeconds(45))
+//                    .build();
+//            dockerClient = DockerClientImpl.getInstance(standard, httpClient);
+//            List<Container> containers = dockerClient.listContainersCmd().exec();
+//            for (Container c : containers) {
+//                message.append(c.toString());
+//            }
+//        } catch(Error e) {
+//            message.append(e.toString());
+//        }
 
         try {
-            DockerClientConfig standard = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
-            DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
-                    .dockerHost(standard.getDockerHost())
-                    .sslConfig(standard.getSSLConfig())
-                    .maxConnections(100)
-                    .connectionTimeout(Duration.ofSeconds(30))
-                    .responseTimeout(Duration.ofSeconds(45))
-                    .build();
-            dockerClient = DockerClientImpl.getInstance(standard, httpClient);
-            List<Container> containers = dockerClient.listContainersCmd().exec();
-            for (Container c : containers) {
-                message.append(c.toString());
-            }
+            ConnectClient connectClient = new ConnectClient();
+            message.append(connectClient.listImages());
         } catch(Error e) {
-            message.append(e.toString());
+            message.append(e);
         }
-
-//        ConnectClient connectClient = new ConnectClient();
-//        message.append(connectClient.ListContainers());
 
         Messages.showMessageDialog(
                 currentProject,
@@ -62,3 +67,11 @@ public class DockerConnect extends AnAction {
                 Messages.getInformationIcon());
     }
 }
+
+//public class DockerConnect extends AnAction {
+//
+//    @Override
+//    public void actionPerformed(@NotNull AnActionEvent e) {
+//
+//    }
+//}
