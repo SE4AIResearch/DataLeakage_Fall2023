@@ -20,7 +20,7 @@ public enum OverlapLeakageSourceKeyword implements LeakageSourceKeyword {
     @Override
     public String getTaintKeyword() {
         return switch (this) {
-            case flow -> "TODO"; //TODO: add keyword
+            case flow -> "flow"; //TODO: add keyword
             case sample -> "split";
         };
     }

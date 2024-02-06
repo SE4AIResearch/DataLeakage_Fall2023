@@ -40,7 +40,7 @@ public class Invocation {
 
     @Override
     public boolean equals(Object obj) {
-        return this.number == ((Invocation)obj).number;
+        return this.number == ((Invocation) obj).number;
     }
 
     public int getNumber() {
@@ -71,12 +71,13 @@ public class Invocation {
 
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+        return 0;
 
     }
 
-    private  String getFunctionCallFromInvocation( ){
+    private String getFunctionCallFromInvocation() {
         File file = new File(LeakageOutput.folderPath() + "Invoke.facts");
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -92,9 +93,9 @@ public class Invocation {
 
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-
+        return "";
     }
 
     public String getPyCallExpression() {

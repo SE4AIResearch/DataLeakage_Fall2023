@@ -54,7 +54,7 @@ public class MultiTestLeakageDetector extends LeakageDetector {
                 int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
                 int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
 
-                var leakageInstance = new MultiTestLeakageInstance(actualLineNumber,  invocation);
+                var leakageInstance = new MultiTestLeakageInstance(actualLineNumber, invocation);
 
                 var existingInstances = leakageInstances();
                 if (!debug || !existingInstances.contains(leakageInstance)) {
@@ -62,8 +62,9 @@ public class MultiTestLeakageDetector extends LeakageDetector {
                 }
 
 
-            }  } catch (IOException e) {
-            throw new RuntimeException(e);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -78,7 +79,6 @@ public class MultiTestLeakageDetector extends LeakageDetector {
     public boolean isLeakageDetected() {
         return !this.leakageInstances.isEmpty();
     }
-
 
 
 }

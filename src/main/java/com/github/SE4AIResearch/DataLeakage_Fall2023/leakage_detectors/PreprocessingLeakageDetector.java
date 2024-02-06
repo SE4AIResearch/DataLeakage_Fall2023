@@ -66,7 +66,7 @@ public class PreprocessingLeakageDetector extends LeakageDetector {
 
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
