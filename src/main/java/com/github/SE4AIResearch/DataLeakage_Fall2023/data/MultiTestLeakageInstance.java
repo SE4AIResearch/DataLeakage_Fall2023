@@ -26,7 +26,7 @@ public class MultiTestLeakageInstance implements LeakageInstance {
         return lineNumber;
     }
 
-    @Override
+        @Override
     public LeakageType type() {
         return type;
     }

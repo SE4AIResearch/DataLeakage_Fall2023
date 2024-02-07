@@ -7,6 +7,8 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
  */
 public record LeakageOutput() {
     public static String folderPath() {
-       return"C:\\dev\\nb_100841-fact\\";
+        return
+            //    "C:\\dev\\nb_100841-fact\\";
+               "C:\\dev\\Airbnb-Ratings\\demo-fact\\";
     }
 }
