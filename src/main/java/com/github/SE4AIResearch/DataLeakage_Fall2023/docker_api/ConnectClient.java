@@ -104,7 +104,7 @@ public class ConnectClient {
         // Get the container's id
         String containerId = createContainerResponse.getId();
 
-        // InspectContainerResponse container = dockerClient.inspectContainerCmd(containerId).exec();
+        // Execute the container by ID
         dockerClient.startContainerCmd(containerId).exec();
 
         return containerId;
