@@ -22,7 +22,7 @@ public class Invocation {
      * @param invocationString A string believed to be of the form "$invo{number}".
      */
     public Invocation(String invocationString) {
-        this.pyCallExpression = getFunctionCallFromInvocation();
+
         //TODO: test
         Pattern invocationPattern = Pattern.compile("(\\$)(invo)([0-9]+)");
         Matcher matcher = invocationPattern.matcher(invocationString);
@@ -35,7 +35,7 @@ public class Invocation {
         } else {
             number = 0;
         }
-
+        this.pyCallExpression = getFunctionCallFromInvocation();
     }
 
     @Override
@@ -89,9 +89,12 @@ public class Invocation {
 
             }
             String[] columns = line.split(("\t"));
+
+            var functionCall = columns[1];
+            if(functionCall.contains(".")){
+                return functionCall.split("\\.")[1];
+            }
             return columns[1];
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
