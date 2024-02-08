@@ -88,17 +88,21 @@ public class ConnectClient {
 
     //Input should be file location
     public String runLeakageAnalysis(File filePath, String fileName) {
-        //should only run leakage on active python file
-        String test = filePath.toString()+"/"+fileName;
+        // Get the path to the file on the users machine
+        String path2file = filePath.toString();
+
+        // Create the container
         CreateContainerResponse createContainerResponse = dockerClient.createContainerCmd("leakage")
                 .withImage("bkreiser01/leakage-analysis")
-                .withBinds(Bind.parse(filePath.getParent()+":"+filePath.getParent()))
-                .withCmd(filePath.toString()+"/"+fileName).exec();
+                .withBinds(Bind.parse(path2file+":/execute"))
+                .withCmd("/execute/"+fileName).exec();
+
+        // Get the container's id
         String containerId = createContainerResponse.getId();
-        InspectContainerResponse container
-                = dockerClient.inspectContainerCmd(containerId).exec();
+
+        // InspectContainerResponse container = dockerClient.inspectContainerCmd(containerId).exec();
         dockerClient.startContainerCmd(containerId).exec();
-//        dockerClient.killContainerCmd(containerId).exec();
+
         return containerId;
     }
 
