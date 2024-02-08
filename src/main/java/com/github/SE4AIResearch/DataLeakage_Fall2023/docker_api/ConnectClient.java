@@ -2,6 +2,7 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.Container;
@@ -10,6 +11,7 @@ import com.github.dockerjava.api.model.SearchItem;
 import com.github.dockerjava.core.DockerClientBuilder;
 
 import java.util.List;
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 
@@ -72,14 +74,19 @@ public class ConnectClient {
     }
 
     //Input should be file location
-    public int runLeakageAnalysis(String filePath) {
+    public String runLeakageAnalysis(File filePath, String fileName) {
         //should only run leakage on active python file
+        String test = filePath.toString()+"/"+fileName;
         CreateContainerResponse createContainerResponse = dockerClient.createContainerCmd("leakage")
                 .withImage("bkreiser01/leakage-analysis")
-                .withBinds(Bind.parse(filePath+":/dev")).exec();
+                .withBinds(Bind.parse(filePath.getParent()+":"+filePath.getParent()))
+                .withCmd(filePath.toString()+"/"+fileName).exec();
         String containerId = createContainerResponse.getId();
+        InspectContainerResponse container
+                = dockerClient.inspectContainerCmd(containerId).exec();
         dockerClient.startContainerCmd(containerId).exec();
-        return -1;
+        dockerClient.killContainerCmd(containerId).exec();
+        return containerId;
     }
 
     public boolean x () throws InterruptedException {

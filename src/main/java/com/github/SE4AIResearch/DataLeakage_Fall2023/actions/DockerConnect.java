@@ -1,6 +1,7 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.actions;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.ConnectClient;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.FileChanger;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.core.DockerClientConfig;
@@ -17,6 +18,8 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 
@@ -57,20 +60,37 @@ public class DockerConnect extends AnAction {
 
         String projectPath = currentProject.getBasePath();
         PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
-//        String filePath = psiFile.getVirtualFile().getPath();
+        String filePath = psiFile.getVirtualFile().getPath();
 
         ConnectClient connectClient = new ConnectClient();
+        FileChanger fileChanger = new FileChanger(projectPath);
         try {
-            message.append("Before:");
-            message.append(connectClient.checkImageOnMachine());
-            message.append("\nPulling:");
-            message.append(connectClient.pullImage());
-            message.append("\nAfter:");
-            message.append(connectClient.checkImageOnMachine());
-            message.append(connectClient.listImages());
+            String initOut = fileChanger.inititalizeTempDir();
+            message.append(initOut);
+            String copyOut = fileChanger.copyToTempDir(filePath);
+            message.append(copyOut);
+            File workingDir = fileChanger.getWorkingDirectory();
+
+            if (!connectClient.checkImageOnMachine()) {
+                connectClient.pullImage();
+            }
+
+            connectClient.runLeakageAnalysis(workingDir, copyOut);
+
+//            boolean isDeleted = fileChanger.deleteTempDir();
+//            message.append(isDeleted);
+//            message.append("Before:");
+//            message.append(connectClient.checkImageOnMachine());
+//            message.append("\nPulling:");
+//            message.append(connectClient.pullImage());
+//            message.append("\nAfter:");
+//            message.append(connectClient.checkImageOnMachine());
+//            message.append(connectClient.listImages());
 //            connectClient.runLeakageAnalysis(filePath);
         } catch(Error e) {
             message.append(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
