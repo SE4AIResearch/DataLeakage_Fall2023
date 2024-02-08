@@ -33,49 +33,34 @@ public class DockerConnect extends AnAction {
     public void update(@NotNull AnActionEvent event) {
         event.getPresentation().setEnabledAndVisible(true);
     }
+
+    /**
+     * actionPerformed is activated whenever the action button is clicked
+     * @param event
+     */
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-//        DockerClient dockerClient;
-//
-        Project currentProject = event.getProject();
-        StringBuilder message = new StringBuilder();
-//
-//        try {
-//            DockerClientConfig standard = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
-//            DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
-//                    .dockerHost(standard.getDockerHost())
-//                    .sslConfig(standard.getSSLConfig())
-//                    .maxConnections(100)
-//                    .connectionTimeout(Duration.ofSeconds(30))
-//                    .responseTimeout(Duration.ofSeconds(45))
-//                    .build();
-//            dockerClient = DockerClientImpl.getInstance(standard, httpClient);
-//            List<Container> containers = dockerClient.listContainersCmd().exec();
-//            for (Container c : containers) {
-//                message.append(c.toString());
-//            }
-//        } catch(Error e) {
-//            message.append(e.toString());
-//        }
+        Project currentProject = event.getProject(); // this retrieves the project from the action event, this contains the information about all the files in the project
+        StringBuilder message = new StringBuilder(); // this is just initializing the message displayed after the action is performed
 
-        String projectPath = currentProject.getBasePath();
-        PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
-        String filePath = psiFile.getVirtualFile().getPath();
+        String projectPath = currentProject.getBasePath(); // Just gets the path of the project something like "pycharmProjects/project1"
+        PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE); // this gets the psifile which is the file currently selected in the project window
+        String filePath = psiFile.getVirtualFile().getPath(); // this gets the path from the psifile (currently selected file) this can be null and will error out
 
-        ConnectClient connectClient = new ConnectClient();
-        FileChanger fileChanger = new FileChanger(projectPath);
+        ConnectClient connectClient = new ConnectClient(); //constructing new connect client
+        FileChanger fileChanger = new FileChanger(projectPath); //constructing new filechanger
         try {
-            String initOut = fileChanger.inititalizeTempDir();
-            message.append(initOut);
-            String copyOut = fileChanger.copyToTempDir(filePath);
-            message.append(copyOut);
-            File workingDir = fileChanger.getWorkingDirectory();
+            String initOut = fileChanger.inititalizeTempDir(); // creates the temporary directory and returns it
+            message.append(initOut); //appending the temporary directory name to the message displayed
+            String copyOut = fileChanger.copyToTempDir(filePath); // copies the file specified earlier to the temporary directory
+            message.append(copyOut); // adding the name of the file to the end of the message
+            File workingDir = fileChanger.getWorkingDirectory(); //getting the file of the temporary directory
 
-            if (!connectClient.checkImageOnMachine()) {
-                connectClient.pullImage();
+            if (!connectClient.checkImageOnMachine()) { // if the bkreiser/leakage-analysis image is not on the user's docker we pull the image from docker hub
+                connectClient.pullImage(); //pull image from docker hub
             }
 
-            connectClient.runLeakageAnalysis(workingDir, copyOut);
+            connectClient.runLeakageAnalysis(workingDir, copyOut); // run the leakage-analysis on the file in the temporary directory
 
 //            boolean isDeleted = fileChanger.deleteTempDir();
 //            message.append(isDeleted);
@@ -87,14 +72,16 @@ public class DockerConnect extends AnAction {
 //            message.append(connectClient.checkImageOnMachine());
 //            message.append(connectClient.listImages());
 //            connectClient.runLeakageAnalysis(filePath);
+
         } catch(Error e) {
             message.append(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); // this catch was automatically generated
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //pulling the docker image can result in an interupt exception this catch was automatically generated
         }
 
+        // This displays the message we constructed earlier and displays it to the user
         Messages.showMessageDialog(
                 currentProject,
                 message.toString(),
