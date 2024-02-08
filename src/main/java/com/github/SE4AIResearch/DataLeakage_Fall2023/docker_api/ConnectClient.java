@@ -86,7 +86,11 @@ public class ConnectClient {
         return false;
     }
 
-    //Input should be file location
+    /*
+    * This function creates and run the LAT docker container
+    * @param filePath - The path to the file to run the LAT on
+    * @param fileName - The name of the file to run the LAT on
+    * @return String containing the container ID*/
     public String runLeakageAnalysis(File filePath, String fileName) {
         // Get the path to the file on the users machine
         String path2file = filePath.toString();
