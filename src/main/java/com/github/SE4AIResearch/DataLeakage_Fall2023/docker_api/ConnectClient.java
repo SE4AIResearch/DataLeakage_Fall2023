@@ -85,7 +85,7 @@ public class ConnectClient {
         InspectContainerResponse container
                 = dockerClient.inspectContainerCmd(containerId).exec();
         dockerClient.startContainerCmd(containerId).exec();
-        dockerClient.killContainerCmd(containerId).exec();
+//        dockerClient.killContainerCmd(containerId).exec();
         return containerId;
     }
 
