@@ -79,7 +79,9 @@
     </actions>
 
     <applicationListeners>
-
+        <listener
+                class="com.github.SE4AIResearch.DataLeakage_Fall2023.listeners.PythonFileSaveListener"
+                topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
         <listener
                 class="com.github.SE4AIResearch.DataLeakage_Fall2023.listeners.FileChangeDetector"
                 topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>

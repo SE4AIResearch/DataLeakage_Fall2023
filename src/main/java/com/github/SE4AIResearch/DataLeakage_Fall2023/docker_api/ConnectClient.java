@@ -110,7 +110,7 @@ public class ConnectClient {
         return containerId;
     }
 
-    public boolean x () throws InterruptedException {
+    public boolean checkThenPull () throws InterruptedException {
         if(!this.checkImageOnMachine()){
             this.pullImage();
         }

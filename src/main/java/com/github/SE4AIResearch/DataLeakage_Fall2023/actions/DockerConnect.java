@@ -2,13 +2,6 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.actions;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.ConnectClient;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.FileChanger;
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.model.Container;
-import com.github.dockerjava.core.DockerClientConfig;
-import com.github.dockerjava.core.DefaultDockerClientConfig;
-import com.github.dockerjava.core.DockerClientImpl;
-import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
-import com.github.dockerjava.transport.DockerHttpClient;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -20,8 +13,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
-import java.util.List;
 
 public class DockerConnect extends AnAction {
     @Override
@@ -63,9 +54,9 @@ public class DockerConnect extends AnAction {
         String filePath = psiFile.getVirtualFile().getPath();
 
         ConnectClient connectClient = new ConnectClient();
-        FileChanger fileChanger = new FileChanger(projectPath);
+        FileChanger fileChanger = new FileChanger();
         try {
-            String initOut = fileChanger.inititalizeTempDir();
+            String initOut = fileChanger.initializeTempDir();
             message.append(initOut);
             String copyOut = fileChanger.copyToTempDir(filePath);
             message.append(copyOut);
