@@ -2,12 +2,10 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.actions;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.ConnectClient;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.FileChanger;
-import com.intellij.openapi.actionSystem.ActionUpdateThread;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,7 +29,10 @@ public class DockerConnect extends AnAction {
         StringBuilder message = new StringBuilder();
 
         String projectPath = currentProject.getBasePath();
-        PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
+        final PsiFile psiFile =
+                PsiDocumentManager.getInstance(currentProject).getPsiFile(   event.getData(PlatformDataKeys.EDITOR).getDocument());
+//
+//        PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
         String filePath = psiFile.getVirtualFile().getPath();
 
         ConnectClient connectClient = new ConnectClient();

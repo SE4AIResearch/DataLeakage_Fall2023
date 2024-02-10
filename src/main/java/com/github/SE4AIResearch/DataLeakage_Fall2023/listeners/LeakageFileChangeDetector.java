@@ -16,7 +16,7 @@ public  class LeakageFileChangeDetector implements BulkFileListener {
     private LeakageAnalysisParser leakageAnalysisParser;
     private final DataLeakageIndicator dataLeakageIndicator;
     //TODO: remove debug flag
-    private final boolean debug = true;
+    private final boolean debug = false;
 
     public LeakageFileChangeDetector() {
         leakageAnalysisParser = new LeakageAnalysisParser();
@@ -57,6 +57,10 @@ public  class LeakageFileChangeDetector implements BulkFileListener {
 
     private boolean OverlapLeakageCSVFileWasChanged(VFileEvent event) {
         return aCSVFileWasChanged(event) && event.getPath().endsWith("FinalOverlapLeak.csv");
+    }
+
+    private boolean LeakageFileChanged(VFileEvent event){
+
     }
 
 

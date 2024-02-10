@@ -6,7 +6,7 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
  * //TODO: make the path point to the output of the leakage tool binary.
  */
 public  class LeakageOutput {
-    private static String folderPath =  "C:\\dev\\nb_100841-fact\\";;
+    private static String folderPath =  "";;
     public static String folderPath() {
         return folderPath;
     }
