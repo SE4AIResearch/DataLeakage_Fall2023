@@ -48,6 +48,7 @@ public class DockerConnect extends AnAction {
             }
 
             connectClient.runLeakageAnalysis(workingDir, copyOut);
+            //connectClient.close();
 
 //            boolean isDeleted = fileChanger.deleteTempDir();
 //            message.append(isDeleted);

@@ -110,6 +110,7 @@ public class ConnectClient {
 
     public void close() {
         containers.forEach((id) -> dockerClient.killContainerCmd(id).exec());
+        containers.forEach((id) -> dockerClient.removeContainerCmd(id).exec());
     }
 
     public boolean checkThenPull () throws InterruptedException {
