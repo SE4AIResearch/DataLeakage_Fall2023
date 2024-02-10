@@ -5,10 +5,15 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
  * must be changed each time you want to test the plugin on a new Python file.
  * //TODO: make the path point to the output of the leakage tool binary.
  */
-public record LeakageOutput() {
+public  class LeakageOutput {
+    private static String folderPath =  "C:\\dev\\nb_100841-fact\\";;
     public static String folderPath() {
-        return
-            //    "C:\\dev\\nb_100841-fact\\";
-               "C:\\dev\\Airbnb-Ratings\\demo-fact\\";
+        return folderPath;
     }
+
+    public static void setFactFolderPath(String path){
+
+        folderPath = path;
+    }
+
 }

@@ -37,7 +37,7 @@ public class LeakageAnalysisAction extends AnAction {
         String filePath = psiFile.getVirtualFile().getPath();
         String fileName = psiFile.getVirtualFile().getName();
 
-        Project currentProject = event.getProject();
+            Project currentProject = event.getProject();
         StringBuilder message = new StringBuilder();
 
         LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();

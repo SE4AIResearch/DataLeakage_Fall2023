@@ -12,6 +12,7 @@
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.python</depends>
     <depends>com.intellij.modules.python-core-capable</depends>
+<!--    <depends>com.github.docker-java</depends>-->
 
     <resource-bundle>messages.MyBundle</resource-bundle>
     <extensions defaultExtensionNs="com.intellij">
@@ -60,20 +61,27 @@
     </extensions>
     
     <actions>
-        <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.LeakageAnalysisAction"
-                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.LeakageAnalysisAction" text="Run Leakage Analysis"
-                description="Runs leakage analysis on currently open file">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
-        </action>
-        <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.IPYNBAnalysis"
-                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.IPYNBAnalysis" text="IPYNB Analysis"
-                description="Run leakage analysis for IPYNB File">
+<!--        <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.LeakageAnalysisAction"-->
+<!--                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.LeakageAnalysisAction" text="Run Leakage Analysis"-->
+<!--                description="Runs leakage analysis on currently open file">-->
+<!--            <add-to-group group-id="ToolsMenu" anchor="first"/>-->
+<!--        </action>-->
+<!--        <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.IPYNBAnalysis"-->
+<!--                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.IPYNBAnalysis" text="IPYNB Analysis"-->
+<!--                description="Run leakage analysis for IPYNB File">-->
+<!--            <add-to-group group-id="ToolsMenu" anchor=" first"/>-->
+<!--        </action>-->
+        <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.DockerConnect"
+                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.DockerConnect" text="Connect to Docker"
+                description="Connect to docker">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
     </actions>
 
     <applicationListeners>
-
+        <listener
+                class="com.github.SE4AIResearch.DataLeakage_Fall2023.listeners.PythonFileSaveListener"
+                topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
         <listener
                 class="com.github.SE4AIResearch.DataLeakage_Fall2023.listeners.FileChangeDetector"
                 topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
