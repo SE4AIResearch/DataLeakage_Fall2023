@@ -44,7 +44,8 @@ public class OverlapLeakageInstanceVisitor extends InstanceElementVisitor<Overla
     public Predicate<OverlapLeakageInstance> leakageInstanceIsAssociatedWithNode(@NotNull PsiElement node) {
         var nodeLineNumber = PsiUtils.getNodeLineNumber(node, holder);
 
-        return instance -> (instance.lineNumber() == nodeLineNumber) && Objects.equals(instance.test(), node.getText()); //TODO: make sure it's ok to have text and not name
+        return instance -> (instance.lineNumber() == nodeLineNumber) && node.getText().contains(instance.test());
+                //Objects.equals(instance.test(), node.getText()); //TODO: make sure it's ok to have text and not name
     }
 
     @Override

@@ -89,9 +89,12 @@ public class Invocation {
 
             }
             String[] columns = line.split(("\t"));
+
+            var functionCall = columns[1];
+            if(functionCall.contains(".")){
+                return functionCall.split("\\.")[1];
+            }
             return columns[1];
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
