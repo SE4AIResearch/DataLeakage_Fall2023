@@ -8,14 +8,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class FileChanger {
-    Path projectDirectory;
     File workingDirectory;
-    public FileChanger(String projectDirectory) {
-        this.projectDirectory = Paths.get(projectDirectory);
+    public FileChanger() {
         this.workingDirectory = null;
     }
 
-    public String inititalizeTempDir() throws IOException {
+    public String initializeTempDir() throws IOException {
         workingDirectory = FileUtilRt.createTempDirectory("leakTemp", "");
         return this.workingDirectory.toString();
     }

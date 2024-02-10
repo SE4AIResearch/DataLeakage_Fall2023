@@ -111,4 +111,11 @@ public class ConnectClient {
     public void close() {
         containers.forEach((id) -> dockerClient.killContainerCmd(id).exec());
     }
+
+    public boolean checkThenPull () throws InterruptedException {
+        if(!this.checkImageOnMachine()){
+            this.pullImage();
+        }
+        return true;
+    }
 }

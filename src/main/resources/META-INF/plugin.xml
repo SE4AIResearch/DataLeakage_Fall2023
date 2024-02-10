@@ -69,7 +69,7 @@
 <!--        <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.IPYNBAnalysis"-->
 <!--                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.IPYNBAnalysis" text="IPYNB Analysis"-->
 <!--                description="Run leakage analysis for IPYNB File">-->
-<!--            <add-to-group group-id="ToolsMenu" anchor="first"/>-->
+<!--            <add-to-group group-id="ToolsMenu" anchor=" first"/>-->
 <!--        </action>-->
         <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.DockerConnect"
                 class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.DockerConnect" text="Connect to Docker"
@@ -79,7 +79,9 @@
     </actions>
 
     <applicationListeners>
-
+        <listener
+                class="com.github.SE4AIResearch.DataLeakage_Fall2023.listeners.PythonFileSaveListener"
+                topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
         <listener
                 class="com.github.SE4AIResearch.DataLeakage_Fall2023.listeners.FileChangeDetector"
                 topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
