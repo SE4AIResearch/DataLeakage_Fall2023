@@ -15,6 +15,7 @@ import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
 
 // Import java libraries
+import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
 import java.time.Duration;
@@ -27,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 public class ConnectClient {
 
     private static DockerClient dockerClient;
+    private ArrayList<String> containers; // Arraylist of all containers
 
     /**
      * Constructor for ConnectClient object
@@ -48,6 +50,9 @@ public class ConnectClient {
         // Create the docker client builder
         dockerClient = DockerClientBuilder.getInstance()
                 .withDockerHttpClient(httpClient).build();
+
+        // Create empty arraylist
+        containers = new ArrayList<String>();
     }
 
     /**
@@ -91,13 +96,19 @@ public class ConnectClient {
                 .withBinds(Bind.parse(path2file + ":/execute"))
                 .withCmd("/execute/" + fileName).exec();
 
-        // Get the container's id
+        // Get the container's ID
         String containerId = createContainerResponse.getId();
 
         // Execute the container by ID
         dockerClient.startContainerCmd(containerId).exec();
 
+        containers.add(containerId);
+
         // Return the ID of the newly created container
         return containerId;
+    }
+
+    public void close() {
+        containers.forEach((id) -> dockerClient.killContainerCmd(id).exec());
     }
 }

@@ -35,28 +35,9 @@ public class DockerConnect extends AnAction {
     }
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-//        DockerClient dockerClient;
-//
+
         Project currentProject = event.getProject();
         StringBuilder message = new StringBuilder();
-//
-//        try {
-//            DockerClientConfig standard = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
-//            DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
-//                    .dockerHost(standard.getDockerHost())
-//                    .sslConfig(standard.getSSLConfig())
-//                    .maxConnections(100)
-//                    .connectionTimeout(Duration.ofSeconds(30))
-//                    .responseTimeout(Duration.ofSeconds(45))
-//                    .build();
-//            dockerClient = DockerClientImpl.getInstance(standard, httpClient);
-//            List<Container> containers = dockerClient.listContainersCmd().exec();
-//            for (Container c : containers) {
-//                message.append(c.toString());
-//            }
-//        } catch(Error e) {
-//            message.append(e.toString());
-//        }
 
         String projectPath = currentProject.getBasePath();
         PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
@@ -102,11 +83,3 @@ public class DockerConnect extends AnAction {
                 Messages.getInformationIcon());
     }
 }
-
-//public class DockerConnect extends AnAction {
-//
-//    @Override
-//    public void actionPerformed(@NotNull AnActionEvent e) {
-//
-//    }
-//}
