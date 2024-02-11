@@ -35,6 +35,15 @@ public class FileChanger {
         return FileUtilRt.delete(this.workingDirectory);
     }
 
+    public boolean clearTempDir() throws IOException {
+        if(workingDirectory == null) {
+            return false;
+        }
+        Path workingDirPath = this.workingDirectory.toPath();
+        FileUtilRt.deleteRecursively(workingDirPath);
+        return true;
+    }
+
     public boolean deleteAllTempDir() throws IOException {
         Path workingDirPath = this.workingDirectory.toPath();
         Path parentPath = workingDirPath.getParent();
