@@ -111,8 +111,8 @@ public class ConnectClient {
 
         // Execute the container by ID
         dockerClient.startContainerCmd(containerId).exec();
-//      var waiter=  dockerClient.waitContainerCmd(containerId).exec(save(event,containerId));
-//waiter.onComplete();
+      var waiter=  dockerClient.waitContainerCmd(containerId).exec(save(event,containerId));
+waiter.onComplete();
 
 
         containers.add(containerId);
