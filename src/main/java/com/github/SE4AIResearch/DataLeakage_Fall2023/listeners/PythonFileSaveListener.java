@@ -72,7 +72,11 @@ public class PythonFileSaveListener implements BulkFileListener {
                                 Messages.getInformationIcon());
                     if (tempDirectory != null && fileName != null) {
 
-                      connectClient.runLeakageAnalysis(tempDirectory, fileName);
+//                        try {
+//                            connectClient.runLeakageAnalysis(tempDirectory, fileName);
+//                        } catch (InterruptedException e) {
+//                            throw new RuntimeException(e);
+//                        }
 
                     }
 

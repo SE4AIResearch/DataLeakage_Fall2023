@@ -96,7 +96,7 @@ public class ConnectClient {
      * @param fileName - The name of the file to run the LAT on
      * @return String containing the container ID
      */
-    public String runLeakageAnalysis(File filePath, String fileName, AnActionEvent event) {
+    public Boolean runLeakageAnalysis(File filePath, String fileName, AnActionEvent event) throws InterruptedException {
         // Get the path to the file on the users machine
         String path2file = filePath.toString();
         List<String> commands = Arrays.asList("/execute/" + fileName, "-o");
@@ -112,57 +112,34 @@ public class ConnectClient {
 
         // Execute the container by ID
         dockerClient.startContainerCmd(containerId).exec();
-      var waiter=  dockerClient.waitContainerCmd(containerId).exec(save(event,containerId));
-waiter.onComplete();
+        close(containerId);
 
-
-        containers.add(containerId);
-
-        // Return the ID of the newly created container
-        return containerId;
-    }
-
-    public String runLeakageAnalysis(File filePath, String fileName) {
-        // Get the path to the file on the users machine
-        String path2file = filePath.toString();
-        List<String> commands = Arrays.asList("/execute/" + fileName, "-o");
-
-        // Create the container
-        CreateContainerResponse createContainerResponse = dockerClient.createContainerCmd("leakage")
-                .withImage("bkreiser01/leakage-analysis")
-                .withBinds(Bind.parse(path2file + ":/execute"))
-                .withCmd(commands).exec();
-
-        // Get the container's ID
-        String containerId = createContainerResponse.getId();
-
-        // Execute the container by ID
-        dockerClient.startContainerCmd(containerId).exec();
-        containers.add(containerId);
+        // Save file
+        FileDocumentManager.getInstance().reloadFiles((event.getData(LangDataKeys.EDITOR)).getVirtualFile());
 
         // Return the ID of the newly created container
-        return containerId;
+        return true;
     }
 
-    public void close() {
-        List<Container> exitedContainers = dockerClient.listContainersCmd().withStatusFilter(Collections.singleton("exited")).exec();
-        ArrayList<String> exitedContainerIds = new ArrayList<String>();
-        exitedContainers.forEach((container) -> exitedContainerIds.add(container.getId()));
-
+    private ArrayList<String> getRunningContainers() {
+        // Get all running docker containers
         List<Container> runningContainers = dockerClient.listContainersCmd().withStatusFilter(Collections.singleton("running")).exec();
+
+        // Store all running containers into an arraylist
         ArrayList<String> runningContainerIds = new ArrayList<String>();
-        runningContainers.forEach((container) -> runningContainerIds.add(container.getId()));
+        runningContainers.forEach(container -> runningContainerIds.add(container.getId()));
 
-        for (String id : this.containers) {
-            if (runningContainerIds.contains(id)) {
-                dockerClient.killContainerCmd(id).exec();
-                dockerClient.removeContainerCmd(id).exec();
-            }
+        return runningContainerIds;
+    }
 
-            if (exitedContainerIds.contains(id)) {
-                dockerClient.removeContainerCmd(id).exec();
-            }
+    public void close(String containerId) throws InterruptedException {
+        // If the container is running, wait until it stops running
+        while (getRunningContainers().contains(containerId)) {
+            TimeUnit.SECONDS.sleep(1);
         }
+
+        // Remove the container
+        dockerClient.removeContainerCmd(containerId).exec();
     }
 
     public boolean checkThenPull() throws InterruptedException {

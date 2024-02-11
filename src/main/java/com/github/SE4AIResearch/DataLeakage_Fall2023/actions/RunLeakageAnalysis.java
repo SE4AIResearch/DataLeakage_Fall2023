@@ -88,8 +88,12 @@ public class RunLeakageAnalysis extends AnAction {
 
             if (tempDirectory != null && fileName != null) {
                 // TODO: remove previous containers
-                connectClient.close();
-                connectClient.runLeakageAnalysis(tempDirectory, fileName);
+                // connectClient.close();
+                try {
+                    connectClient.runLeakageAnalysis(tempDirectory, fileName, event);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
         }
