@@ -87,8 +87,6 @@ public class RunLeakageAnalysis extends AnAction {
             }
 
             if (tempDirectory != null && fileName != null) {
-                // TODO: remove previous containers
-                // connectClient.close();
                 try {
                     connectClient.runLeakageAnalysis(tempDirectory, fileName, event);
                 } catch (InterruptedException e) {
@@ -99,7 +97,7 @@ public class RunLeakageAnalysis extends AnAction {
         }
         Messages.showMessageDialog(
                 getProjectForFile(file),
-                "Your code is being analyzed for data leakage. You may close this dialog window.",
+                "Leakage Analysis Complete.",
                 "",
                 Messages.getInformationIcon());
         (event.getData(LangDataKeys.EDITOR)).getProject().save();
