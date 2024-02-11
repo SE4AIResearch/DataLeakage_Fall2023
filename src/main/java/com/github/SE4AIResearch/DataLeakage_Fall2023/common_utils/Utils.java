@@ -42,6 +42,7 @@ public class Utils {
 
 
             }
+            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

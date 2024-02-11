@@ -66,7 +66,7 @@ public class OverlapLeakageDetector extends LeakageDetector {
                         addLeakageInstance(leakageInstance);
                     }
 
-
+                    reader.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();

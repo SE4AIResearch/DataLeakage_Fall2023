@@ -70,6 +70,8 @@ public class Invocation {
 
             }
             String[] columns = line.split(("\t"));
+
+            reader.close();
             return Integer.parseInt(columns[1]);
 
 
@@ -96,10 +98,13 @@ public class Invocation {
             String[] columns = line.split(("\t"));
 
             var functionCall = columns[1];
-            if(functionCall.contains(".")){
+            if (functionCall.contains(".")) {
                 return functionCall.split("\\.")[1];
             }
+
+            reader.close();
             return columns[1];
+
         } catch (IOException e) {
             e.printStackTrace();
         }

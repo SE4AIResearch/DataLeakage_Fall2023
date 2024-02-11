@@ -32,7 +32,7 @@ public class TaintUtils {
                 }
 
             }
-
+            reader.close();
 
         } catch (IOException e) {
             e.printStackTrace();

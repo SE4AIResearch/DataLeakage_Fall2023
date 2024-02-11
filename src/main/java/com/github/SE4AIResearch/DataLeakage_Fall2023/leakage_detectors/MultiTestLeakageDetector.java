@@ -64,6 +64,7 @@ public class MultiTestLeakageDetector extends LeakageDetector {
 
 
                 }
+                reader.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

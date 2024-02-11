@@ -33,7 +33,7 @@ public class Utils {
                 return test;
 
             }
-
+            reader.close();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -70,7 +70,7 @@ public class Utils {
                 return test;
 
             }
-
+            reader.close();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -109,7 +109,7 @@ public class Utils {
                 return train;
 
             }
-
+            reader.close();
 
         } catch (IOException e) {
             e.printStackTrace();
