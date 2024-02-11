@@ -16,6 +16,7 @@ import com.github.dockerjava.transport.DockerHttpClient;
 
 // Import java libraries
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.io.File;
 import java.time.Duration;
@@ -89,12 +90,13 @@ public class ConnectClient {
     public String runLeakageAnalysis(File filePath, String fileName) {
         // Get the path to the file on the users machine
         String path2file = filePath.toString();
+        List<String> commands = Arrays.asList("/execute/" + fileName, "-o");
 
         // Create the container
         CreateContainerResponse createContainerResponse = dockerClient.createContainerCmd("leakage")
                 .withImage("bkreiser01/leakage-analysis")
                 .withBinds(Bind.parse(path2file + ":/execute"))
-                .withCmd("/execute/" + fileName).exec();
+                .withCmd(commands).exec();
 
         // Get the container's ID
         String containerId = createContainerResponse.getId();
