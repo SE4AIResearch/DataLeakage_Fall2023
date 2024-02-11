@@ -48,14 +48,44 @@ public class RunLeakageAnalysis extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-        VirtualFile file;
+        Project currentProject = null;
+        VirtualFile file = null;
+//        try {
+//             file = event.getData(LangDataKeys.EDITOR).getVirtualFile();
+//        } catch (NullPointerException e) {
+//            Document currentDoc = FileEditorManager.getInstance(event.getData(LangDataKeys.EDITOR).getProject()).getSelectedTextEditor().getDocument();
+//             file = FileDocumentManager.getInstance().getFile(currentDoc);
+//
+//        }
+
         try {
-             file = event.getData(LangDataKeys.EDITOR).getVirtualFile();
+            currentProject = event.getData(LangDataKeys.EDITOR).getProject();
         } catch (NullPointerException e) {
-            Document currentDoc = FileEditorManager.getInstance(event.getData(LangDataKeys.EDITOR).getProject()).getSelectedTextEditor().getDocument();
-             file = FileDocumentManager.getInstance().getFile(currentDoc);
-         
+            Messages.showMessageDialog(
+
+                    "Please wait until the Python file is fully loaded before checking for data leakage.",
+                    "",
+                    Messages.getInformationIcon());
         }
+
+
+        try {
+
+            file = event.getData(LangDataKeys.EDITOR).getVirtualFile();
+
+//            Document currentDoc = FileEditorManager.getInstance(currentProject).getSelectedTextEditor().getDocument();
+//            file = FileDocumentManager.getInstance().getFile(currentDoc);
+        } catch (NullPointerException e) {
+
+
+            Messages.showMessageDialog(
+                    currentProject,
+                    "Please wait until the Python file is fully loaded before checking for data leakage.",
+                    "",
+                    Messages.getInformationIcon());
+
+        }
+
 
         FileType fileType = null;
 
@@ -77,7 +107,7 @@ public class RunLeakageAnalysis extends AnAction {
                     fileChanger.initializeTempDir();
                 } else {
                     fileChanger.clearTempDir();
-                    }
+                }
                 tempDirectory = fileChanger.getTempDirectory();
                 fileName = fileChanger.copyToTempDir(file.getPath());
                 String factFolderPath = tempDirectory.toPath().resolve(file.getNameWithoutExtension() + "-fact").toString();
