@@ -5,11 +5,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.ConnectClient;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.FileChanger;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -47,16 +43,15 @@ public class RunLeakageAnalysis extends AnAction {
                 throw new RuntimeException(e);
             }
 
-            // TODO: remove previous containers
             File tempDirectory;
             String fileName;
             try {
-                if (fileChanger.getWorkingDirectory() == null) {
+                if (fileChanger.getTempDirectory() == null) {
                     fileChanger.initializeTempDir();
                 } else {
                     fileChanger.clearTempDir();
                     }
-                tempDirectory = fileChanger.getWorkingDirectory();
+                tempDirectory = fileChanger.getTempDirectory();
                 fileName = fileChanger.copyToTempDir(file.getPath());
                 LeakageOutput.setFactFolderPath(Paths.get(tempDirectory.getCanonicalPath(),file.getNameWithoutExtension().toString()).toString()+"-fact\\");
             } catch (IOException e) {
@@ -64,6 +59,8 @@ public class RunLeakageAnalysis extends AnAction {
             }
 
             if (tempDirectory != null && fileName != null) {
+                // TODO: remove previous containers
+                connectClient.close();
                 connectClient.runLeakageAnalysis(tempDirectory, fileName);
             }
         }

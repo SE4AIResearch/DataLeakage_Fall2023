@@ -8,49 +8,49 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class FileChanger {
-    File workingDirectory;
+    File tempDirectory;
     public FileChanger() {
-        this.workingDirectory = null;
+        this.tempDirectory = null;
     }
 
     public String initializeTempDir() throws IOException {
-        workingDirectory = FileUtilRt.createTempDirectory("leakTemp", "");
-        return this.workingDirectory.toString();
+        tempDirectory = FileUtilRt.createTempDirectory("leakTemp", "");
+        return this.tempDirectory.toString();
     }
 
     public String copyToTempDir(String filePathString) throws IOException {
         File fileToCopy = Paths.get(filePathString).toFile();
         String fileName = fileToCopy.getName();
-        File destinationFile = FileUtilRt.createTempFile(workingDirectory, fileName, "");
+        File destinationFile = FileUtilRt.createTempFile(tempDirectory, fileName, "");
         FileUtilRt.copy(fileToCopy, destinationFile);
         return fileName;
     }
 
     public boolean deleteTempDir() throws IOException {
-        if (workingDirectory == null) {
+        if (tempDirectory == null) {
             return false;
         }
-        Path workingDirPath = this.workingDirectory.toPath();
+        Path workingDirPath = this.tempDirectory.toPath();
         FileUtilRt.deleteRecursively(workingDirPath);
-        return FileUtilRt.delete(this.workingDirectory);
+        return FileUtilRt.delete(this.tempDirectory);
     }
 
     public boolean clearTempDir() throws IOException {
-        if(workingDirectory == null) {
+        if(tempDirectory == null) {
             return false;
         }
-        Path workingDirPath = this.workingDirectory.toPath();
+        Path workingDirPath = this.tempDirectory.toPath();
         FileUtilRt.deleteRecursively(workingDirPath);
         return true;
     }
 
     public boolean deleteAllTempDir() throws IOException {
-        Path workingDirPath = this.workingDirectory.toPath();
+        Path workingDirPath = this.tempDirectory.toPath();
         Path parentPath = workingDirPath.getParent();
         return false;
     }
 
-    public File getWorkingDirectory() {
-        return workingDirectory;
+    public File getTempDirectory() {
+        return tempDirectory;
     }
 }

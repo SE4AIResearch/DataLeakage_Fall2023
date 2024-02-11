@@ -17,6 +17,7 @@ import com.github.dockerjava.transport.DockerHttpClient;
 // Import java libraries
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.io.File;
 import java.time.Duration;
@@ -111,8 +112,24 @@ public class ConnectClient {
     }
 
     public void close() {
-        containers.forEach((id) -> dockerClient.killContainerCmd(id).exec());
-        containers.forEach((id) -> dockerClient.removeContainerCmd(id).exec());
+        List<Container> exitedContainers = dockerClient.listContainersCmd().withStatusFilter(Collections.singleton("exited")).exec();
+        ArrayList<String> exitedContainerIds = new ArrayList<String>();
+        exitedContainers.forEach((container) -> exitedContainerIds.add(container.getId()));
+
+        List<Container> runningContainers = dockerClient.listContainersCmd().withStatusFilter(Collections.singleton("running")).exec();
+        ArrayList<String> runningContainerIds = new ArrayList<String>();
+        runningContainers.forEach((container) -> runningContainerIds.add(container.getId()));
+
+        for (String id : this.containers) {
+            if (runningContainerIds.contains(id)) {
+                dockerClient.killContainerCmd(id).exec();
+                dockerClient.removeContainerCmd(id).exec();
+            }
+
+            if (exitedContainerIds.contains(id)) {
+                dockerClient.removeContainerCmd(id).exec();
+            }
+        }
     }
 
     public boolean checkThenPull () throws InterruptedException {

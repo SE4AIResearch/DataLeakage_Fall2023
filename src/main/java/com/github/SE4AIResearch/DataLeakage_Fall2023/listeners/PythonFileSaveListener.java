@@ -7,7 +7,6 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
-import com.jetbrains.python.PythonFileType;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -44,7 +43,7 @@ public class PythonFileSaveListener implements BulkFileListener {
                     String fileName;
                     try {
                         fileChanger.initializeTempDir();
-                        tempDirectory = fileChanger.getWorkingDirectory();
+                        tempDirectory = fileChanger.getTempDirectory();
                         fileName = fileChanger.copyToTempDir(file.getPath());
 LeakageOutput.setFactFolderPath(Paths.get(tempDirectory.getCanonicalPath(),file.getNameWithoutExtension().toString()).toString()+"-fact\\");
                     } catch (IOException e) {
