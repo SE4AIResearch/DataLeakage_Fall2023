@@ -1,20 +1,25 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api;
 
 // Import DockerJavaAPI library
+
 import com.github.dockerjava.api.*;
+import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.command.PullImageResultCallback;
-import com.github.dockerjava.api.model.Bind;
-import com.github.dockerjava.api.model.Container;
-import com.github.dockerjava.api.model.Image;
-import com.github.dockerjava.api.model.SearchItem;
+import com.github.dockerjava.api.command.WaitContainerResultCallback;
+import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 
 // Import java libraries
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,12 +64,13 @@ public class ConnectClient {
 
     /**
      * Checks if the bkreiser/leakage-analysis image is available in docker
+     *
      * @return boolean true if the image is on the machine false otherwise
      */
     public boolean checkImageOnMachine() {
         List<Image> images = dockerClient.listImagesCmd().exec();
-        for(Image i : images) {
-            if(i.getRepoTags()[0].equals("bkreiser01/leakage-analysis:latest"))
+        for (Image i : images) {
+            if (i.getRepoTags()[0].equals("bkreiser01/leakage-analysis:latest"))
                 return true;
         }
         return false;
@@ -72,22 +78,50 @@ public class ConnectClient {
 
     /**
      * Pulls the bkreiser/leakage-analysis image from dockerhub
+     *
      * @return true if pullled, false if not
      */
     public boolean pullImage() throws InterruptedException {
         List<SearchItem> items = dockerClient.searchImagesCmd("bkreiser01/leakage-analysis").exec();
         return dockerClient.pullImageCmd("bkreiser01/leakage-analysis")
-                    .withTag("latest")
-                    .exec(new PullImageResultCallback())
-                    .awaitCompletion(180, TimeUnit.SECONDS);
+                .withTag("latest")
+                .exec(new PullImageResultCallback())
+                .awaitCompletion(180, TimeUnit.SECONDS);
     }
 
     /**
      * This function creates and run the LAT docker container
+     *
      * @param filePath - The path to the file to run the LAT on
      * @param fileName - The name of the file to run the LAT on
      * @return String containing the container ID
      */
+    public String runLeakageAnalysis(File filePath, String fileName, AnActionEvent event) {
+        // Get the path to the file on the users machine
+        String path2file = filePath.toString();
+        List<String> commands = Arrays.asList("/execute/" + fileName, "-o");
+
+        // Create the container
+        CreateContainerResponse createContainerResponse = dockerClient.createContainerCmd("leakage")
+                .withImage("bkreiser01/leakage-analysis")
+                .withBinds(Bind.parse(path2file + ":/execute"))
+                .withCmd(commands).exec();
+
+        // Get the container's ID
+        String containerId = createContainerResponse.getId();
+
+        // Execute the container by ID
+        dockerClient.startContainerCmd(containerId).exec();
+      var waiter=  dockerClient.waitContainerCmd(containerId).exec(save(event,containerId));
+waiter.onComplete();
+
+
+        containers.add(containerId);
+
+        // Return the ID of the newly created container
+        return containerId;
+    }
+
     public String runLeakageAnalysis(File filePath, String fileName) {
         // Get the path to the file on the users machine
         String path2file = filePath.toString();
@@ -104,7 +138,6 @@ public class ConnectClient {
 
         // Execute the container by ID
         dockerClient.startContainerCmd(containerId).exec();
-
         containers.add(containerId);
 
         // Return the ID of the newly created container
@@ -132,10 +165,46 @@ public class ConnectClient {
         }
     }
 
-    public boolean checkThenPull () throws InterruptedException {
-        if(!this.checkImageOnMachine()){
+    public boolean checkThenPull() throws InterruptedException {
+        if (!this.checkImageOnMachine()) {
             this.pullImage();
         }
         return true;
+    }
+
+    private static ResultCallback<WaitResponse> save(AnActionEvent event, String containerId) {
+
+        return new ResultCallback<WaitResponse>() {
+            @Override
+            public void onStart(Closeable closeable) {
+                dockerClient.startContainerCmd(containerId).exec();
+            }
+
+            @Override
+            public void onNext(WaitResponse object) {
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                FileDocumentManager.getInstance().saveDocument((event.getData(LangDataKeys.EDITOR)).getDocument());
+                FileDocumentManager.getInstance().reloadFiles((event.getData(LangDataKeys.EDITOR)).getVirtualFile());
+         //       FileDocumentManager.getInstance().reloadFromDisk((event.getData(LangDataKeys.EDITOR)).getDocument());
+            }
+
+            @Override
+            public void close() throws IOException {
+
+                FileDocumentManager.getInstance().saveDocument((event.getData(LangDataKeys.EDITOR)).getDocument());
+                FileDocumentManager.getInstance().reloadFiles((event.getData(LangDataKeys.EDITOR)).getVirtualFile());
+       //         FileDocumentManager.getInstance().reloadFromDisk((event.getData(LangDataKeys.EDITOR)).getDocument());
+
+            }
+        };
     }
 }

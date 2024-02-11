@@ -1,9 +1,12 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils;
 
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class Utils {
 
@@ -19,7 +22,10 @@ public class Utils {
      * @return An {@code int} representing an actual line number in the user's code.
      */
     public static int getActualLineNumberFromInternalLineNumber(String folderPath, int internalLineNumber) {
-        File file = new File(folderPath + "LinenoMapping.facts");
+        String filePath = Paths.get(folderPath).resolve("LinenoMapping.facts").toString();
+//        File file = new File(folderPath + "LinenoMapping.facts");
+        File file = new File(filePath);
+
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
 

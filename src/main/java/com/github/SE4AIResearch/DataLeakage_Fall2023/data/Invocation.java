@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,7 +57,9 @@ public class Invocation {
      * @return An {@code int} representing a number provided by the leakage analysis tool. The number is meaningless to the end user, but may be used by other functions in the plugin code.
      */
     public static int getInternalLineNumberFromInvocation(String folderPath, Invocation invocation) {
-        File file = new File(folderPath + "InvokeLineno.facts");
+        String filePath = Paths.get(folderPath).resolve("InvokeLineno.facts").toString();
+//        File file = new File(folderPath + "InvokeLineno.facts");
+        File file = new File(filePath);
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             int lineNumber = invocation.getNumber() + 1;
@@ -78,7 +81,9 @@ public class Invocation {
     }
 
     private String getFunctionCallFromInvocation() {
-        File file = new File(LeakageOutput.folderPath() + "Invoke.facts");
+        String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Invoke.facts").toString();
+//        File file = new File(LeakageOutput.folderPath() + "Invoke.facts");
+        File file = new File(filePath);
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             int lineNumber = this.getNumber() + 1;

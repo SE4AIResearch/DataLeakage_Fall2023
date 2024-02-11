@@ -4,11 +4,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class Utils {
 
     public static String getTestFromOverlapLeakTelemetryFile() {
-        File file = new File(LeakageOutput.folderPath() + "Telemetry_OverlapLeak.csv");
+        String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_OverlapLeak.csv").toString();
+//        File file = new File(LeakageOutput.folderPath() + "Telemetry_OverlapLeak.csv");
+        File file = new File(filePath);
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
@@ -42,7 +45,9 @@ public class Utils {
 
 
     public static String getTestFromMultiUseTestLeakTelemetryFile() {
-        File file = new File(LeakageOutput.folderPath() + "Telemetry_MultiUseTestLeak.csv");
+        String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_MultiUseTestLeak.csv").toString();
+//        File file = new File(LeakageOutput.folderPath() + "Telemetry_MultiUseTestLeak.csv");
+        File file = new File(filePath);
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
@@ -76,7 +81,10 @@ public class Utils {
 
 
     public static String getTrainFromPreprocessingLeakTelemetryFile() {
-        File file = new File(LeakageOutput.folderPath() + "Telemetry_PreProcessingLeak.csv");
+        String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_PreProcessingLeak.csv").toString();
+//        File file = new File(LeakageOutput.folderPath() + "Telemetry_PreProcessingLeak.csv");
+        File file = new File(filePath);
+
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
 

@@ -5,6 +5,8 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
 import com.intellij.codeInspection.ProblemsHolder;
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.jetbrains.python.psi.PyFunction;
@@ -47,6 +49,8 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
 
     @Override
     public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {
+      var log=  Logger.getInstance(PreprocessingLeakageInstanceVisitor.class);
+        log.warn("HERE***********************************************************");
         renderInspectionOnLeakageInstance(preprocessingLeakageInstances, node);
 
     }

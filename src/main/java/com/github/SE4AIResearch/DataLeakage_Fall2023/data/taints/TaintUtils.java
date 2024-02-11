@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,7 +15,9 @@ import java.util.Objects;
 public class TaintUtils {
 
     public static List<String> getTaintsFromFile(TaintLabel taintType) {
-        File file = new File(LeakageOutput.folderPath() + "TaintStartsTarget.csv");
+        String filePath = Paths.get(LeakageOutput.folderPath()).resolve("TaintStartsTarget.csv").toString();
+//        File file = new File(LeakageOutput.folderPath() + "TaintStartsTarget.csv");
+        File file = new File(filePath);
         List<String> taints = new ArrayList<>();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
