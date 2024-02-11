@@ -30,7 +30,7 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_sources.OverlapLeakageSourceInspection"
-                         displayName="Overlap leakage"
+                         displayName="Overlap Leakage Source"
                          shortName="OverlapLeakageSourceInspection"/>
         <localInspection language="Python"
                          groupPath="Python"
@@ -38,7 +38,7 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_instances.PreprocessingLeakageInstanceInspection"
-                         displayName="Preprocessing Leakage"
+                         displayName="Preprocessing Leakage Instance"
                          shortName="PreprocessingLeakageInstanceInspection"/>
         <localInspection language="Python"
                          groupPath="Python"
@@ -46,7 +46,7 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_sources.PreprocessingLeakageSourceInspection"
-                         displayName="Preprocessing Leakage"
+                         displayName="Preprocessing Leakage Source"
                          shortName="PreprocessingLeakageSourceInspection"/>
         <localInspection language="Python"
                          groupPath="Python"
@@ -54,7 +54,7 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_instances.MultiTestLeakageInstanceInspection"
-                         displayName="Multi-test Leakage"
+                         displayName="Multi-test Leakage Instance"
                          shortName="MultiTestLeakageInstanceInspection"/>
 
 
