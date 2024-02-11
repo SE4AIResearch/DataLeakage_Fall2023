@@ -5,6 +5,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.PreprocessingLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
+import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
@@ -52,7 +53,7 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
 
         if (!preprocessingLeakageInstances.isEmpty()) {
             if (leakageSourceIsAssociatedWithNode(preprocessingLeakageInstances, node)) {
-                if ( holder.getResults().stream().noneMatch(problemDescriptor -> problemDescriptor.getLineNumber()+1/*need plus one to account for zero based line number*/ == PsiUtils.getNodeLineNumber(node, holder))) {//TODO: naive solution, should refactor to look more closely at method calls. need to check if the correct psi element is being highlighted
+                if (holder.getResults().stream().noneMatch(problemDescriptor -> problemDescriptor.getLineNumber() + 1/*need plus one to account for zero based line number*/ == PsiUtils.getNodeLineNumber(node, holder))) {//TODO: naive solution, should refactor to look more closely at method calls. need to check if the correct psi element is being highlighted
                     renderInspectionOnLeakageSource(node, holder, preprocessingLeakageInstances);
                 }
             }
@@ -73,7 +74,7 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
 
         //TODO: change name?
         preprocessingLeakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().ifPresent(
-                instance -> holder.registerProblem(node, getInspectionMessageForLeakageSource(instance, node))
+                instance -> holder.registerProblem(node, getInspectionMessageForLeakageSource(instance, node), ProblemHighlightType.WARNING)
         );
 
 

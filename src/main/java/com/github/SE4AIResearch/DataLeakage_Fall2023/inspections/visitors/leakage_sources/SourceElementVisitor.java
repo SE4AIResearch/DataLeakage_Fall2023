@@ -6,6 +6,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
+import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
 import com.jetbrains.python.psi.PyCallExpression;
@@ -22,7 +23,6 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
 
 
     public abstract void renderInspectionOnLeakageSource(@NotNull PsiElement node, @NotNull ProblemsHolder holder, List<T> leakageInstances);
-
 
 
     public Predicate<T> leakageSourceAssociatedWithNode(@NotNull PsiElement node) {
@@ -46,7 +46,7 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
         var key = potentialCauses.get(0).getInspectionTextKey();//TODO: refactor?
 
         if (node.getText().toLowerCase().contains(taintKeyword)) {//TODO: not the whole node text, just the method itself
-            holder.registerProblem(node, InspectionBundle.get(key));
+            holder.registerProblem(node, InspectionBundle.get(key), ProblemHighlightType.WARNING);
         }
     }
 
@@ -55,7 +55,7 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
         var key = cause.getInspectionTextKey();
 
         if (node.getText().toLowerCase().contains(taintKeyword)) {//TODO: not the whole node text, just the method itself
-            holder.registerProblem(node, InspectionBundle.get(key));
+            holder.registerProblem(node, InspectionBundle.get(key), ProblemHighlightType.WARNING);
         }
     }
 
@@ -66,8 +66,6 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
         keywords.forEach(keyword -> renderInspectionOnTaintForInstanceWithKeyword(node, holder, keyword));
 
     }
-
-
 
 
 }
