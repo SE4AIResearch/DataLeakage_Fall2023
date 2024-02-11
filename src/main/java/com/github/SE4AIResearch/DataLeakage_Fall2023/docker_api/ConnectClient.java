@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit;
 public class ConnectClient {
 
     private static DockerClient dockerClient;
-    private ArrayList<String> containers; // Arraylist of all containers
 
     /**
      * Constructor for ConnectClient object
@@ -57,9 +56,6 @@ public class ConnectClient {
         // Create the docker client builder
         dockerClient = DockerClientBuilder.getInstance()
                 .withDockerHttpClient(httpClient).build();
-
-        // Create empty arraylist
-        containers = new ArrayList<String>();
     }
 
     /**
@@ -86,7 +82,19 @@ public class ConnectClient {
         return dockerClient.pullImageCmd("bkreiser01/leakage-analysis")
                 .withTag("latest")
                 .exec(new PullImageResultCallback())
-                .awaitCompletion(180, TimeUnit.SECONDS);
+                .awaitCompletion(600, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Checks for the image and pulls if it is not on the machine
+     *
+     * @return Boolean - True on successful pull. False if failed
+     * */
+    public boolean checkThenPull() throws InterruptedException {
+        if (!this.checkImageOnMachine()) {
+            this.pullImage();
+        }
+        return true;
     }
 
     /**
@@ -140,48 +148,5 @@ public class ConnectClient {
 
         // Remove the container
         dockerClient.removeContainerCmd(containerId).exec();
-    }
-
-    public boolean checkThenPull() throws InterruptedException {
-        if (!this.checkImageOnMachine()) {
-            this.pullImage();
-        }
-        return true;
-    }
-
-    private static ResultCallback<WaitResponse> save(AnActionEvent event, String containerId) {
-
-        return new ResultCallback<WaitResponse>() {
-            @Override
-            public void onStart(Closeable closeable) {
-                dockerClient.startContainerCmd(containerId).exec();
-            }
-
-            @Override
-            public void onNext(WaitResponse object) {
-
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-
-            }
-
-            @Override
-            public void onComplete() {
-                FileDocumentManager.getInstance().saveDocument((event.getData(LangDataKeys.EDITOR)).getDocument());
-                FileDocumentManager.getInstance().reloadFiles((event.getData(LangDataKeys.EDITOR)).getVirtualFile());
-         //       FileDocumentManager.getInstance().reloadFromDisk((event.getData(LangDataKeys.EDITOR)).getDocument());
-            }
-
-            @Override
-            public void close() throws IOException {
-
-                FileDocumentManager.getInstance().saveDocument((event.getData(LangDataKeys.EDITOR)).getDocument());
-                FileDocumentManager.getInstance().reloadFiles((event.getData(LangDataKeys.EDITOR)).getVirtualFile());
-       //         FileDocumentManager.getInstance().reloadFromDisk((event.getData(LangDataKeys.EDITOR)).getDocument());
-
-            }
-        };
     }
 }
