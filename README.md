@@ -17,12 +17,16 @@
 - [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
 
 <!-- Plugin description -->
-This Fancy IntelliJ Platform Plugin is going to be your implementation of the brilliant ideas that you have.
-
-This specific section is a source for the [plugin.xml](/src/main/resources/META-INF/plugin.xml) file which will be extracted by the [Gradle](/build.gradle.kts) during the build process.
-
-To keep everything working, do not remove `<!-- ... -->` sections. 
+First version of a plugin that detects data leakage in Python code for ML.
 <!-- Plugin description end -->
+
+[//]: # (This Fancy IntelliJ Platform Plugin is going to be your implementation of the brilliant ideas that you have.)
+
+[//]: # ()
+[//]: # (This specific section is a source for the [plugin.xml]&#40;/src/main/resources/META-INF/plugin.xml&#41; file which will be extracted by the [Gradle]&#40;/build.gradle.kts&#41; during the build process.)
+
+[//]: # ()
+[//]: # (To keep everything working, do not remove `<!-- ... -->` sections.)
 
 ## Installation
 

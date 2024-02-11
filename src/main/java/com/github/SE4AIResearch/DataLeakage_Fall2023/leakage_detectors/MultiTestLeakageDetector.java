@@ -44,26 +44,30 @@ public class MultiTestLeakageDetector extends LeakageDetector {
      */
     @Override
     public void findLeakageInstancesInFile(File file) {
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+        if (file.exists()) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
 
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] columns = line.split(("\t"));
-                Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
-                int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
-                int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] columns = line.split(("\t"));
+                    Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
+                    int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
+                    int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
 
-                var leakageInstance = new MultiTestLeakageInstance(actualLineNumber,  invocation);
+                    var leakageInstance = new MultiTestLeakageInstance(actualLineNumber, invocation);
 
-                var existingInstances = leakageInstances();
-                if (!debug || !existingInstances.contains(leakageInstance)) {
-                    addLeakageInstance(leakageInstance);
+                    var existingInstances = leakageInstances();
+                    if (!debug || !existingInstances.contains(leakageInstance)) {
+                        addLeakageInstance(leakageInstance);
+                    }
+
+
                 }
-
-
-            }  } catch (IOException e) {
-            throw new RuntimeException(e);
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -78,7 +82,6 @@ public class MultiTestLeakageDetector extends LeakageDetector {
     public boolean isLeakageDetected() {
         return !this.leakageInstances.isEmpty();
     }
-
 
 
 }

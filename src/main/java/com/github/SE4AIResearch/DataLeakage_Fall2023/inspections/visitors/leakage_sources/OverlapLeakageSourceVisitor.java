@@ -5,6 +5,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.taints.Taint;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
+import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
@@ -34,7 +35,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
             @Override
             public void visitElement(@NotNull PsiElement element) {
                 //  super.visitElement(element);//TODO:
-                renderInspectionOnLeakageSource(element,holder,overlapLeakageInstances);
+                renderInspectionOnLeakageSource(element, holder, overlapLeakageInstances);
             }
         };
     }
@@ -67,7 +68,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
     public void renderInspectionOnLeakageSource(@NotNull PsiElement node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances) {
 //TODO: change name?
         overlapLeakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().ifPresent(
-                instance -> holder.registerProblem(node, getInspectionMessageForLeakageSource(instance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText())))
+                instance -> holder.registerProblem(node, getInspectionMessageForLeakageSource(instance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText())), ProblemHighlightType.WARNING)
         );
 
 
@@ -84,6 +85,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
         return inspectionMessage.toString();
     }
+
     @Override
     public void visitPyFunction(@NotNull PyFunction node) {
         this.recursiveElementVisitor.visitElement(node);

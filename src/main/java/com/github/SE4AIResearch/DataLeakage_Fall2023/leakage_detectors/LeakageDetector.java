@@ -6,12 +6,13 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 
 public abstract class LeakageDetector {
     public LeakageType leakageType;
     //TODO: remove debug
-    protected final boolean debug = true;
+    protected final boolean debug = false;
 
     /**
      * @return The name of the CSV file that contains relevant information
@@ -39,8 +40,9 @@ public abstract class LeakageDetector {
     public List<LeakageInstance> FindLeakageInstances() {
 
 
-
-            File file = new File(LeakageOutput.folderPath() + this.getCsvFileName());
+        String filePath = Paths.get(LeakageOutput.folderPath()).resolve(this.getCsvFileName()).toString();
+//        File file = new File(LeakageOutput.folderPath() + this.getCsvFileName());
+        File file = new File(filePath);
 
             findLeakageInstancesInFile(file);
 

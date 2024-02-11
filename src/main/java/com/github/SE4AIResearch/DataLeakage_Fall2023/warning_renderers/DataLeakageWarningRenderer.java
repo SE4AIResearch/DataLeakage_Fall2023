@@ -32,5 +32,9 @@ public abstract class DataLeakageWarningRenderer implements EditorCustomElementR
         return 50;
     }
 
+    public boolean warningIsDisplayed(@NotNull Editor editor, int startOffset){
+
+        return !editor.getInlayModel().getBlockElementsInRange(startOffset, startOffset + getMessage().length()).isEmpty();
+    }
 
 }

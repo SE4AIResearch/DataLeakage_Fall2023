@@ -4,7 +4,10 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.PreprocessingLeakageIn
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
+import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.jetbrains.python.psi.PyFunction;
@@ -28,7 +31,7 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
             @Override
             public void visitElement(@NotNull PsiElement element) {
                 //  super.visitElement(element);//TODO:
-                renderInspectionOnLeakageInstance(preprocessingLeakageInstances,element);
+                renderInspectionOnLeakageInstance(preprocessingLeakageInstances, element);
             }
         };
     }
@@ -47,17 +50,18 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
 
     @Override
     public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {
+//      var log=  Logger.getInstance(PreprocessingLeakageInstanceVisitor.class);
+//        log.warn("HERE***********************************************************");
         renderInspectionOnLeakageInstance(preprocessingLeakageInstances, node);
 
     }
-
 
 
     @Override
     public void visitPyNamedParameter(@NotNull PyNamedParameter node) {
 
         if (leakageIsAssociatedWithNode(preprocessingLeakageInstances, node)) {
-            holder.registerProblem(node, InspectionBundle.get(LeakageType.PreprocessingLeakage.getInspectionTextKey()));
+            holder.registerProblem(node, InspectionBundle.get(LeakageType.PreprocessingLeakage.getInspectionTextKey()), ProblemHighlightType.WARNING);
 
         }
     }

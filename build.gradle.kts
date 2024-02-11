@@ -25,6 +25,15 @@ repositories {
 dependencies {
 //    implementation(libs.annotations)
 
+    // https://mvnrepository.com/artifact/com.github.docker-java/docker-java
+    implementation(libs.docker) {
+        exclude("org.slf4j", "slf4j-api")
+    }
+
+    // https://mvnrepository.com/artifact/com.github.docker-java/docker-java-transport-httpclient5
+    implementation("com.github.docker-java:docker-java-transport-httpclient5:3.3.4"){
+        exclude("org.slf4j", "slf4j-api")
+    }
 
 }
 
@@ -33,11 +42,11 @@ kotlin {
     jvmToolchain(17)
 }
 
-//java {
-//    toolchain {
-//        languageVersion.set(JavaLanguageVersion.of(17))
-//    }
-//}
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
 
 // Configure Gradle IntelliJ Plugin - read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
@@ -47,6 +56,7 @@ intellij {
 
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
     plugins = properties("platformPlugins").map { it.split(',').map(String::trim).filter(String::isNotEmpty) }
+
 }
 
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin

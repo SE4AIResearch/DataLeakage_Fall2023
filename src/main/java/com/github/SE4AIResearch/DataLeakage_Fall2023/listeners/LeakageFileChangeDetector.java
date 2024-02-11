@@ -1,5 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.listeners;
 
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_indicators.DataLeakageIndicator;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
@@ -16,7 +17,7 @@ public  class LeakageFileChangeDetector implements BulkFileListener {
     private LeakageAnalysisParser leakageAnalysisParser;
     private final DataLeakageIndicator dataLeakageIndicator;
     //TODO: remove debug flag
-    private final boolean debug = true;
+    private final boolean debug = false;
 
     public LeakageFileChangeDetector() {
         leakageAnalysisParser = new LeakageAnalysisParser();
@@ -26,28 +27,28 @@ public  class LeakageFileChangeDetector implements BulkFileListener {
 
     @Override
     public void after(@NotNull List<? extends @NotNull VFileEvent> events) {
-        for (VFileEvent event : events) {
-            var editor = getEditorForFileChanged(event);
-            if (editor != null) {
-                if (debug || (OverlapLeakageCSVFileWasChanged(event) || MultiTestLeakageCSVFileWasChanged(event))) {
-                    if (debug) {
-                        dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
-                    }
-
-                    var instances = leakageAnalysisParser.LeakageInstances();
-
-                    if (!instances.isEmpty()) {
-                        for (var instance : instances) {
-                            dataLeakageIndicator.renderDataLeakageWarning(editor, instance.lineNumber(), instance.type());
-                        }
-
-                    } else {
-                        dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
-
-                    }
-                }
-            }
-        }
+//        for (VFileEvent event : events) {
+//            var editor = getEditorForFileChanged(event);
+//            if (editor != null) {
+//              //  if (debug ) {
+//                 //   if (debug) {
+//                        dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
+//                   // }
+//
+//                    var instances = leakageAnalysisParser.LeakageInstances();
+//
+//                    if (!instances.isEmpty()) {
+//                        for (var instance : instances) {
+//                            dataLeakageIndicator.renderDataLeakageWarning(editor, instance.lineNumber(), instance.type());
+//                        }
+//
+//                    } else {
+//                        dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
+//
+//                    }
+//                //}
+//            }
+//        }
 
     }
 

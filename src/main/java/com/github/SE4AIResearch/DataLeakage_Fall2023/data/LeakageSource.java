@@ -34,14 +34,15 @@ public class LeakageSource {
     public LeakageCause getCause() {
         return cause;
     }
+
     private LeakageCause setCause() {
         //TODO: revise
-        if(taints.stream().anyMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("vector"))){
+        if (taints.stream().anyMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("vector"))) {
             return LeakageCause.VectorizingTextData;
-        } else if(taints.stream().allMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("split"))){
+        } else if (taints.stream().allMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("split"))) {
             return LeakageCause.SplitBeforeSample;
-        } else if (taints.stream().allMatch(taint -> taint.getPyCallExpression().contains("TODO"))) {
-        return LeakageCause.DataAugmentation;
+        } else if (taints.stream().allMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("flow"))) {
+            return LeakageCause.DataAugmentation;
         }
         return LeakageCause.unknown;
     }
@@ -63,28 +64,29 @@ public class LeakageSource {
 
     private List<Taint> setTaints(LeakageType leakageType) {
         List<Taint> taints;
-         switch (leakageType) {
-            case OverlapLeakage -> taints= TaintUtils.getTaintsFromFile(TaintLabel.dup).stream()
+        switch (leakageType) {
+            case OverlapLeakage -> taints = TaintUtils.getTaintsFromFile(TaintLabel.dup).stream()
                     .map(taintString -> new Taint(taintString, TaintLabel.dup))
                     .collect(Collectors.toList());
-            case PreprocessingLeakage -> taints=TaintUtils.getTaintsFromFile(TaintLabel.rowset).stream()
+            case PreprocessingLeakage -> taints = TaintUtils.getTaintsFromFile(TaintLabel.rowset).stream()
                     .map(taintString -> new Taint(taintString, TaintLabel.rowset))
                     .collect(Collectors.toList());
 
-            default -> throw new IllegalStateException("Unexpected value: " + leakageType);
+            default -> taints = new ArrayList<>();
         }
         List<Taint> rtn = new ArrayList<>();//TODO: .distinct() method doesn't work for taints
-        for(var taint : taints) {
-            if(!rtn.contains(taint)){
+        for (var taint : taints) {
+            if (!rtn.contains(taint)) {
                 rtn.add(taint);
             }
         }
-        return  rtn;
+        return rtn;
     }
 
     public Taint findTaintThatMatchesText(String text) {
         return this.getTaints().stream().filter(
                 taint -> taint.getPyCallExpression().equalsIgnoreCase(text) //equalsIgnoreCase MUST be used here
+                //TODO: the pycall expression in the leakage analysis tool does not match what is actually in the test file
         ).findFirst().orElse(new Taint("", TaintLabel.dup));//TODO: better error handling
     }
 
