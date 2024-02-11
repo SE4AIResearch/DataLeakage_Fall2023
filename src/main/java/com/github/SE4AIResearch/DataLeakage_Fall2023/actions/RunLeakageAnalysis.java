@@ -130,8 +130,6 @@ public class RunLeakageAnalysis extends AnAction {
                 "Leakage Analysis Complete.",
                 "",
                 Messages.getInformationIcon());
-        (event.getData(LangDataKeys.EDITOR)).getProject().save();
-        FileDocumentManager.getInstance().saveDocument((event.getData(LangDataKeys.EDITOR)).getDocument());
 
 
 //        Project currentProject = event.getProject();
