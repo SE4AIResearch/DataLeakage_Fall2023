@@ -60,30 +60,13 @@ public class RunLeakageAnalysis extends AnAction {
 
         try {
             currentProject = event.getData(LangDataKeys.EDITOR).getProject();
-        } catch (NullPointerException e) {
-            Messages.showMessageDialog(
-
-                    "Please wait until the Python file is fully loaded before checking for data leakage.",
-                    "",
-                    Messages.getInformationIcon());
-        }
-
-
-        try {
-
             file = event.getData(LangDataKeys.EDITOR).getVirtualFile();
-
-//            Document currentDoc = FileEditorManager.getInstance(currentProject).getSelectedTextEditor().getDocument();
-//            file = FileDocumentManager.getInstance().getFile(currentDoc);
         } catch (NullPointerException e) {
-
-
             Messages.showMessageDialog(
-                    currentProject,
+
                     "Please wait until the Python file is fully loaded before checking for data leakage.",
                     "",
                     Messages.getInformationIcon());
-
         }
 
 
