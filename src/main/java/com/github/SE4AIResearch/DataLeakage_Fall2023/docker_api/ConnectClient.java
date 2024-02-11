@@ -82,7 +82,7 @@ public class ConnectClient {
         return dockerClient.pullImageCmd("bkreiser01/leakage-analysis")
                 .withTag("latest")
                 .exec(new PullImageResultCallback())
-                .awaitCompletion(180, TimeUnit.SECONDS);
+                .awaitCompletion(600, TimeUnit.SECONDS);
     }
 
     /**
