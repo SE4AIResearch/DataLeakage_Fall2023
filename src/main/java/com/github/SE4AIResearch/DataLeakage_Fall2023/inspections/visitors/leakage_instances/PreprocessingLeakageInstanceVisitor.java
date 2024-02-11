@@ -49,8 +49,8 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
 
     @Override
     public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {
-      var log=  Logger.getInstance(PreprocessingLeakageInstanceVisitor.class);
-        log.warn("HERE***********************************************************");
+//      var log=  Logger.getInstance(PreprocessingLeakageInstanceVisitor.class);
+//        log.warn("HERE***********************************************************");
         renderInspectionOnLeakageInstance(preprocessingLeakageInstances, node);
 
     }
