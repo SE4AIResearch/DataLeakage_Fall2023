@@ -177,7 +177,7 @@ waiter.onComplete();
             public void onComplete() {
                 FileDocumentManager.getInstance().saveDocument((event.getData(LangDataKeys.EDITOR)).getDocument());
                 FileDocumentManager.getInstance().reloadFiles((event.getData(LangDataKeys.EDITOR)).getVirtualFile());
-                FileDocumentManager.getInstance().reloadFromDisk((event.getData(LangDataKeys.EDITOR)).getDocument());
+         //       FileDocumentManager.getInstance().reloadFromDisk((event.getData(LangDataKeys.EDITOR)).getDocument());
             }
 
             @Override
@@ -185,6 +185,8 @@ waiter.onComplete();
 
                 FileDocumentManager.getInstance().saveDocument((event.getData(LangDataKeys.EDITOR)).getDocument());
                 FileDocumentManager.getInstance().reloadFiles((event.getData(LangDataKeys.EDITOR)).getVirtualFile());
+       //         FileDocumentManager.getInstance().reloadFromDisk((event.getData(LangDataKeys.EDITOR)).getDocument());
+
             }
         };
     }
