@@ -27,28 +27,28 @@ public  class LeakageFileChangeDetector implements BulkFileListener {
 
     @Override
     public void after(@NotNull List<? extends @NotNull VFileEvent> events) {
-        for (VFileEvent event : events) {
-            var editor = getEditorForFileChanged(event);
-            if (editor != null) {
-                if (debug || (LeakageFileChanged(event))) {
-                 //   if (debug) {
-                        dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
-                   // }
-
-                    var instances = leakageAnalysisParser.LeakageInstances();
-
-                    if (!instances.isEmpty()) {
-                        for (var instance : instances) {
-                            dataLeakageIndicator.renderDataLeakageWarning(editor, instance.lineNumber(), instance.type());
-                        }
-
-                    } else {
-                        dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
-
-                    }
-                }
-            }
-        }
+//        for (VFileEvent event : events) {
+//            var editor = getEditorForFileChanged(event);
+//            if (editor != null) {
+//              //  if (debug ) {
+//                 //   if (debug) {
+//                        dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
+//                   // }
+//
+//                    var instances = leakageAnalysisParser.LeakageInstances();
+//
+//                    if (!instances.isEmpty()) {
+//                        for (var instance : instances) {
+//                            dataLeakageIndicator.renderDataLeakageWarning(editor, instance.lineNumber(), instance.type());
+//                        }
+//
+//                    } else {
+//                        dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
+//
+//                    }
+//                //}
+//            }
+//        }
 
     }
 
@@ -59,12 +59,6 @@ public  class LeakageFileChangeDetector implements BulkFileListener {
     private boolean OverlapLeakageCSVFileWasChanged(VFileEvent event) {
         return aCSVFileWasChanged(event) && event.getPath().endsWith("FinalOverlapLeak.csv");
     }
-
-private boolean LeakageFileChanged(VFileEvent event){
-        if(event.getFile().getPath().contains(LeakageOutput.folderPath())){
-            return true;
-        }return false;
-}
 
 
 }

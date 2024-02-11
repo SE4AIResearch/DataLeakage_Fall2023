@@ -5,6 +5,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.jetbrains.python.psi.PyElementVisitor;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,17 +25,11 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
     }
 
 
-
-
-
-    public void renderInspectionOnLeakageInstance(List<T> leakageInstances, PsiElement node ){
+    public void renderInspectionOnLeakageInstance(List<T> leakageInstances, PsiElement node) {
         if (leakageIsAssociatedWithNode(leakageInstances, node)) {
             LeakageType leakageType = getLeakageType();
             holder.registerProblem(node, InspectionBundle.get(leakageType.getInspectionTextKey()));
 
         }
     }
-
-
-
 }

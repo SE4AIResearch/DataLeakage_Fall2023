@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 
 public class FileChanger {
     File workingDirectory;
+
     public FileChanger() {
         this.workingDirectory = null;
     }
@@ -36,7 +37,7 @@ public class FileChanger {
     }
 
     public boolean clearTempDir() throws IOException {
-        if(workingDirectory == null) {
+        if (workingDirectory == null) {
             return false;
         }
         Path workingDirPath = this.workingDirectory.toPath();
@@ -53,4 +54,6 @@ public class FileChanger {
     public File getWorkingDirectory() {
         return workingDirectory;
     }
+
+
 }

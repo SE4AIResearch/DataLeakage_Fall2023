@@ -11,7 +11,7 @@ import java.util.List;
 public abstract class LeakageDetector {
     public LeakageType leakageType;
     //TODO: remove debug
-    protected final boolean debug = true;
+    protected final boolean debug = false;
 
     /**
      * @return The name of the CSV file that contains relevant information
