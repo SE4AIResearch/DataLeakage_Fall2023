@@ -1,5 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.listeners;
 
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_indicators.DataLeakageIndicator;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
@@ -29,10 +30,10 @@ public  class LeakageFileChangeDetector implements BulkFileListener {
         for (VFileEvent event : events) {
             var editor = getEditorForFileChanged(event);
             if (editor != null) {
-                if (debug || (OverlapLeakageCSVFileWasChanged(event) || MultiTestLeakageCSVFileWasChanged(event))) {
-                    if (debug) {
+                if (debug || (LeakageFileChanged(event))) {
+                 //   if (debug) {
                         dataLeakageIndicator.clearAllDataLeakageWarnings(editor);
-                    }
+                   // }
 
                     var instances = leakageAnalysisParser.LeakageInstances();
 
@@ -59,9 +60,11 @@ public  class LeakageFileChangeDetector implements BulkFileListener {
         return aCSVFileWasChanged(event) && event.getPath().endsWith("FinalOverlapLeak.csv");
     }
 
-    private boolean LeakageFileChanged(VFileEvent event){
-
-    }
+private boolean LeakageFileChanged(VFileEvent event){
+        if(event.getFile().getPath().contains(LeakageOutput.folderPath())){
+            return true;
+        }return false;
+}
 
 
 }
