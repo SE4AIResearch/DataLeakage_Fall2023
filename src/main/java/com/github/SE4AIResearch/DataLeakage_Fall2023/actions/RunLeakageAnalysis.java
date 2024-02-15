@@ -107,9 +107,11 @@ public class RunLeakageAnalysis extends AnAction {
                             "Please wait a moment while leakage analysis runs. You may close this dialog window.",
                             "",
                             Messages.getInformationIcon());
-                    MyThread thread = new MyThread(tempDirectory,fileName,event);
-                   // connectClient.runLeakageAnalysis(tempDirectory, fileName, event);
-                    thread.run();
+                try {
+                    connectClient.runLeakageAnalysis(tempDirectory, fileName, event);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
             }
 

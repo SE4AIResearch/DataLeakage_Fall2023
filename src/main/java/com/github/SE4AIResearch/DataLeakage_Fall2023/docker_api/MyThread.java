@@ -4,11 +4,16 @@ import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.Container;
+import com.github.dockerjava.core.DefaultDockerClientConfig;
+import com.github.dockerjava.core.DockerClientBuilder;
+import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
+import com.github.dockerjava.transport.DockerHttpClient;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,11 +25,27 @@ public class MyThread implements  Runnable{
     private String fileName;
     private AnActionEvent event;
 
-    private static DockerClient dockerClient;
+    private static DockerClient dockerClient ;
     public MyThread(File filePath, String fileName, AnActionEvent event){
         this.filePath=filePath;
         this.fileName = fileName;
         this.event= event;
+        // Create a default client config
+        DefaultDockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
+
+        // Create a default http client
+        DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
+                .dockerHost(config.getDockerHost())
+                .sslConfig(config.getSSLConfig())
+                .maxConnections(100)
+                .connectionTimeout(Duration.ofSeconds(30))
+                .responseTimeout(Duration.ofSeconds(45))
+                .build();
+
+        // Create the docker client builder
+        dockerClient = DockerClientBuilder.getInstance()
+                .withDockerHttpClient(httpClient).build();
+
     }
     @Override
     public void run()  {

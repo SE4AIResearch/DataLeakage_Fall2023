@@ -15,21 +15,9 @@ import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
-import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.progress.PerformInBackgroundOption;
-import com.intellij.openapi.progress.ProcessCanceledException;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.NlsContexts;
-import com.intellij.openapi.util.ThrowableComputable;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 // Import java libraries
-import javax.swing.*;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,13 +27,12 @@ import java.util.List;
 import java.io.File;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 
 /**
  * This class creates a Docker client to connect to the hosts docker daemon
  */
-public class ConnectClient extends ProgressManager {
+public class ConnectClient {
 
     private static DockerClient dockerClient;
 
@@ -69,108 +56,6 @@ public class ConnectClient extends ProgressManager {
         // Create the docker client builder
         dockerClient = DockerClientBuilder.getInstance()
                 .withDockerHttpClient(httpClient).build();
-    }
-
-    @Override
-    public boolean hasProgressIndicator() {
-        return false;
-    }
-
-    @Override
-    public boolean hasModalProgressIndicator() {
-        return false;
-    }
-
-    @Override
-    public boolean hasUnsafeProgressIndicator() {
-        return false;
-    }
-
-    @Override
-    public void runProcess(@NotNull Runnable process, @Nullable ProgressIndicator progress) throws ProcessCanceledException {
-
-    }
-
-    @Override
-    public ProgressIndicator getProgressIndicator() {
-        return null;
-    }
-
-    @Override
-    protected void doCheckCanceled() throws ProcessCanceledException {
-
-    }
-
-    @Override
-    public void executeNonCancelableSection(@NotNull Runnable runnable) {
-
-    }
-
-    @Override
-    public <T, E extends Exception> T computeInNonCancelableSection(@NotNull ThrowableComputable<T, E> computable) throws E {
-        return null;
-    }
-
-    @Override
-    public boolean runProcessWithProgressSynchronously(@NotNull Runnable process, @NotNull @NlsContexts.DialogTitle String progressTitle, boolean canBeCanceled, @Nullable Project project) {
-        return false;
-    }
-
-    @Override
-    public <T, E extends Exception> T runProcessWithProgressSynchronously(@NotNull ThrowableComputable<T, E> process, @NotNull @NlsContexts.DialogTitle String progressTitle, boolean canBeCanceled, @Nullable Project project) throws E {
-        return null;
-    }
-
-    @Override
-    public boolean runProcessWithProgressSynchronously(@NotNull Runnable process, @NotNull @NlsContexts.DialogTitle String progressTitle, boolean canBeCanceled, @Nullable Project project, @Nullable JComponent parentComponent) {
-        return false;
-    }
-
-    @Override
-    public void runProcessWithProgressAsynchronously(@NotNull Project project, @NotNull @NlsContexts.ProgressTitle String progressTitle,
-                                                     @NotNull Runnable process, @Nullable Runnable successRunnable, @Nullable Runnable canceledRunnable,
-                                                     @NotNull PerformInBackgroundOption option) {
-
-    }
-
-    @Override
-    public void run(@NotNull Task task) {
-
-    }
-
-    @Override
-    public void runProcessWithProgressAsynchronously(Task.@NotNull Backgroundable task, @NotNull ProgressIndicator progressIndicator) {
-
-    }
-
-    @Override
-    public void executeProcessUnderProgress(@NotNull Runnable process, @Nullable ProgressIndicator progress) throws ProcessCanceledException {
-
-    }
-
-    @Override
-    public boolean runInReadActionWithWriteActionPriority(@NotNull Runnable action, @Nullable ProgressIndicator indicator) {
-        return false;
-    }
-
-    @Override
-    public boolean isInNonCancelableSection() {
-        return false;
-    }
-
-    @Override
-    public <T, E extends Throwable> T computePrioritized(@NotNull ThrowableComputable<T, E> computable) throws E {
-        return null;
-    }
-
-    @Override
-    public <X> X silenceGlobalIndicator(@NotNull Supplier<? extends X> computable) {
-        return null;
-    }
-
-    @Override
-    public @Nullable ModalityState getCurrentProgressModality() {
-        return null;
     }
 
     /**
@@ -212,6 +97,58 @@ public class ConnectClient extends ProgressManager {
         return true;
     }
 
+    /**
+     * This function creates and run the LAT docker container
+     *
+     * @param filePath - The path to the file to run the LAT on
+     * @param fileName - The name of the file to run the LAT on
+     * @return String containing the container ID
+     */
+    public Boolean runLeakageAnalysis(File filePath, String fileName, AnActionEvent event) throws InterruptedException {
+        MyThread thread = new MyThread(filePath, fileName, event);
+         thread.run();
+//        // Get the path to the file on the users machine
+//        String path2file = filePath.toString();
+//        List<String> commands = Arrays.asList("/execute/" + fileName, "-o");
+//
+//        // Create the container
+//        CreateContainerResponse createContainerResponse = dockerClient.createContainerCmd("leakage")
+//                .withImage("bkreiser01/leakage-analysis")
+//                .withBinds(Bind.parse(path2file + ":/execute"))
+//                .withCmd(commands).exec();
+//
+//        // Get the container's ID
+//        String containerId = createContainerResponse.getId();
+//
+//        // Execute the container by ID
+//        dockerClient.startContainerCmd(containerId).exec();
+//        close(containerId);
+//
+//        // Save file
+//        FileDocumentManager.getInstance().reloadFiles((event.getData(LangDataKeys.EDITOR)).getVirtualFile());
 
+        // Return the ID of the newly created container
+        return true;
+    }
 
+    private ArrayList<String> getRunningContainers() {
+        // Get all running docker containers
+        List<Container> runningContainers = dockerClient.listContainersCmd().withStatusFilter(Collections.singleton("running")).exec();
+
+        // Store all running containers into an arraylist
+        ArrayList<String> runningContainerIds = new ArrayList<String>();
+        runningContainers.forEach(container -> runningContainerIds.add(container.getId()));
+
+        return runningContainerIds;
+    }
+
+    public void close(String containerId) throws InterruptedException {
+        // If the container is running, wait until it stops running
+        while (getRunningContainers().contains(containerId)) {
+            TimeUnit.SECONDS.sleep(1);
+        }
+
+        // Remove the container
+        dockerClient.removeContainerCmd(containerId).exec();
+    }
 }
