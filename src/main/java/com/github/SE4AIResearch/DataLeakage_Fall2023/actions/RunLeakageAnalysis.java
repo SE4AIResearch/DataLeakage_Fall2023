@@ -3,6 +3,7 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.actions;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.ConnectClient;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.FileChanger;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.MyThread;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -100,11 +101,16 @@ public class RunLeakageAnalysis extends AnAction {
             }
 
             if (tempDirectory != null && fileName != null) {
-                try {
-                    connectClient.runLeakageAnalysis(tempDirectory, fileName, event);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+
+                    Messages.showMessageDialog(
+                            getProjectForFile(file),
+                            "Please wait a moment while leakage analysis runs. You may close this dialog window.",
+                            "",
+                            Messages.getInformationIcon());
+                    MyThread thread = new MyThread(tempDirectory,fileName,event);
+                   // connectClient.runLeakageAnalysis(tempDirectory, fileName, event);
+                    thread.run();
+
             }
 
         }
