@@ -16,6 +16,8 @@
 
     <resource-bundle>messages.MyBundle</resource-bundle>
     <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="Data Leakage Analysis" secondary="true" icon="AllIcons.Toolwindows.WebToolWindow" anchor="right"
+                    factoryClass="com.github.SE4AIResearch.DataLeakage_Fall2023.tool_windows.LeakageToolWindow"/>
         <notificationGroup id="Leakage Notification Group"
                            displayType="BALLOON"/>
         <localInspection language="Python"
