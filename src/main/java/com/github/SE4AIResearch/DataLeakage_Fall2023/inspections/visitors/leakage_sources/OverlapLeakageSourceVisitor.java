@@ -2,11 +2,18 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leaka
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.taints.Taint;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
+import com.intellij.codeInspection.LocalQuickFix;
+import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
+import com.intellij.codeInspection.util.IntentionFamilyName;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.jetbrains.python.psi.PyCallExpression;
@@ -14,6 +21,7 @@ import com.jetbrains.python.psi.PyElementVisitor;
 import com.jetbrains.python.psi.PyFunction;
 import com.jetbrains.python.psi.PyReferenceExpression;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +34,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
     private final List<OverlapLeakageInstance> overlapLeakageInstances;
     private final PsiRecursiveElementVisitor recursiveElementVisitor;
 
+    private final OverlapLeakageQuickFix myQuickFix = new OverlapLeakageQuickFix();
 
     public OverlapLeakageSourceVisitor(List<OverlapLeakageInstance> overlapLeakageInstances, @NotNull ProblemsHolder holder) {
         this.overlapLeakageInstances = overlapLeakageInstances;
@@ -35,7 +44,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
             @Override
             public void visitElement(@NotNull PsiElement element) {
                 //  super.visitElement(element);//TODO:
-                renderInspectionOnLeakageSource(element, holder, overlapLeakageInstances);
+                renderInspectionOnLeakageSource(element, holder, overlapLeakageInstances, myQuickFix);
             }
         };
     }
@@ -56,7 +65,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
         if (!overlapLeakageInstances.isEmpty()) {
             if (leakageSourceIsAssociatedWithNode(overlapLeakageInstances, node)) {
 
-                renderInspectionOnLeakageSource(node, holder, overlapLeakageInstances);
+                renderInspectionOnLeakageSource(node, holder, overlapLeakageInstances,myQuickFix);
             }
 
             renderInspectionOnTaints(node, holder, Arrays.stream(OverlapLeakageSourceKeyword.values()).toList());
@@ -69,6 +78,15 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 //TODO: change name?
         overlapLeakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().ifPresent(
                 instance -> holder.registerProblem(node, getInspectionMessageForLeakageSource(instance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText())), ProblemHighlightType.WARNING)
+        );
+
+
+    }
+
+    public void renderInspectionOnLeakageSource(@NotNull PsiElement node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances, LocalQuickFix fix) {
+//TODO: change name?
+        overlapLeakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().ifPresent(
+                instance -> holder.registerProblem(node, getInspectionMessageForLeakageSource(instance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText())), ProblemHighlightType.WARNING, fix)
         );
 
 
@@ -90,6 +108,65 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
     public void visitPyFunction(@NotNull PyFunction node) {
         this.recursiveElementVisitor.visitElement(node);
 
+    }
+
+    private class OverlapLeakageQuickFix implements LocalQuickFix {
+//private final List<OverlapLeakageInstance> overlapLeakageInstances;
+
+//        public OverlapLeakageQuickFix(List<OverlapLeakageInstance> overlapLeakageInstances) {
+//
+//            this.overlapLeakageInstances = overlapLeakageInstances;
+//        }
+
+        @NotNull
+        @Override
+        public String getName() {
+            return InspectionBundle.get("inspectionText.swapSplitAndSample.quickfix.text");
+        }
+
+        @Override
+        public @IntentionFamilyName @NotNull String getFamilyName() {
+            return getName();
+        }
+
+        @Override
+        public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+
+            var lineNumber = descriptor.getLineNumber();
+
+            var descriptionText = descriptor.getDescriptionTemplate();
+            var psiElement = descriptor.getPsiElement();
+            var psiFile = psiElement.getContainingFile();
+            PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
+            Document document = documentManager.getDocument(psiFile);
+            //Split
+            if (descriptionText.equals(InspectionBundle.get("inspectionText.splitBeforeSampleReminder.text"))) {
+
+            }
+            //Source not linked to instance
+
+            //Sample
+            if (descriptionText.equals(InspectionBundle.get("inspectionText.overlapLeakage.text"))
+                    && psiElement.getText().contains(OverlapLeakageSourceKeyword.sample.toString())) {
+
+            }
+
+//won't work if assignment is split on multiple lines
+            var instance = getInstanceForLeakageSourceAssociatedWithNode(overlapLeakageInstances, psiElement);
+            var source = instance.getLeakageSource();
+            if (source.getCause().equals(LeakageCause.SplitBeforeSample)) {
+
+                int offset = document.getLineStartOffset(lineNumber);
+
+                @Nullable
+                PsiElement statement = psiFile.findElementAt(offset
+                );
+
+
+            }
+
+
+        }
     }
 
 
