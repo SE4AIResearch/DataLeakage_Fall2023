@@ -12,17 +12,17 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
-import com.jetbrains.python.psi.PyCallExpression;
-import com.jetbrains.python.psi.PyElementVisitor;
-import com.jetbrains.python.psi.PyFunction;
-import com.jetbrains.python.psi.PyReferenceExpression;
+import com.jetbrains.python.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.intellij.psi.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -155,12 +155,18 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
             var instance = getInstanceForLeakageSourceAssociatedWithNode(overlapLeakageInstances, psiElement);
             var source = instance.getLeakageSource();
             if (source.getCause().equals(LeakageCause.SplitBeforeSample)) {
+                Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
 
                 int offset = document.getLineStartOffset(lineNumber);
 
                 @Nullable
-                PsiElement statement = psiFile.findElementAt(offset
+                PsiElement firstElementOnLine = psiFile.findElementAt(offset
                 );
+                PsiManager manager = PsiManager.getInstance ( project );
+              var myFacade=  PyPsiFacade.getInstance(project);
+
+
+                document.insertString(offset, "split()\n");
 
 
             }
