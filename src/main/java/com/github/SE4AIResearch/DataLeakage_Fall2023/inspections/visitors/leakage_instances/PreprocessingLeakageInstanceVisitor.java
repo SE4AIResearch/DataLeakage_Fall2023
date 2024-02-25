@@ -40,7 +40,7 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
             @Override
             public void visitElement(@NotNull PsiElement element) {
                 //  super.visitElement(element);//TODO:
-                renderInspectionOnLeakageInstance(preprocessingLeakageInstances, element,myQuickFix);
+                renderInspectionOnLeakageInstance(preprocessingLeakageInstances, element, myQuickFix);
             }
         };
     }
@@ -61,7 +61,7 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
     public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {
 //      var log=  Logger.getInstance(PreprocessingLeakageInstanceVisitor.class);
 //        log.warn("HERE***********************************************************");
-        renderInspectionOnLeakageInstance(preprocessingLeakageInstances, node,myQuickFix);
+        renderInspectionOnLeakageInstance(preprocessingLeakageInstances, node, myQuickFix);
 
     }
 
@@ -70,7 +70,7 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
     public void visitPyNamedParameter(@NotNull PyNamedParameter node) {
 
         if (leakageIsAssociatedWithNode(preprocessingLeakageInstances, node)) {
-            holder.registerProblem(node, InspectionBundle.get(LeakageType.PreprocessingLeakage.getInspectionTextKey()), ProblemHighlightType.WARNING,myQuickFix);
+            holder.registerProblem(node, InspectionBundle.get(LeakageType.PreprocessingLeakage.getInspectionTextKey()), ProblemHighlightType.WARNING, myQuickFix);
 
         }
     }
@@ -82,17 +82,11 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
     }
 
     private class PreprocessingLeakageQuickFix implements LocalQuickFix {
-//private final List<OverlapLeakageInstance> overlapLeakageInstances;
-
-//        public OverlapLeakageQuickFix(List<OverlapLeakageInstance> overlapLeakageInstances) {
-//
-//            this.overlapLeakageInstances = overlapLeakageInstances;
-//        }
 
         @NotNull
         @Override
         public String getName() {
-            return InspectionBundle.get("inspectionText.swapSplitAndSample.quickfix.text");
+            return InspectionBundle.get("inspectionText.vectorizingTextData.quickfix.text");
         }
 
         @Override
@@ -110,14 +104,11 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
             var psiFile = psiElement.getContainingFile();
             PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
             Document document = documentManager.getDocument(psiFile);
-            //Split
-            if (descriptionText.equals(InspectionBundle.get("inspectionText.splitBeforeSampleReminder.text"))) {
 
-            }
             //Source not linked to instance
 
             //Sample
-            if (descriptionText.equals(InspectionBundle.get("inspectionText.overlapLeakage.text"))
+            if (descriptionText.equals(InspectionBundle.get("inspectionText.preprocessingLeakage.text"))
                     && psiElement.getText().contains(OverlapLeakageSourceKeyword.sample.toString())) {
 
             }
@@ -125,14 +116,16 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
 //won't work if assignment is split on multiple lines
             var instance = getLeakageInstanceAssociatedWithNode(preprocessingLeakageInstances, psiElement);
             var source = instance.getLeakageSource();
-            if (source.getCause().equals(LeakageCause.SplitBeforeSample)) {
+            if (source.getCause().equals(LeakageCause.VectorizingTextData)) {
 
                 int offset = document.getLineStartOffset(lineNumber);
 
                 @Nullable
                 PsiElement statement = psiFile.findElementAt(offset
                 );
+                //won't work if assignment is split on multiple lines
 
+                document.insertString(offset, "split()\n");
 
             }
 
