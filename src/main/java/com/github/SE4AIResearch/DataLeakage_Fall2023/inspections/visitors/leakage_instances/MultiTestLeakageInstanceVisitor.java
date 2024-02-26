@@ -8,12 +8,12 @@ import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.codeInspection.util.IntentionFamilyName;
+import com.intellij.find.FindManager;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiRecursiveElementVisitor;
-import com.intellij.psi.PsiReference;
+import com.intellij.psi.*;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.refactoring.Refactoring;
 import com.intellij.refactoring.RefactoringFactory;
@@ -83,11 +83,35 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
             //  var references = instance.getReferences();
             //does not get all references
 //            PsiElement parentOfType = PsiTreeUtil.getParentOfType(instance, instance.getClass());
-//var references = ReferencesSearch.search(parentOfType);
+            //   var references = ReferencesSearch.search(parentOfType);
+//
+//            var references = instance.getReferences();//Does not get references
+            //            var usages = myRefactoring.findUsages();//Does not find any usages
+//
             var myFactory = RefactoringFactory.getInstance(project);
-            var myRefactoring = myFactory.createRename((PsiElement) instance, instance.getText() + "_1", true, true);
-//            var usages = myRefactoring.findUsages();
-//            myRefactoring.doRefactoring(usages);
+            PsiNamedElement namedElement = PsiTreeUtil.getParentOfType(instance, PsiNamedElement.class);
+            var myRefactoring = myFactory.createRename((PsiElement) namedElement, instance.getText() + "_1",
+                    true, true);
+            myRefactoring.run();
+//            CommandProcessor.getInstance().executeCommand(project, new Runnable() {
+//                @Override
+//                public void run() {
+//                    ApplicationManager.getApplication().runWriteAction(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            myRefactoring.run();
+//                        }
+//                    });
+//                }
+//            }, "Rename", "Rename action");
+
+
+//            myRefactoring.doRefactoring(usages); //Cannot perform refactoring and throws an error
+//            // java.lang.Throwable: Unknown element type : PyReferenceExpression: X_test
+
+            FindManager myFindManager = FindManager.getInstance(project);
+            var possible = myFindManager.canFindUsages(instance);
+
 
             var descriptionText = descriptor.getDescriptionTemplate();
             var psiElement = descriptor.getPsiElement();
@@ -97,7 +121,7 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
             var lineNumber = descriptor.getLineNumber();
 
             int offset = document.getLineStartOffset(lineNumber);
-            document.replaceString(instance.getTextOffset(), instance.getTextOffset()+instance.getTextLength(), instance.getText()+"_1");
+            //   document.replaceString(instance.getTextOffset(), instance.getTextOffset() + instance.getTextLength(), instance.getText() + "_1");
 
         }
     }

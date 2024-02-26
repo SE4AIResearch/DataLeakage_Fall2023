@@ -6,6 +6,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.quick_fixes.OverlapLeakageQuickFix;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
@@ -17,12 +18,12 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.jetbrains.python.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.intellij.psi.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,6 +48,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
                 renderInspectionOnLeakageSource(element, holder, overlapLeakageInstances, myQuickFix);
             }
         };
+        //  this.myQuickFix = new OverlapLeakageQuickFix(overlapLeakageInstances);
     }
 
 
@@ -65,7 +67,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
         if (!overlapLeakageInstances.isEmpty()) {
             if (leakageSourceIsAssociatedWithNode(overlapLeakageInstances, node)) {
 
-                renderInspectionOnLeakageSource(node, holder, overlapLeakageInstances,myQuickFix);
+                renderInspectionOnLeakageSource(node, holder, overlapLeakageInstances, myQuickFix);
             }
 
             renderInspectionOnTaints(node, holder, Arrays.stream(OverlapLeakageSourceKeyword.values()).toList());
@@ -111,12 +113,10 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
     }
 
     private class OverlapLeakageQuickFix implements LocalQuickFix {
-//private final List<OverlapLeakageInstance> overlapLeakageInstances;
 
-//        public OverlapLeakageQuickFix(List<OverlapLeakageInstance> overlapLeakageInstances) {
-//
-//            this.overlapLeakageInstances = overlapLeakageInstances;
-//        }
+
+        public OverlapLeakageQuickFix() {
+        }
 
         @NotNull
         @Override
@@ -162,8 +162,8 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
                 @Nullable
                 PsiElement firstElementOnLine = psiFile.findElementAt(offset
                 );
-                PsiManager manager = PsiManager.getInstance ( project );
-              var myFacade=  PyPsiFacade.getInstance(project);
+                PsiManager manager = PsiManager.getInstance(project);
+                var myFacade = PyPsiFacade.getInstance(project);
 
 
                 document.insertString(offset, "split()\n");
