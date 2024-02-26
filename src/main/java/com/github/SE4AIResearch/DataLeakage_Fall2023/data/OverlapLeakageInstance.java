@@ -17,11 +17,7 @@ public class OverlapLeakageInstance implements LeakageInstance {
         this.test = Utils.getTestFromOverlapLeakTelemetryFile();
         this.leakageSource = new LeakageSource(this.type);
     }
-
-    public String test() {
-        return test;
-    }
-
+    
     public LeakageSource getLeakageSource() {
         return leakageSource;
     }
@@ -38,16 +34,20 @@ public class OverlapLeakageInstance implements LeakageInstance {
     }
 
     @Override
+    public String variableName() {
+        return test;
+    }
+
+    @Override
     public LeakageType type() {
         return type;
     }
 
 
-
     @Override
-    public boolean equals(Object obj){
-        return this.lineNumber() == ((OverlapLeakageInstance)obj).lineNumber()
-                &&this.invocation.getNumber() == ((OverlapLeakageInstance)obj).invocation().getNumber();
+    public boolean equals(Object obj) {
+        return this.lineNumber() == ((OverlapLeakageInstance) obj).lineNumber()
+                && this.invocation.getNumber() == ((OverlapLeakageInstance) obj).invocation().getNumber();
     }
 
 }

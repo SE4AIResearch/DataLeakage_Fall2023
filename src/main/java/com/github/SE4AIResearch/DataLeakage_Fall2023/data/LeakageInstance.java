@@ -9,6 +9,8 @@ public interface LeakageInstance {
 
     Invocation invocation();
 
+    String variableName();//TODO: rename
+
     LeakageSource getLeakageSource();
 
 
