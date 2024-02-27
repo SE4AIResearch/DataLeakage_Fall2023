@@ -77,10 +77,18 @@ public class RunLeakageAnalysis extends AnAction {
         }
         if (fileType != null && fileType.getName().equals("Python")) { // check that the saved file is a python file
 
+
             try {
                 connectClient.checkThenPull();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
+            } catch (UnsatisfiedLinkError | NoClassDefFoundError e){
+                Messages.showErrorDialog(
+                        getProjectForFile(file),
+                        "Please start the Docker Engine before running leakage analysis.",
+                        ""
+                    );
+                return;
             }
 
             File tempDirectory;
