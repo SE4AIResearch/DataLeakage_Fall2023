@@ -31,8 +31,8 @@ import static com.intellij.openapi.actionSystem.IdeActions.ACTION_INSPECT_CODE;
 
 public class RunLeakageAnalysis extends AnAction {
 
-   private ConnectClient connectClient = new ConnectClient();
-   private FileChanger fileChanger = new FileChanger();
+   private final ConnectClient connectClient = new ConnectClient();
+   private final FileChanger fileChanger = new FileChanger();
 
    private boolean isCompleted = false;
 

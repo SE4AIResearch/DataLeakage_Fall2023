@@ -5,17 +5,17 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
 import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPlaces;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.JBColor;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.panels.HorizontalLayout;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.table.JBTable;
@@ -34,9 +34,10 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
    private final JPanel summaryPanel = new JPanel();
    private final JPanel instancePanel = new JPanel();
+
    @Override
    public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
-      LeakageToolWindowContent toolWindowContent = new LeakageToolWindowContent(toolWindow);
+      LeakageToolWindowContent toolWindowContent = new LeakageToolWindowContent(project, toolWindow);
 
       JPanel contentPanel = new JPanel();
 
@@ -69,7 +70,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       }
       for (LeakageInstance instance : instances) {
          instance.lineNumber();
-         LeakageType leakageType =  instance.type();
+         LeakageType leakageType = instance.type();
 
       }
 
@@ -84,31 +85,64 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       private JBTable summaryTable;
       private JBTable instanceTable;
       private DefaultTableModel instanceTableModel;
+      private DefaultTableModel summaryTableModel;
+      private Project project;
 
-      public LeakageToolWindowContent(ToolWindow toolWindow) {
+      public LeakageToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
+         this.project = project;
          contentPanel = new JPanel();
-         contentPanel.setLayout(new BorderLayout(0, 5));
-         contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+         contentPanel.setLayout(new BorderLayout(0, 10));
+         contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+//         contentPanel.add(createToolBarPanel());
 
          contentPanel.add(createSummaryPanel(), BorderLayout.NORTH);
          contentPanel.add(createInstancePanel(), BorderLayout.CENTER);
 
-         contentPanel.add(createControlsPanel(toolWindow), BorderLayout.SOUTH);
+//         contentPanel.add(createInfoPanel(), BorderLayout.CENTER);
+
+
+         JPanel southComponent = new JPanel();
+//         southComponent.add(createInfoPanel(), BorderLayout.NORTH);
+         southComponent.add(createControlsPanel(toolWindow), BorderLayout.CENTER);
+
+         contentPanel.add(southComponent, BorderLayout.SOUTH);
 
          updateTableData();
+      }
+
+      private JPanel createToolBarPanel() {
+         DefaultActionGroup actionGroup = new DefaultActionGroup();
+         actionGroup.add(new RunLeakageAnalysis());
+
+         ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("MyToolbar", actionGroup, true);
+         JPanel toolbarPanel = new JPanel();
+         toolbarPanel.add(toolbar.getComponent());
+         toolbar.setTargetComponent(toolbarPanel);
+
+         return toolbarPanel;
       }
 
       @NotNull
       private JPanel createControlsPanel(ToolWindow toolWindow) {
          JPanel controlsPanel = new JPanel();
-         JButton runAnalysisButton = new JButton("Run Leakage Analysis on Open File");
+         JButton runAnalysisButton = new JButton("Refresh Table");
 
          runAnalysisButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                // Call method to update table data
-               updateTableData();
                // TODO run analysis somehow
+
+//               DataContext dataContext =  DataManager.getInstance().getDataContext(toolWindow.getComponent());
+//               AnAction action = ActionManager.getInstance().getAction("com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAnalysis");
+//               if (action != null) {
+//                  AnActionEvent event = new AnActionEvent(
+//                        null, dataContext, "", action.getTemplatePresentation(), ActionManager.getInstance(), 0);
+//                  action.actionPerformed(event);
+//               }
+
+               updateTableData();
             }
          });
 
@@ -118,12 +152,27 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       }
 
       @NotNull
+      private JPanel createInfoPanel() {
+         JPanel infoPanel = new JPanel(new BorderLayout());
+         JBLabel moreInfo = new JBLabel("More information on types of Data Leakage can be found bellow");
+         infoPanel.add(moreInfo);
+
+         return infoPanel;
+      }
+
+      @NotNull
       private JPanel createSummaryPanel() {
          JPanel summaryPanel = new JPanel(new BorderLayout());
 
          String[] columnNames = {"Leakage Type", "Leakage Count", "Information on Leakage Type"};
-         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 3);
-         summaryTable = new JBTable(tableModel);
+         summaryTableModel = new DefaultTableModel(columnNames, 3) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+               // Make all cells non-editable
+               return false;
+            }
+         };
+         summaryTable = new JBTable(summaryTableModel);
 
          summaryTable.setValueAt("Pre-Processing", 0, 0);
          summaryTable.setValueAt("Multi-Test", 1, 0);
@@ -145,7 +194,13 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          JPanel instancesPanel = new JPanel(new BorderLayout());
 
          String[] columnNames = {"Leakage Type", "Line Number", "Variable Associated"};
-         instanceTableModel = new DefaultTableModel(columnNames, 3);
+         instanceTableModel = new DefaultTableModel(columnNames, 3) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+               // Make all cells non-editable
+               return false;
+            }
+         };
          instanceTable = new JBTable(instanceTableModel);
 
          JBScrollPane scrollPane = new JBScrollPane(instanceTable);
@@ -157,18 +212,34 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       }
 
       private void updateTableData() {
+         // Update Instance
          instanceTable.removeAll();
          instanceTableModel.setRowCount(0);
 
          Object[][] newInstanceData = fetchInstanceData();
 
-         for(Object[] row : newInstanceData) {
+         for (Object[] row : newInstanceData) {
             instanceTableModel.addRow(row);
          }
 
          // Refresh table view
          instanceTable.revalidate();
          instanceTable.repaint();
+
+         // Update Summary
+         summaryTable.removeAll();
+         summaryTableModel.setRowCount(0);
+
+         Object[][] newSummaryData = fetchSummaryData();
+
+         for (Object[] row : newSummaryData) {
+            summaryTableModel.addRow(row);
+         }
+
+
+         // Refresh table view
+         summaryTable.revalidate();
+         summaryTable.repaint();
       }
 
       private Object[][] fetchInstanceData() {
@@ -185,12 +256,43 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
          data = new String[row][col];
 
-         for (int i = 0; i < row; i++) {
-            LeakageInstance instance =  leakageInstances.get(i);
+         for (int i = 0; i < leakageInstances.size(); i++) {
+            LeakageInstance instance = leakageInstances.get(i);
             data[i][0] = instance.type().toString();
             data[i][1] = String.valueOf(instance.lineNumber());
-            data[i][2] = "";
+            data[i][2] = instance.variableName();
          }
+
+         return data;
+      }
+
+      private Object[][] fetchSummaryData() {
+         Object[][] data = new String[3][3];
+         LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
+         List<LeakageInstance> leakageInstances = leakageAnalysisParser.LeakageInstances();
+         int preproc = 0, multitest = 0, overlap = 0;
+
+         for (LeakageInstance instance : leakageInstances) {
+            switch (instance.type()) {
+               case PreprocessingLeakage:
+                  preproc++;
+                  break;
+               case MultiTestLeakage:
+                  multitest++;
+                  break;
+               case OverlapLeakage:
+                  overlap++;
+                  break;
+            }
+         }
+
+         data[0][0] = "Pre-Processing";
+         data[1][0] = "Multi-Test";
+         data[2][0] = "Overlap";
+
+         data[0][1] = String.valueOf(preproc);
+         data[1][1] = String.valueOf(multitest);
+         data[2][1] = String.valueOf(overlap);
 
          return data;
       }
