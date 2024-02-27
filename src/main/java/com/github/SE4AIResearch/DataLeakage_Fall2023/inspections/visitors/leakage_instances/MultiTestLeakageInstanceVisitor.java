@@ -17,8 +17,11 @@ import com.intellij.psi.*;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.refactoring.Refactoring;
 import com.intellij.refactoring.RefactoringFactory;
+import com.intellij.refactoring.rename.RenamePsiElementProcessor;
+import com.intellij.util.DocumentUtil;
 import com.jetbrains.python.psi.PyPsiFacade;
 import com.jetbrains.python.psi.PyReferenceExpression;
+import com.jetbrains.python.refactoring.rename.RenamePyElementProcessor;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.psi.util.PsiTreeUtil;
 
@@ -80,6 +83,10 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
         public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
             var myFacade = PyPsiFacade.getInstance(project);
             var instance = descriptor.getPsiElement();
+            var myFactory = RefactoringFactory.getInstance(project);
+
+            //PyReference expression is not a PsiNamedElement, nor does it have writeable metadata
+
             //  var references = instance.getReferences();
             //does not get all references
 //            PsiElement parentOfType = PsiTreeUtil.getParentOfType(instance, instance.getClass());
@@ -88,11 +95,25 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
 //            var references = instance.getReferences();//Does not get references
             //            var usages = myRefactoring.findUsages();//Does not find any usages
 //
-            var myFactory = RefactoringFactory.getInstance(project);
-            PsiNamedElement namedElement = PsiTreeUtil.getParentOfType(instance, PsiNamedElement.class);
-            var myRefactoring = myFactory.createRename((PsiElement) namedElement, instance.getText() + "_1",
-                    true, true);
-            myRefactoring.run();
+
+            //  PsiNamedElement namedElement = PsiTreeUtil.getParentOfType(instance, PsiNamedElement.class);
+
+//            var myRefactoring = myFactory.createRename((PsiElement) instance, instance.getText() + "_1",
+//                    true, true);
+//            var usages = myRefactoring.findUsages();
+//            var processor = RenamePyElementProcessor.forElement(instance);
+//            processor.renameElement(instance, instance.getText()+"_1", usages,null);
+//
+
+
+//
+//            ApplicationManager.getApplication().executeOnPooledThread(()->{
+//                ApplicationManager.getApplication().invokeLater(()->{
+//                    myRefactoring.run();
+//                });
+//            });
+
+
 //            CommandProcessor.getInstance().executeCommand(project, new Runnable() {
 //                @Override
 //                public void run() {
@@ -121,7 +142,17 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
             var lineNumber = descriptor.getLineNumber();
 
             int offset = document.getLineStartOffset(lineNumber);
-            //   document.replaceString(instance.getTextOffset(), instance.getTextOffset() + instance.getTextLength(), instance.getText() + "_1");
+        //    document.replaceString(instance.getTextOffset(), instance.getTextOffset() + instance.getTextLength(), instance.getText() + "_1");
+
+            for (int i = 0; i < multiTestLeakageInstances.size(); i++) {
+                //Doesn't always reload contents of document from disk
+                var inst = multiTestLeakageInstances.get(i);
+                var line = inst.lineNumber()-1;
+                var lineTextRange = DocumentUtil.getLineTextRange(document, line);
+                var lineContent = document.getText(lineTextRange);
+                var newStr = lineContent.replace(instance.getText(), instance.getText() + "_" + i);
+                document.replaceString(document.getLineStartOffset(line),document.getLineEndOffset(line),newStr);
+            }
 
         }
     }

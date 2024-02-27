@@ -42,8 +42,6 @@ public class OverlapLeakageInstance implements LeakageInstance {
         return type;
     }
 
-
-
     @Override
     public boolean equals(Object obj){
         return this.lineNumber() == ((OverlapLeakageInstance)obj).lineNumber()

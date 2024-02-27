@@ -26,7 +26,7 @@ public class MultiTestLeakageInstance implements LeakageInstance {
         return lineNumber;
     }
 
-        @Override
+    @Override
     public LeakageType type() {
         return type;
     }
@@ -38,6 +38,12 @@ public class MultiTestLeakageInstance implements LeakageInstance {
 
     @Override
     public LeakageSource getLeakageSource() {
-       return null;
+        return null;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        return this.lineNumber() == ((MultiTestLeakageInstance)obj).lineNumber()
+                &&this.invocation.getNumber() == ((MultiTestLeakageInstance)obj).invocation().getNumber();
     }
 }

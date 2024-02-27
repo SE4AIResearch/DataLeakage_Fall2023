@@ -11,5 +11,7 @@ public interface LeakageInstance {
 
     LeakageSource getLeakageSource();
 
+    @Override
+    boolean equals(Object other);
 
 }
