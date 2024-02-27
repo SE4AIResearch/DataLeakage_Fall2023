@@ -21,6 +21,7 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
 
     public abstract Predicate<T> leakageInstanceIsAssociatedWithNode(@NotNull PsiElement node);
 
+    public abstract List<T> getLeakageInstances();
 
     public boolean leakageIsAssociatedWithNode(List<T> leakageInstances, @NotNull PsiElement node) {
         return leakageInstances.stream().anyMatch(leakageInstanceIsAssociatedWithNode(node));

@@ -60,6 +60,11 @@ public class OverlapLeakageInstanceVisitor extends InstanceElementVisitor<Overla
     }
 
     @Override
+    public List<OverlapLeakageInstance> getLeakageInstances() {
+        return overlapLeakageInstances;
+    }
+
+    @Override
     public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {
 
         renderInspectionOnLeakageInstance(overlapLeakageInstances, node, myQuickFix);
