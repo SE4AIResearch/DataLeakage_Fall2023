@@ -5,7 +5,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.TaintLabel;
 
 public class PreprocessingLeakageInstance implements LeakageInstance {
-    private final String test;
+    private final String train;
     private final int lineNumber;
     private final LeakageType type;
     private final Invocation invocation;
@@ -15,13 +15,10 @@ public class PreprocessingLeakageInstance implements LeakageInstance {
         this.lineNumber = lineNumber;
         this.type = LeakageType.PreprocessingLeakage;
         this.invocation = invocation;
-        this.test = Utils.getTrainFromPreprocessingLeakTelemetryFile();
+        this.train = Utils.getTrainFromPreprocessingLeakTelemetryFile();
         this.leakageSource = new LeakageSource(this.type);
     }
 
-    public String test() {
-        return test;
-    }
 
     @Override
     public int lineNumber() {
@@ -36,6 +33,11 @@ public class PreprocessingLeakageInstance implements LeakageInstance {
     @Override
     public Invocation invocation() {
         return invocation;
+    }
+
+    @Override
+    public String variableName() {
+        return train;
     }
 
     public LeakageSource getLeakageSource() {

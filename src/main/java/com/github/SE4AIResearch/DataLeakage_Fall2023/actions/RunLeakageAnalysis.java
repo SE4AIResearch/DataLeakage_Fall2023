@@ -86,21 +86,29 @@ public class RunLeakageAnalysis extends AnAction {
       }
 
       if (fileType != null && fileType.getName().equals("Python")) { // check that the file is a python file
-
          VirtualFile finalFile = file;
          Runnable runLeakage = new Runnable() {
             public void run() {
                ProgressIndicator indicator = ProgressManager.getInstance().getProgressIndicator();
 
-               if (!connectClient.checkImageOnMachine()) {
-                  try {
-                     indicator.setText("Pulling the leakage-analysis docker image");
-                     indicator.setText2("Pulling");
-                     connectClient.pullImage();
-                     indicator.setFraction(0.5);
-                  } catch (InterruptedException e) {
-                     throw new RuntimeException(e);
+               try {
+                  if (!connectClient.checkImageOnMachine()) {
+                     try {
+                        indicator.setText("Pulling the leakage-analysis docker image");
+                        indicator.setText2("Pulling");
+                        connectClient.pullImage();
+                        indicator.setFraction(0.5);
+                     } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                     }
                   }
+               } catch (UnsatisfiedLinkError | NoClassDefFoundError e) {
+                  Messages.showErrorDialog(
+                        getProjectForFile(file),
+                        "Please start the Docker Engine before running leakage analysis.",
+                        ""
+                  );
+                  return;
                }
 
 //               if (indicator.isCanceled()) { throw new ProcessCanceledException(); }
@@ -141,7 +149,6 @@ public class RunLeakageAnalysis extends AnAction {
 
                indicator.stop();
             }
-
          };
 
          ProgressManager.getInstance().runProcessWithProgressSynchronously(
@@ -153,13 +160,7 @@ public class RunLeakageAnalysis extends AnAction {
 
       }
 
-      //  Remove this once the progress indicator is done
-//      Messages.showMessageDialog(
-//            getProjectForFile(file),
-//            "Leakage Analysis Complete.",
-//            "",
-//            Messages.getInformationIcon());
-
       LeakageNotifier.notifyInformation(currentProject, "Leakage Analysis Complete.");
    }
 }
+
