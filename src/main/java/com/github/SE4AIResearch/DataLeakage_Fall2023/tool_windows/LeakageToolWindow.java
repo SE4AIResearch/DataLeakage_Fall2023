@@ -236,6 +236,9 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             summaryTableModel.addRow(row);
          }
 
+         // Mouse listener for line number navigation
+         MyTableMouseListener myTableMouseListener = new MyTableMouseListener(instanceTable, project);
+         instanceTable.addMouseListener(myTableMouseListener);
 
          // Refresh table view
          summaryTable.revalidate();
