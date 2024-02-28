@@ -43,6 +43,8 @@ public class LeakageSource {
             return LeakageCause.SplitBeforeSample;
         } else if (taints.stream().allMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("flow"))) {
             return LeakageCause.DataAugmentation;
+        }else if (taints.stream().allMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("select"))) {
+            return LeakageCause.UsingTestDataForFeatureSelection;
         }
         return LeakageCause.unknown;
     }
