@@ -122,9 +122,6 @@ public class ConnectClient {
         dockerClient.startContainerCmd(containerId).exec();
         close(containerId);
 
-        // Save file
-        FileDocumentManager.getInstance().reloadFiles((event.getData(LangDataKeys.EDITOR)).getVirtualFile());
-
         // Return the ID of the newly created container
         return true;
     }
