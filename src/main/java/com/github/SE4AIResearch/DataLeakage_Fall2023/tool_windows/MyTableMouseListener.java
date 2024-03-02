@@ -25,11 +25,19 @@ public class MyTableMouseListener extends MouseInputAdapter {
 
    @Override
    public void mouseClicked(MouseEvent e) {
-      int row = table.rowAtPoint(e.getPoint());
-      int column = table.columnAtPoint(e.getPoint());
+      int row, column, cellValueInt;
+
+      row = table.rowAtPoint(e.getPoint());
+      column = table.columnAtPoint(e.getPoint());
       DefaultTableModel model = (DefaultTableModel) table.getModel();
-      String cellValue = (String) model.getValueAt(row, column);
-      int cellValueInt = Integer.parseInt(cellValue); // TODO this can result in NumberFormatException must be fixed
+
+      // If the selected cell isn't a valid number do nothing
+      try {
+         String cellValue = (String) model.getValueAt(row, column);
+         cellValueInt = Integer.parseInt(cellValue);
+      } catch (NumberFormatException | ArrayIndexOutOfBoundsException err) {
+         return;
+      }
 
       if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
          if (row >= 0 && column >= 0) {
