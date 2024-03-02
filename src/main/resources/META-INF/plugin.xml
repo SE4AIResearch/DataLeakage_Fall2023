@@ -16,6 +16,8 @@
 
     <resource-bundle>messages.MyBundle</resource-bundle>
     <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="Leakage Notification Group"
+                           displayType="BALLOON"/>
         <localInspection language="Python"
                          groupPath="Python"
                          groupName="LeakageInspections"
