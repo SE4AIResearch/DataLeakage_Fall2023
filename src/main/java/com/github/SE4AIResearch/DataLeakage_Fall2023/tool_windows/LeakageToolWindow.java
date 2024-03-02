@@ -2,6 +2,7 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.tool_windows;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAnalysis;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
 import com.intellij.ide.DataManager;
@@ -27,6 +28,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 // implementing DumbAware makes the tool window not available until indexing is complete
@@ -96,8 +98,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
 //         contentPanel.add(createToolBarPanel());
 
-         contentPanel.add(createSummaryPanel(), BorderLayout.NORTH);
-         contentPanel.add(createInstancePanel(), BorderLayout.CENTER);
+         contentPanel.add(createSummaryPanel(new String[] {"Leakage Type", "Leakage Count", "Information on Leakage Type"}), BorderLayout.NORTH);
+         contentPanel.add(createInstancePanel(new String[]  {"Leakage Type", "Line Number", "Variable Associated", "Cause"}), BorderLayout.CENTER);
 
 //         contentPanel.add(createInfoPanel(), BorderLayout.CENTER);
 
@@ -161,10 +163,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       }
 
       @NotNull
-      private JPanel createSummaryPanel() {
+      private JPanel createSummaryPanel(String[] columnNames) {
          JPanel summaryPanel = new JPanel(new BorderLayout());
-
-         String[] columnNames = {"Leakage Type", "Leakage Count", "Information on Leakage Type"};
          summaryTableModel = new DefaultTableModel(columnNames, 3) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -190,10 +190,9 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       }
 
       @NotNull
-      private JPanel createInstancePanel() {
+      private JPanel createInstancePanel(String[] columnNames) {
          JPanel instancesPanel = new JPanel(new BorderLayout());
 
-         String[] columnNames = {"Leakage Type", "Line Number", "Variable Associated"};
          instanceTableModel = new DefaultTableModel(columnNames, 3) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -247,26 +246,44 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
       private Object[][] fetchInstanceData() {
          // for instance it is type, line number, variable name
-         Object[][] data;
+         ArrayList<String[]> data;
          LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
          List<LeakageInstance> leakageInstances = leakageAnalysisParser.LeakageInstances();
          int row = leakageInstances.size();
-         int col = 3;
+         int col = instanceTableModel.getColumnCount();
 
          if (row == 0) {
-            return new String[1][3];
+            return new String[1][4];
          }
 
-         data = new String[row][col];
+          data = new ArrayList<>();
 
-         for (int i = 0; i < leakageInstances.size(); i++) {
-            LeakageInstance instance = leakageInstances.get(i);
-            data[i][0] = instance.type().toString();
-            data[i][1] = String.valueOf(instance.lineNumber());
-            data[i][2] = instance.variableName();
+//         {"Leakage Type", "Line Number", "Variable Associated", "Cause"}
+
+         int curRow = 0;
+         for (LeakageInstance instance : leakageInstances) {
+            String[] newDataRow = new String[col];
+            LeakageSource source = instance.getLeakageSource();
+
+            newDataRow[0] = instance.type().toString(); // Leakage Type
+            newDataRow[1] = String.valueOf(instance.lineNumber()); //Line Number
+            newDataRow[2] = instance.variableName(); // Variable Associated
+            newDataRow[3] = source.getCause().name(); // Cause
+
+            data.add(curRow, newDataRow);
+            curRow++;
+
+            for (int i = 0; i < source.getLineNumbers().size(); i++) {
+               String[] subDataRow = newDataRow.clone();
+               subDataRow[1] = source.getLineNumbers().get(i).toString();
+               data.add(curRow, subDataRow);
+               curRow++;
+
+            }
+
          }
 
-         return data;
+         return data.toArray(String[][]::new); // Convert data arraylist to array
       }
 
       private Object[][] fetchSummaryData() {
