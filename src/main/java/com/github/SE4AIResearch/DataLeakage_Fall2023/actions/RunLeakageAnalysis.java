@@ -36,8 +36,6 @@ public class RunLeakageAnalysis extends AnAction {
 
    private boolean isCompleted = false;
 
-   private boolean isCompleted = false;
-
    private static Project getProjectForFile(VirtualFile file) {
       Project project = null;
       if (file != null) {

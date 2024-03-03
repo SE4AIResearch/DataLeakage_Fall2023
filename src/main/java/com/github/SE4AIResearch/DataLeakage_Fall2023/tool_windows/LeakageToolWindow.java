@@ -23,10 +23,15 @@ import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -98,8 +103,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
 //         contentPanel.add(createToolBarPanel());
 
-         contentPanel.add(createSummaryPanel(new String[] {"Leakage Type", "Leakage Count", "Information on Leakage Type"}), BorderLayout.NORTH);
-         contentPanel.add(createInstancePanel(new String[]  {"Leakage Type", "Line Number", "Variable Associated", "Cause"}), BorderLayout.CENTER);
+         contentPanel.add(createSummaryPanel(new String[]{"Leakage Type", "Leakage Count", "Information on Leakage Type"}), BorderLayout.NORTH);
+         contentPanel.add(createInstancePanel(new String[]{"Leakage Type", "Line Number", "Variable Associated", "Cause"}), BorderLayout.CENTER);
 
 //         contentPanel.add(createInfoPanel(), BorderLayout.CENTER);
 
@@ -178,8 +183,6 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          summaryTable.setValueAt("Multi-Test", 1, 0);
          summaryTable.setValueAt("Overlap", 2, 0);
 
-         // TODO Make links work
-//         summaryTable.getColumn(2).setCellRenderer();
 
          JBScrollPane scrollPane = new JBScrollPane(summaryTable);
          scrollPane.setBorder(BorderFactory.createTitledBorder("Leakage Summary"));
@@ -187,6 +190,45 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          summaryPanel.add(scrollPane, BorderLayout.CENTER);
 
          return summaryPanel;
+      }
+
+      private static JPanel createNewInfoPanel() {
+
+         JPanel panel = new JPanel(new BorderLayout());
+
+         JBLabel multi = createNewLinkLabel("Multi-Test Leakage Info", "https://se4airesearch.github.io/DataLeakage_Website_Fall2023/pages/leakage/multi-test/");
+         JBLabel preprop = createNewLinkLabel("Preprocessing Leakage Info", "https://se4airesearch.github.io/DataLeakage_Website_Fall2023/pages/leakage/preprocessing/");
+         JBLabel overlap = createNewLinkLabel("Overlap Leakage Info", "https://se4airesearch.github.io/DataLeakage_Website_Fall2023/pages/leakage/overlap/");
+
+
+         panel.add(multi, BorderLayout.NORTH);
+         panel.add(preprop, BorderLayout.CENTER);
+         panel.add(overlap, BorderLayout.SOUTH);
+
+         return panel;
+      }
+
+      private static JBLabel createNewLinkLabel(String name, String url) {
+         JBLabel label = new JBLabel("<html><u>" + name + "</u></html>");
+         label.setForeground(Color.LIGHT_GRAY);
+         label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+         label.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+               openWebpage(url);
+            }
+         });
+
+         return label;
+      }
+
+      private static void openWebpage(String url) {
+         try {
+            Desktop.getDesktop().browse(URI.create(url));
+         } catch (Exception e) {
+            return;
+         }
       }
 
       @NotNull
@@ -206,6 +248,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          scrollPane.setBorder(BorderFactory.createTitledBorder("Leakage Instances"));
 
          instancesPanel.add(scrollPane, BorderLayout.CENTER);
+
+         instancesPanel.add(createNewInfoPanel(), BorderLayout.SOUTH);
 
          return instancesPanel;
       }
@@ -256,7 +300,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             return new String[1][4];
          }
 
-          data = new ArrayList<>();
+         data = new ArrayList<>();
 
 //         {"Leakage Type", "Line Number", "Variable Associated", "Cause"}
 
@@ -268,19 +312,20 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             newDataRow[0] = instance.type().toString(); // Leakage Type
             newDataRow[1] = String.valueOf(instance.lineNumber()); //Line Number
             newDataRow[2] = instance.variableName(); // Variable Associated
-            newDataRow[3] = source.getCause().name(); // Cause
+            if (source != null) {
+               newDataRow[3] = source.getCause().name(); // Cause
+            }
 
             data.add(curRow, newDataRow);
             curRow++;
-
-            for (int i = 0; i < source.getLineNumbers().size(); i++) {
-               String[] subDataRow = newDataRow.clone();
-               subDataRow[1] = source.getLineNumbers().get(i).toString();
-               data.add(curRow, subDataRow);
-               curRow++;
-
+            if (source != null) {
+               for (int i = 0; i < source.getLineNumbers().size(); i++) {
+                  String[] subDataRow = newDataRow.clone();
+                  subDataRow[1] = source.getLineNumbers().get(i).toString();
+                  data.add(curRow, subDataRow);
+                  curRow++;
+               }
             }
-
          }
 
          return data.toArray(String[][]::new); // Convert data arraylist to array
