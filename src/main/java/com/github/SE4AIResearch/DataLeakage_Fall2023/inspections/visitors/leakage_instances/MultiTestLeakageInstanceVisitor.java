@@ -56,7 +56,7 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
     public Predicate<MultiTestLeakageInstance> leakageInstanceIsAssociatedWithNode(@NotNull PsiElement node) {
 
         return instance -> (instance.lineNumber() == PsiUtils.getNodeLineNumber(node, holder))
-                && Objects.equals(instance.test(), node.getText()
+                && Objects.equals(instance.variableName(), node.getText()
         );
 
     }
