@@ -17,6 +17,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectLocator;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.util.ui.JBSwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,8 +35,24 @@ public class RunLeakageAnalysis extends AnAction {
 
    private final ConnectClient connectClient = new ConnectClient();
    private final FileChanger fileChanger = new FileChanger();
-
    private boolean isCompleted = false;
+   private Project project;
+
+   /**
+    * Constructor when created from the IDE (plugin.xml)
+    */
+   public RunLeakageAnalysis() {
+      super("Run Leakage Analysis");
+   }
+
+   /**
+    * Constructor when created from someplace other than the IDE such as a tool window
+    * @param project
+    */
+   public RunLeakageAnalysis(Project project) {
+      super("Run Leakage Analysis");
+      this.project = project;
+   }
 
    private static Project getProjectForFile(VirtualFile file) {
       Project project = null;
@@ -57,125 +75,131 @@ public class RunLeakageAnalysis extends AnAction {
 
    @Override
    public void actionPerformed(@NotNull AnActionEvent event) {
-      Project currentProject = null;
-      VirtualFile file = null;
-//        try {
-//             file = event.getData(LangDataKeys.EDITOR).getVirtualFile();
-//        } catch (NullPointerException e) {
-//            Document currentDoc = FileEditorManager.getInstance(event.getData(LangDataKeys.EDITOR).getProject()).getSelectedTextEditor().getDocument();
-//             file = FileDocumentManager.getInstance().getFile(currentDoc);
-//
-//        }
-
-      try {
-         currentProject = event.getData(LangDataKeys.EDITOR).getProject();
-      } catch (NullPointerException e) {
+      if (this.project == null) {
+         try {
+            this.project = event.getProject();
+         } catch (NullPointerException e) {
 //            LeakageNotifier.notifyNotLoaded("Please wait until the project is fully loaded before checking for data leakage");
-         Messages.showMessageDialog(
-               "Please wait until the Python file is fully loaded before checking for data leakage.",
-               "",
-               Messages.getInformationIcon());
+            Messages.showMessageDialog(
+                  "Please wait until the Python file is fully loaded before checking for data leakage.",
+                  "",
+                  Messages.getInformationIcon());
+         }
       }
 
-      try {
-         file = event.getData(LangDataKeys.EDITOR).getVirtualFile();
-      } catch (NullPointerException e) {
-         LeakageNotifier.notifyError(currentProject, "Must open a python file to run leakage analysis");
-      }
+      runAnalysis();
+   }
 
+   private void runAnalysis() {
+      VirtualFile file = null;
+      String fileName;
       FileType fileType = null;
+
+      FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
+
+      // Get the currently selected or open file
+      VirtualFile[] selectedFiles = fileEditorManager.getSelectedFiles();
+      if (selectedFiles.length > 0) {
+         file = selectedFiles[0];
+      } else {
+         LeakageNotifier.notifyError(project, "Must open a python file to run leakage analysis");
+      }
 
       if (file != null) {
          fileType = file.getFileType();
+         fileName = file.getName();
+      } else {
+         fileName = "";
       }
 
       if (fileType != null && fileType.getName().equals("Python")) { // check that the file is a python file
-         VirtualFile finalFile = file;
-         Project finalCurrentProject = currentProject;
-         Runnable runLeakage = () -> {
-            ProgressIndicator indicator = ProgressManager.getInstance().getProgressIndicator();
-
-            try {
-               if (!connectClient.checkImageOnMachine()) {
-                  try {
-                     indicator.setText("Pulling the leakage-analysis docker image");
-                     indicator.setText2("Pulling");
-                     connectClient.pullImage();
-                     indicator.setFraction(0.5);
-                  } catch (InterruptedException e) {
-                     throw new RuntimeException(e);
-                  }
-               }
-            } catch (UnsatisfiedLinkError | NoClassDefFoundError e) {
-
-               // Wrap UI call around runnable to invokeLater to prevent thread error
-               Runnable showMessage = () -> {
-                  // UI-related code here
-                  Messages.showErrorDialog(
-                        finalCurrentProject,
-                        "Please start the Docker Engine before running leakage analysis.",
-                        ""
-                  );
-               };
-
-               SwingUtilities.invokeLater(showMessage);
-
-               return;
-            }
-
-//               if (indicator.isCanceled()) { throw new ProcessCanceledException(); }
-
-            File tempDirectory;
-            String fileName;
-
-            try {
-               if (fileChanger.getTempDirectory() == null) {
-                  indicator.setText("Creating temporary directory");
-                  fileChanger.initializeTempDir();
-               } else {
-                  indicator.setText("Cleaning up temporary directory");
-                  fileChanger.clearTempDir();
-               }
-               indicator.setFraction(indicator.getFraction() + 0.1);
-
-               tempDirectory = fileChanger.getTempDirectory();
-
-               indicator.setText("Copying " + finalFile.getName() + " to temporary directory");
-               fileName = fileChanger.copyToTempDir(finalFile.getPath());
-               indicator.setFraction(indicator.getFraction() + 0.1);
-
-               String factFolderPath = tempDirectory.toPath().resolve(finalFile.getNameWithoutExtension() + "-fact").toString();
-               LeakageOutput.setFactFolderPath(Paths.get(tempDirectory.getCanonicalPath(), finalFile.getNameWithoutExtension()) + "-fact");
-            } catch (IOException e) {
-               throw new RuntimeException(e);
-            }
-
-            try {
-               indicator.setText("Running analysis");
-               indicator.setText2("Running");
-               connectClient.runLeakageAnalysis(tempDirectory, fileName, event);
-               indicator.setFraction(1);
-            } catch (InterruptedException e) {
-               throw new RuntimeException(e);
-            }
-            isCompleted = true;
-
-            indicator.stop();
-         };
-
          ProgressManager.getInstance().runProcessWithProgressSynchronously(
-               runLeakage,
-               "Running Data Leakage Analysis",
+               createRunnable(file),
+               "Running Data Leakage Analysis on " + fileName,
                false,
-               currentProject
+               project
          );
-
       }
 
       if (isCompleted) {
-         LeakageNotifier.notifyInformation(currentProject, "Leakage Analysis Complete.");
+         LeakageNotifier.notifyInformation(project, "Leakage Analysis Complete.");
+         ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Data Leakage Analysis");
+         // TODO IDK how to update the table from here honestly
       }
+   }
 
+   private Runnable createRunnable(VirtualFile file) {
+      String fileName = file.getName();
+      Runnable runLeakage = () -> {
+         ProgressIndicator indicator = ProgressManager.getInstance().getProgressIndicator();
+
+         try {
+            if (!connectClient.checkImageOnMachine()) {
+               try {
+                  indicator.setText("Pulling the leakage-analysis docker image");
+                  indicator.setText2("Pulling");
+                  connectClient.pullImage();
+                  indicator.setFraction(0.5);
+               } catch (InterruptedException e) {
+                  throw new RuntimeException(e);
+               }
+            }
+         } catch (UnsatisfiedLinkError | NoClassDefFoundError e) {
+
+            // Wrap UI call around runnable to invokeLater to prevent thread error
+            Runnable showMessage = () -> {
+               // UI-related code here
+               Messages.showErrorDialog(
+                     this.project,
+                     "Please start the Docker Engine before running leakage analysis.",
+                     ""
+               );
+            };
+
+            SwingUtilities.invokeLater(showMessage);
+
+            return;
+         }
+
+//               if (indicator.isCanceled()) { throw new ProcessCanceledException(); }
+
+         File tempDirectory;
+
+         try {
+            if (fileChanger.getTempDirectory() == null) {
+               indicator.setText("Creating temporary directory");
+               fileChanger.initializeTempDir();
+            } else {
+               indicator.setText("Cleaning up temporary directory");
+               fileChanger.clearTempDir();
+            }
+            indicator.setFraction(indicator.getFraction() + 0.1);
+
+            tempDirectory = fileChanger.getTempDirectory();
+
+            indicator.setText("Copying " + file.getName() + " to temporary directory");
+            fileChanger.copyToTempDir(file.getPath());
+            indicator.setFraction(indicator.getFraction() + 0.1);
+
+            String factFolderPath = tempDirectory.toPath().resolve(file.getNameWithoutExtension() + "-fact").toString();
+            LeakageOutput.setFactFolderPath(Paths.get(tempDirectory.getCanonicalPath(), file.getNameWithoutExtension()) + "-fact");
+         } catch (IOException e) {
+            throw new RuntimeException(e);
+         }
+
+         try {
+            indicator.setText("Running analysis on " + fileName);
+            indicator.setText2("Running");
+            connectClient.runLeakageAnalysis(tempDirectory, fileName);
+            indicator.setFraction(1);
+         } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+         }
+         isCompleted = true;
+
+         indicator.stop();
+      };
+      return runLeakage;
    }
 }
 

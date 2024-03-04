@@ -104,7 +104,7 @@ public class ConnectClient {
      * @param fileName - The name of the file to run the LAT on
      * @return String containing the container ID
      */
-    public Boolean runLeakageAnalysis(File filePath, String fileName, AnActionEvent event) throws InterruptedException {
+    public Boolean runLeakageAnalysis(File filePath, String fileName) throws InterruptedException {
         // Get the path to the file on the users machine
         String path2file = filePath.toString();
         List<String> commands = Arrays.asList("/execute/" + fileName, "-o");

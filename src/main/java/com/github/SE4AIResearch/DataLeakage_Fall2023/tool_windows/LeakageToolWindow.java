@@ -38,53 +38,22 @@ import java.util.List;
 
 // implementing DumbAware makes the tool window not available until indexing is complete
 public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
-
-   private final JPanel summaryPanel = new JPanel();
-   private final JPanel instancePanel = new JPanel();
+   private LeakageToolWindowContent toolWindowContent;
 
    @Override
    public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
-      LeakageToolWindowContent toolWindowContent = new LeakageToolWindowContent(project, toolWindow);
+      toolWindowContent = new LeakageToolWindowContent(project, toolWindow);
 
       JPanel contentPanel = new JPanel();
 
       contentPanel.setLayout(new BorderLayout(0, 5));
       contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
-//      contentPanel.add(SummaryPanelFactory.getPanel(toolWindow), BorderLayout.NORTH);
-//      contentPanel.add(InstancePanelFactory.getPanel(), BorderLayout.CENTER);
-
       contentPanel.add(toolWindowContent.createControlsPanel(toolWindow), BorderLayout.SOUTH);
 
       Content content = ContentFactory.getInstance().createContent(toolWindowContent.getContentPanel(), "", false);
       toolWindow.getContentManager().addContent(content);
    }
-
-   private void updatePanels() {
-      // get data for panels
-      int preProcessingCount = 0;
-      int multiTestCount = 0;
-      int overlapCount = 0;
-
-      LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
-      List<LeakageInstance> instances = leakageAnalysisParser.LeakageInstances();
-
-      ArrayList<String> instanceData = new ArrayList<>();
-      for (int i = 0; i < instances.size(); i++) {
-         LeakageInstance instance = instances.get(i);
-         instance.lineNumber();
-
-      }
-      for (LeakageInstance instance : instances) {
-         instance.lineNumber();
-         LeakageType leakageType = instance.type();
-
-      }
-
-//      SummaryPanelFactory.getPanel(toolWindow);
-   }
-
-   //TODO function to add or update content
 
    private class LeakageToolWindowContent {
 
@@ -118,42 +87,37 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          updateTableData();
       }
 
-      private JPanel createToolBarPanel() {
-         DefaultActionGroup actionGroup = new DefaultActionGroup();
-         actionGroup.add(new RunLeakageAnalysis());
-
-         ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("MyToolbar", actionGroup, true);
-         JPanel toolbarPanel = new JPanel();
-         toolbarPanel.add(toolbar.getComponent());
-         toolbar.setTargetComponent(toolbarPanel);
-
-         return toolbarPanel;
-      }
+//      private JPanel createToolBarPanel() {
+//         DefaultActionGroup actionGroup = new DefaultActionGroup();
+//         actionGroup.add(new RunLeakageAnalysis());
+//
+//         ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("MyToolbar", actionGroup, true);
+//         JPanel toolbarPanel = new JPanel();
+//         toolbarPanel.add(toolbar.getComponent());
+//         toolbar.setTargetComponent(toolbarPanel);
+//
+//         return toolbarPanel;
+//      }
 
       @NotNull
       private JPanel createControlsPanel(ToolWindow toolWindow) {
          JPanel controlsPanel = new JPanel();
-         JButton runAnalysisButton = new JButton("Refresh Table");
+         JButton runAnalysisButton = new JButton("Run Leakage Analysis");
+         JButton refreshTableButton = new JButton("Refresh Table");
 
-         runAnalysisButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-               // Call method to update table data
-               // TODO run analysis somehow
+         refreshTableButton.addActionListener(e -> updateTableData());
 
-//               DataContext dataContext =  DataManager.getInstance().getDataContext(toolWindow.getComponent());
-//               AnAction action = ActionManager.getInstance().getAction("com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAnalysis");
-//               if (action != null) {
-//                  AnActionEvent event = new AnActionEvent(
-//                        null, dataContext, "", action.getTemplatePresentation(), ActionManager.getInstance(), 0);
-//                  action.actionPerformed(event);
-//               }
+         runAnalysisButton.addActionListener(e -> {
+            DataContext dataContext = DataManager.getInstance().getDataContext(toolWindow.getComponent());
+            AnActionEvent actionEvent = AnActionEvent.createFromDataContext("MyAction", null, dataContext);
 
-               updateTableData();
-            }
+            new RunLeakageAnalysis(project).actionPerformed(actionEvent);
+
+            updateTableData();
          });
 
-         controlsPanel.add(runAnalysisButton);
+         controlsPanel.add(runAnalysisButton, BorderLayout.EAST);
+         controlsPanel.add(refreshTableButton, BorderLayout.WEST);
 
          return controlsPanel;
       }
@@ -254,7 +218,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          return instancesPanel;
       }
 
-      private void updateTableData() {
+      public void updateTableData() {
          // Update Instance
          instanceTable.removeAll();
          instanceTableModel.setRowCount(0);
