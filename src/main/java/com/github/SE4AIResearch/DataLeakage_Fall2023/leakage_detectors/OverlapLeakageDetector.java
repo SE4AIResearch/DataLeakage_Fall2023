@@ -62,7 +62,7 @@ public class OverlapLeakageDetector extends LeakageDetector {
                     var leakageInstance = new OverlapLeakageInstance(actualLineNumber, invocation);
 
                     var existingInstances = leakageInstances();
-                    if (!debug || !existingInstances.contains(leakageInstance)) {
+                    if (!existingInstances.contains(leakageInstance)) {
                         addLeakageInstance(leakageInstance);
                     }
 

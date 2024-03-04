@@ -2,6 +2,8 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 
+import java.util.Objects;
+
 public class MultiTestLeakageInstance implements LeakageInstance {
 
     private final String test;
@@ -47,5 +49,16 @@ public class MultiTestLeakageInstance implements LeakageInstance {
                 &&this.invocation.getNumber() == ((MultiTestLeakageInstance)obj).invocation().getNumber();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || getClass() != obj.getClass()) return false;
+        MultiTestLeakageInstance otherInstance = (MultiTestLeakageInstance) obj;
+        return this.lineNumber() == otherInstance.lineNumber()
+              && this.invocation().getNumber() == otherInstance.invocation().getNumber();
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.lineNumber(), this.invocation());
+    }
 }
