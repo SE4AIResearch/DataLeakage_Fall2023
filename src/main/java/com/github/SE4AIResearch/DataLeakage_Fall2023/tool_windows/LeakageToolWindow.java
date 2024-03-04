@@ -62,7 +62,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       private JBTable instanceTable;
       private DefaultTableModel instanceTableModel;
       private DefaultTableModel summaryTableModel;
-      private Project project;
+      private final Project project;
+      private List<LeakageInstance> leakageInstances;
 
       public LeakageToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
          this.project = project;
@@ -72,7 +73,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
 //         contentPanel.add(createToolBarPanel());
 
-         contentPanel.add(createSummaryPanel(new String[]{"Leakage Type", "Leakage Count", "Information on Leakage Type"}), BorderLayout.NORTH);
+         contentPanel.add(createSummaryPanel(new String[]{"Leakage Type", "Leakage Count"}), BorderLayout.NORTH);
          contentPanel.add(createInstancePanel(new String[]{"Leakage Type", "Line Number", "Variable Associated", "Cause"}), BorderLayout.CENTER);
 
 //         contentPanel.add(createInfoPanel(), BorderLayout.CENTER);
@@ -296,7 +297,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       }
 
       private Object[][] fetchSummaryData() {
-         Object[][] data = new String[3][3];
+         Object[][] data = new String[3][2];
          LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
          List<LeakageInstance> leakageInstances = leakageAnalysisParser.LeakageInstances();
          int preproc = 0, multitest = 0, overlap = 0;

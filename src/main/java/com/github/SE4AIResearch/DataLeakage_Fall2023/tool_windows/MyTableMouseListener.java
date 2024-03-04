@@ -50,7 +50,8 @@ public class MyTableMouseListener extends MouseInputAdapter {
    private void moveToLine(int lineNumber) {
       if (project != null) {
          Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
-         if (editor != null) {
+         int lineCount = editor != null ? editor.getDocument().getLineCount() : -1;
+         if (editor != null && lineCount >= lineNumber) {
             editor.getCaretModel().moveToLogicalPosition(editor.offsetToLogicalPosition(editor.getDocument().getLineStartOffset(lineNumber - 1)));
             editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
          }
