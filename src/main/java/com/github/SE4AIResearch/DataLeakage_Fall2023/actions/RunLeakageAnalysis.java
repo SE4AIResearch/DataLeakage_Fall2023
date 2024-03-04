@@ -3,17 +3,26 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.actions;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.ConnectClient;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.FileChanger;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.notifiers.LeakageNotifier;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.progress.PerformInBackgroundOption;
+import com.intellij.openapi.progress.ProcessCanceledException;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectLocator;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.util.ui.JBSwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -24,145 +33,173 @@ import static com.intellij.openapi.actionSystem.IdeActions.ACTION_INSPECT_CODE;
 
 public class RunLeakageAnalysis extends AnAction {
 
-    private ConnectClient connectClient = new ConnectClient();
-    private FileChanger fileChanger = new FileChanger();
+   private final ConnectClient connectClient = new ConnectClient();
+   private final FileChanger fileChanger = new FileChanger();
+   private boolean isCompleted = false;
+   private Project project;
 
-    private static Project getProjectForFile(VirtualFile file) {
-        Project project = null;
-        if (file != null) {
-            project = ProjectLocator.getInstance().guessProjectForFile(file);
-        }
-        return project;
-    }
+   /**
+    * Constructor when created from the IDE (plugin.xml)
+    */
+   public RunLeakageAnalysis() {
+      super("Run Leakage Analysis");
+   }
+
+   /**
+    * Constructor when created from someplace other than the IDE such as a tool window
+    * @param project
+    */
+   public RunLeakageAnalysis(Project project) {
+      super("Run Leakage Analysis");
+      this.project = project;
+   }
+
+   private static Project getProjectForFile(VirtualFile file) {
+      Project project = null;
+      if (file != null) {
+         project = ProjectLocator.getInstance().guessProjectForFile(file);
+      }
+      return project;
+   }
 
 
-    @Override
-    public @NotNull ActionUpdateThread getActionUpdateThread() {
-        return ActionUpdateThread.BGT;
-    }
+   @Override
+   public @NotNull ActionUpdateThread getActionUpdateThread() {
+      return ActionUpdateThread.BGT;
+   }
 
-    @Override
-    public void update(@NotNull AnActionEvent event) {
-        event.getPresentation().setEnabledAndVisible(true);
-    }
+   @Override
+   public void update(@NotNull AnActionEvent event) {
+      event.getPresentation().setEnabledAndVisible(true);
+   }
 
-    @Override
-    public void actionPerformed(@NotNull AnActionEvent event) {
-        Project currentProject = null;
-        VirtualFile file = null;
-//        try {
-//             file = event.getData(LangDataKeys.EDITOR).getVirtualFile();
-//        } catch (NullPointerException e) {
-//            Document currentDoc = FileEditorManager.getInstance(event.getData(LangDataKeys.EDITOR).getProject()).getSelectedTextEditor().getDocument();
-//             file = FileDocumentManager.getInstance().getFile(currentDoc);
-//
-//        }
-
-        try {
-            currentProject = event.getData(LangDataKeys.EDITOR).getProject();
-            file = event.getData(LangDataKeys.EDITOR).getVirtualFile();
-        } catch (NullPointerException e) {
+   @Override
+   public void actionPerformed(@NotNull AnActionEvent event) {
+      if (this.project == null) {
+         try {
+            this.project = event.getProject();
+         } catch (NullPointerException e) {
+//            LeakageNotifier.notifyNotLoaded("Please wait until the project is fully loaded before checking for data leakage");
             Messages.showMessageDialog(
+                  "Please wait until the Python file is fully loaded before checking for data leakage.",
+                  "",
+                  Messages.getInformationIcon());
+         }
+      }
 
-                    "Please wait until the Python file is fully loaded before checking for data leakage.",
-                    "",
-                    Messages.getInformationIcon());
-        }
+      runAnalysis();
+   }
 
+   private void runAnalysis() {
+      VirtualFile file = null;
+      String fileName;
+      FileType fileType = null;
 
-        FileType fileType = null;
+      FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
 
-        if (file != null) {
-            fileType = file.getFileType();
-        }
-        if (fileType != null && fileType.getName().equals("Python")) { // check that the saved file is a python file
+      // Get the currently selected or open file
+      VirtualFile[] selectedFiles = fileEditorManager.getSelectedFiles();
+      if (selectedFiles.length > 0) {
+         file = selectedFiles[0];
+      } else {
+         LeakageNotifier.notifyError(project, "Must open a python file to run leakage analysis");
+      }
 
-            try {
-                connectClient.checkThenPull();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+      if (file != null) {
+         fileType = file.getFileType();
+         fileName = file.getName();
+      } else {
+         fileName = "";
+      }
+
+      if (fileType != null && fileType.getName().equals("Python")) { // check that the file is a python file
+         ProgressManager.getInstance().runProcessWithProgressSynchronously(
+               createRunnable(file),
+               "Running Data Leakage Analysis on " + fileName,
+               false,
+               project
+         );
+      }
+
+      if (isCompleted) {
+         LeakageNotifier.notifyInformation(project, "Leakage Analysis Complete.");
+         ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Data Leakage Analysis");
+         // TODO IDK how to update the table from here honestly
+      }
+   }
+
+   private Runnable createRunnable(VirtualFile file) {
+      String fileName = file.getName();
+      Runnable runLeakage = () -> {
+         ProgressIndicator indicator = ProgressManager.getInstance().getProgressIndicator();
+
+         try {
+            if (!connectClient.checkImageOnMachine()) {
+               try {
+                  indicator.setText("Pulling the leakage-analysis docker image");
+                  indicator.setText2("Pulling");
+                  connectClient.pullImage();
+                  indicator.setFraction(0.5);
+               } catch (InterruptedException e) {
+                  throw new RuntimeException(e);
+               }
             }
+         } catch (UnsatisfiedLinkError | NoClassDefFoundError e) {
 
-            File tempDirectory;
-            String fileName;
-            try {
-                if (fileChanger.getTempDirectory() == null) {
-                    fileChanger.initializeTempDir();
-                } else {
-                    fileChanger.clearTempDir();
-                }
-                tempDirectory = fileChanger.getTempDirectory();
-                fileName = fileChanger.copyToTempDir(file.getPath());
-                String factFolderPath = tempDirectory.toPath().resolve(file.getNameWithoutExtension() + "-fact").toString();
-                LeakageOutput.setFactFolderPath(Paths.get(tempDirectory.getCanonicalPath(), file.getNameWithoutExtension()) + "-fact");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            // Wrap UI call around runnable to invokeLater to prevent thread error
+            Runnable showMessage = () -> {
+               // UI-related code here
+               Messages.showErrorDialog(
+                     this.project,
+                     "Please start the Docker Engine before running leakage analysis.",
+                     ""
+               );
+            };
+
+            SwingUtilities.invokeLater(showMessage);
+
+            return;
+         }
+
+//               if (indicator.isCanceled()) { throw new ProcessCanceledException(); }
+
+         File tempDirectory;
+
+         try {
+            if (fileChanger.getTempDirectory() == null) {
+               indicator.setText("Creating temporary directory");
+               fileChanger.initializeTempDir();
+            } else {
+               indicator.setText("Cleaning up temporary directory");
+               fileChanger.clearTempDir();
             }
+            indicator.setFraction(indicator.getFraction() + 0.1);
 
-            if (tempDirectory != null && fileName != null) {
-                try {
-                    connectClient.runLeakageAnalysis(tempDirectory, fileName, event);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            tempDirectory = fileChanger.getTempDirectory();
 
-        }
-        Messages.showMessageDialog(
-                getProjectForFile(file),
-                "Leakage Analysis Complete.",
-                "",
-                Messages.getInformationIcon());
+            indicator.setText("Copying " + file.getName() + " to temporary directory");
+            fileChanger.copyToTempDir(file.getPath());
+            indicator.setFraction(indicator.getFraction() + 0.1);
 
+            String factFolderPath = tempDirectory.toPath().resolve(file.getNameWithoutExtension() + "-fact").toString();
+            LeakageOutput.setFactFolderPath(Paths.get(tempDirectory.getCanonicalPath(), file.getNameWithoutExtension()) + "-fact");
+         } catch (IOException e) {
+            throw new RuntimeException(e);
+         }
 
-//        Project currentProject = event.getProject();
-//        StringBuilder message = new StringBuilder();
-//
-//        String projectPath = currentProject.getBasePath();
-//        final PsiFile psiFile =
-//                PsiDocumentManager.getInstance(currentProject).getPsiFile(   event.getData(PlatformDataKeys.EDITOR).getDocument());
-////
-////        PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
-//        String filePath = psiFile.getVirtualFile().getPath();
-//
-//        ConnectClient connectClient = new ConnectClient();
-//        FileChanger fileChanger = new FileChanger();
-//        try {
-//            String initOut = fileChanger.initializeTempDir();
-//            message.append(initOut);
-//            String copyOut = fileChanger.copyToTempDir(filePath);
-//            message.append(copyOut);
-//            File workingDir = fileChanger.getWorkingDirectory();
-//
-//            if (!connectClient.checkImageOnMachine()) {
-//                connectClient.pullImage();
-//            }
-//
-//            connectClient.runLeakageAnalysis(workingDir, copyOut);
-        //connectClient.close();
+         try {
+            indicator.setText("Running analysis on " + fileName);
+            indicator.setText2("Running");
+            connectClient.runLeakageAnalysis(tempDirectory, fileName);
+            indicator.setFraction(1);
+         } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+         }
+         isCompleted = true;
 
-//            boolean isDeleted = fileChanger.deleteTempDir();
-//            message.append(isDeleted);
-//            message.append("Before:");
-//            message.append(connectClient.checkImageOnMachine());
-//            message.append("\nPulling:");
-//            message.append(connectClient.pullImage());
-//            message.append("\nAfter:");
-//            message.append(connectClient.checkImageOnMachine());
-//            message.append(connectClient.listImages());
-//            connectClient.runLeakageAnalysis(filePath);
-//        } catch(Error e) {
-//            message.append(e);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-
-//        Messages.showMessageDialog(
-//                currentProject,
-//                message.toString(),
-//                "",
-//                Messages.getInformationIcon());
-    }
+         indicator.stop();
+      };
+      return runLeakage;
+   }
 }
+
