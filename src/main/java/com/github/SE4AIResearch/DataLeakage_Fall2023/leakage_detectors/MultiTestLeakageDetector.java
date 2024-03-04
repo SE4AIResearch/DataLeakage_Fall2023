@@ -58,7 +58,7 @@ public class MultiTestLeakageDetector extends LeakageDetector {
                     var leakageInstance = new MultiTestLeakageInstance(actualLineNumber, invocation);
 
                     var existingInstances = leakageInstances();
-                    if (!debug || !existingInstances.contains(leakageInstance)) {
+                    if (!existingInstances.contains(leakageInstance)) {
                         addLeakageInstance(leakageInstance);
                     }
 

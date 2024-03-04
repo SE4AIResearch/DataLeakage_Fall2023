@@ -16,6 +16,8 @@
 
     <resource-bundle>messages.MyBundle</resource-bundle>
     <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="Data Leakage Analysis" secondary="true" icon="AllIcons.Toolwindows.WebToolWindow" anchor="right"
+                    factoryClass="com.github.SE4AIResearch.DataLeakage_Fall2023.tool_windows.LeakageToolWindow"/>
         <notificationGroup id="Leakage Notification Group"
                            displayType="BALLOON"/>
         <localInspection language="Python"
@@ -63,19 +65,11 @@
     </extensions>
     
     <actions>
-<!--        <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.LeakageAnalysisAction"-->
-<!--                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.LeakageAnalysisAction" text="Run Leakage Analysis"-->
-<!--                description="Runs leakage analysis on currently open file">-->
-<!--            <add-to-group group-id="ToolsMenu" anchor="first"/>-->
-<!--        </action>-->
-<!--        <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.IPYNBAnalysis"-->
-<!--                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.IPYNBAnalysis" text="IPYNB Analysis"-->
-<!--                description="Run leakage analysis for IPYNB File">-->
-<!--            <add-to-group group-id="ToolsMenu" anchor=" first"/>-->
-<!--        </action>-->
         <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAnalysis"
-                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAnalysis" text="Check For Data Leakage"
-                description="Check for data leakage">
+                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAnalysis"
+                text="Check For Data Leakage"
+                description="Check for data leakage"
+                icon="AllIcons.Actions.Execute">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
     </actions>
