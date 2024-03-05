@@ -44,12 +44,6 @@ public class MultiTestLeakageInstance implements LeakageInstance {
     }
 
     @Override
-    public boolean equals(Object obj){
-        return this.lineNumber() == ((MultiTestLeakageInstance)obj).lineNumber()
-                &&this.invocation.getNumber() == ((MultiTestLeakageInstance)obj).invocation().getNumber();
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj == null || getClass() != obj.getClass()) return false;
         MultiTestLeakageInstance otherInstance = (MultiTestLeakageInstance) obj;
