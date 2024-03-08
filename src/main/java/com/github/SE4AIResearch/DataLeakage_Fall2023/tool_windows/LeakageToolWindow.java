@@ -141,9 +141,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             }
          };
 
-         DefaultActionGroup actionGroup = new DefaultActionGroup(
-               flexibleSpace,
-               helpAction);
+         DefaultActionGroup actionGroup = new DefaultActionGroup(helpAction);
          toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLWINDOW_TITLE, actionGroup, true);
          toolbar.setTargetComponent(targetPanel);
 
