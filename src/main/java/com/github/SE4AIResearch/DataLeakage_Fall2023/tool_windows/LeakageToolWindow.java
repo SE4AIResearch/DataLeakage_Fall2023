@@ -3,13 +3,15 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.tool_windows;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAnalysis;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.notifiers.LeakageNotifier;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.components.JBLabel;
@@ -50,24 +52,25 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
    private static class LeakageToolWindowContent {
 
-      private final JPanel contentPanel;
-      private JBTable summaryTable;
-      private JBTable instanceTable;
-      private DefaultTableModel instanceTableModel;
-      private DefaultTableModel summaryTableModel;
+
       private final Project project;
-      private List<LeakageInstance> leakageInstances;
+      private final JPanel contentPanel;
+      private JBLabel timeLabel, fileNameLabel;
+      private JBTable summaryTable, instanceTable;
+      private DefaultTableModel instanceTableModel, summaryTableModel;
       private int execTime;
-      private String formattedStartTime;
-      private JBLabel timeLabel;
+      private String formattedTimeString;
 
       public LeakageToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
          this.project = project;
          this.contentPanel = createContentPanel(toolWindow);
+//         this.timeLabel = new JBLabel();
+//         this.summaryTable = new JBTable();
+//         this.instanceTable = new JBTable();
+//         this.instanceTableModel = new DefaultTableModel();
+//         this.summaryTableModel = new DefaultTableModel();
          this.execTime = -1;
-         this.formattedStartTime = "";
-
-         // TODO declare everything in here
+         this.formattedTimeString = "";
 
          toolWindow.getComponent().add(contentPanel);
 
@@ -75,7 +78,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       }
 
       private JPanel createContentPanel(@NotNull ToolWindow toolWindow) {
-         JPanel mainPanel, summaryPanel, instancePanel, timePanel, controlsPanel;
+         JPanel mainPanel, summaryPanel, instancePanel, timePanel, controlsPanel, fileNamePanel;
          GridBagLayout layout;
          GridBagConstraints gbc;
          ActionToolbar toolbar;
@@ -89,6 +92,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
          summaryPanel = createSummaryPanel(new String[]{"Leakage Type", "Leakage Count"});
          instancePanel = createInstancePanel(new String[]{"Leakage Type", "Line Number", "Variable Associated", "Cause"});
+         fileNamePanel = createFileNamePanel();
          timePanel = createTimePanel();
          controlsPanel = createControlsPanel(toolWindow);
          JComponent toolbarComp = toolbar.getComponent();
@@ -98,9 +102,10 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          gbc.anchor = GridBagConstraints.EAST;
          GridAdder.addObject(toolbarComp, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
          gbc.fill = GridBagConstraints.BOTH;
-         GridAdder.addObject(summaryPanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 1);
+         GridAdder.addObject(summaryPanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0.15);
          GridAdder.addObject(instancePanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 1);
          gbc.fill = GridBagConstraints.HORIZONTAL;
+         GridAdder.addObject(fileNamePanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
          GridAdder.addObject(timePanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
          GridAdder.addObject(controlsPanel, mainPanel, layout, gbc, 0, row, 1, 1, 1, 0);
 
@@ -137,7 +142,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
             LocalDateTime now = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            formattedStartTime = now.format(formatter);
+            formattedTimeString = now.format(formatter);
 
             DataContext dataContext = DataManager.getInstance().getDataContext(toolWindow.getComponent());
             AnActionEvent actionEvent = AnActionEvent.createFromDataContext("Data Leakage Analysis", null, dataContext);
@@ -148,14 +153,32 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             this.execTime = (int) executionTimeSeconds;
 
             // Check to make sure a python file is open before updating the tables and time label
+            String fileName = getFileName();
+            if(fileName != null) {
+               update(fileName);
 
-            update();
+            }
          });
 
          controlsPanel.add(runAnalysisButton, BorderLayout.CENTER);
 //         controlsPanel.add(refreshTableButton, BorderLayout.WEST);
 
          return controlsPanel;
+      }
+
+      private String getFileName() {
+         VirtualFile file = null;
+         String fileName = null;
+
+         FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
+
+         // Get the currently selected or open file
+         VirtualFile[] selectedFiles = fileEditorManager.getSelectedFiles();
+         if (selectedFiles.length > 0) {
+            file = selectedFiles[0];
+            fileName = file.getName();
+         }
+         return fileName;
       }
 
       @NotNull
@@ -190,7 +213,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
       private void updateTimeLabel() {
          String newText = "Showing results from " +
-               this.formattedStartTime +
+               this.formattedTimeString +
                " | Analysis completed in " +
                execTime
                + " seconds";
@@ -198,11 +221,14 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          this.timeLabel.setText(newText);
       }
 
+      private void updateFileNamePanel(String fileName) {
+         String newText = "Analysis completed on " + fileName;
+         this.fileNameLabel.setText(newText);
+      }
+
       private JPanel createTimePanel() {
          JPanel panel = new JPanel(new BorderLayout());
-
          String labelString = "";
-
          JBLabel timeLabel = new JBLabel(labelString, SwingConstants.CENTER);
          this.timeLabel = timeLabel;
 
@@ -211,8 +237,15 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          return panel;
       }
 
-      private static JPanel createNewInfoPanel() {
+      private JPanel createFileNamePanel() {
+         JPanel panel = new JPanel(new BorderLayout());
+         String labelString = "";
+         this.fileNameLabel = new JBLabel(labelString, SwingConstants.CENTER);
+         panel.add(this.fileNameLabel);
+         return panel;
+      }
 
+      private static JPanel createNewInfoPanel() {
          JPanel panel = new JPanel(new BorderLayout());
 
          JBLabel multi = createNewLinkLabel("Multi-Test Leakage Info", "https://se4airesearch.github.io/DataLeakage_Website_Fall2023/pages/leakage/multi-test/");
@@ -270,9 +303,10 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          return instancesPanel;
       }
 
-      private void update() {
+      private void update(String fileName) {
          updateTableData();
          updateTimeLabel();
+         updateFileNamePanel(fileName);
       }
 
       private void updateTableData() {
