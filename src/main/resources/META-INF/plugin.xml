@@ -64,15 +64,16 @@
 
     </extensions>
     
-    <actions>
-        <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAnalysis"
-                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAnalysis"
-                text="Check For Data Leakage"
-                description="Check for data leakage"
-                icon="AllIcons.Actions.Execute">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
-        </action>
-    </actions>
+
+<!--    <actions>-->
+<!--        <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAction"-->
+<!--                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAction"-->
+<!--                text="Check For Data Leakage"-->
+<!--                description="Check for data leakage"-->
+<!--                icon="AllIcons.Actions.Execute">-->
+<!--            <add-to-group group-id="ToolsMenu" anchor="first"/>-->
+<!--        </action>-->
+<!--    </actions>-->
 
     <applicationListeners>
 <!--        <listener-->
