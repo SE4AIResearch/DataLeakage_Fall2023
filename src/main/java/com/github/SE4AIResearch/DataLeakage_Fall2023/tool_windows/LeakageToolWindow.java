@@ -3,52 +3,39 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.tool_windows;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAnalysis;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.popup.Balloon;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
-import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
-import com.intellij.ui.components.panels.HorizontalLayout;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 // implementing DumbAware makes the tool window not available until indexing is complete
 public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
-   private LeakageToolWindowContent toolWindowContent;
 
    @Override
    public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
-      toolWindowContent = new LeakageToolWindowContent(project, toolWindow);
+      LeakageToolWindowContent toolWindowContent = new LeakageToolWindowContent(project, toolWindow);
 
       JPanel contentPanel = new JPanel();
 
@@ -61,7 +48,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       toolWindow.getContentManager().addContent(content);
    }
 
-   private class LeakageToolWindowContent {
+   private static class LeakageToolWindowContent {
 
       private final JPanel contentPanel;
       private JBTable summaryTable;
@@ -187,7 +174,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       @NotNull
       private JPanel createControlsPanel(ToolWindow toolWindow) {
          JPanel controlsPanel = new JPanel();
-         JButton runAnalysisButton = new JButton("Run Leakage Analysis");
+         JButton runAnalysisButton = new JButton("Run Data Leakage Analysis");
 //         JButton refreshTableButton = new JButton("Refresh Table");
 
 //         refreshTableButton.addActionListener(e -> updateTableData());
@@ -200,7 +187,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             formattedStartTime = now.format(formatter);
 
             DataContext dataContext = DataManager.getInstance().getDataContext(toolWindow.getComponent());
-            AnActionEvent actionEvent = AnActionEvent.createFromDataContext("MyAction", null, dataContext);
+            AnActionEvent actionEvent = AnActionEvent.createFromDataContext("Data Leakage Analysis", null, dataContext);
             new RunLeakageAnalysis(project).actionPerformed(actionEvent);
 
             long endTime = System.currentTimeMillis();

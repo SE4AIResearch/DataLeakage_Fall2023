@@ -121,11 +121,10 @@ public class RunLeakageAnalysis extends AnAction {
          );
       }
 
-      if (isCompleted) {
-         LeakageNotifier.notifyInformation(project, "Leakage Analysis Complete.");
-         ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Data Leakage Analysis");
-         // TODO IDK how to update the table from here honestly
-      }
+//      if (isCompleted) {
+//         LeakageNotifier.notifyInformation(project, "Leakage Analysis Complete.");
+//         ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Data Leakage Analysis");
+//      }
    }
 
    private Runnable createRunnable(VirtualFile file) {
