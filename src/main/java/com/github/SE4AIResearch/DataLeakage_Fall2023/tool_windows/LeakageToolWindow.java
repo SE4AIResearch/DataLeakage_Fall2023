@@ -1,14 +1,14 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.tool_windows;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAnalysis;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAction;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.notifiers.LeakageNotifier;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -122,7 +122,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
                // Open Help site when button clicked
-               openWebpage("https://se4airesearch.github.io/DataLeakage_Website_Fall2023/pages/leakage/multi-test/");
+               openWebpage("https://se4airesearch.github.io/DataLeakage_Website_Fall2023/");
             }
          };
 
@@ -146,18 +146,18 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
             DataContext dataContext = DataManager.getInstance().getDataContext(toolWindow.getComponent());
             AnActionEvent actionEvent = AnActionEvent.createFromDataContext("Data Leakage Analysis", null, dataContext);
-            new RunLeakageAnalysis(project).actionPerformed(actionEvent);
+            new RunLeakageAction(project).actionPerformed(actionEvent);
 
             long endTime = System.currentTimeMillis();
             double executionTimeSeconds = (endTime - startTime) / 1000.0;
             this.execTime = (int) executionTimeSeconds;
 
             // Check to make sure a python file is open before updating the tables and time label
-            String fileName = getFileName();
+            String fileName = getOnlyPythonFileName();
             if(fileName != null) {
                update(fileName);
-
             }
+
          });
 
          controlsPanel.add(runAnalysisButton, BorderLayout.CENTER);
@@ -166,9 +166,10 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          return controlsPanel;
       }
 
-      private String getFileName() {
+      private String getOnlyPythonFileName() {
          VirtualFile file = null;
          String fileName = null;
+         FileType fileType = null;
 
          FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
 
@@ -177,7 +178,14 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          if (selectedFiles.length > 0) {
             file = selectedFiles[0];
             fileName = file.getName();
+            fileType = file.getFileType();
+            if(!fileType.getName().equals("Python")) {
+               return null;
+            }
          }
+
+
+
          return fileName;
       }
 

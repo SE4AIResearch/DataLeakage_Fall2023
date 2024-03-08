@@ -14,6 +14,10 @@ public class LeakageNotifier {
                 .notify(project);
     }
 
+    public static void mustBePython(Project project) {
+        notifyError(project, "Must open a python file to run leakage analysis");
+    }
+
     public static void notifyInformation(Project project, String content) {
         NotificationGroupManager.getInstance()
                 .getNotificationGroup(notifGroup)

@@ -5,33 +5,22 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.ConnectClient;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.FileChanger;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.notifiers.LeakageNotifier;
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.progress.PerformInBackgroundOption;
-import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectLocator;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.util.ui.JBSwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
 
-import static com.intellij.openapi.actionSystem.IdeActions.ACTION_INSPECT_CODE;
-
-public class RunLeakageAnalysis extends AnAction {
+public class RunLeakageAction extends AnAction {
 
    private final ConnectClient connectClient = new ConnectClient();
    private final FileChanger fileChanger = new FileChanger();
@@ -41,15 +30,16 @@ public class RunLeakageAnalysis extends AnAction {
    /**
     * Constructor when created from the IDE (plugin.xml)
     */
-   public RunLeakageAnalysis() {
+   public RunLeakageAction() {
       super("Run Leakage Analysis");
    }
 
    /**
     * Constructor when created from someplace other than the IDE such as a tool window
+    *
     * @param project
     */
-   public RunLeakageAnalysis(Project project) {
+   public RunLeakageAction(Project project) {
       super("Run Leakage Analysis");
       this.project = project;
    }
@@ -101,30 +91,26 @@ public class RunLeakageAnalysis extends AnAction {
       VirtualFile[] selectedFiles = fileEditorManager.getSelectedFiles();
       if (selectedFiles.length > 0) {
          file = selectedFiles[0];
-      } else {
-         LeakageNotifier.notifyError(project, "Must open a python file to run leakage analysis");
       }
 
-      if (file != null) {
-         fileType = file.getFileType();
-         fileName = file.getName();
-      } else {
-         fileName = "";
+      if (file == null) {
+         LeakageNotifier.mustBePython(project);
+         return;
       }
 
-      if (fileType != null && fileType.getName().equals("Python")) { // check that the file is a python file
+      fileType = file.getFileType();
+      fileName = file.getName();
+
+      if (fileType.getName().equals("Python")) { // check that the file is a python file
          ProgressManager.getInstance().runProcessWithProgressSynchronously(
                createRunnable(file),
                "Running Data Leakage Analysis on " + fileName,
                false,
                project
          );
+      } else {
+         LeakageNotifier.mustBePython(project);
       }
-
-//      if (isCompleted) {
-//         LeakageNotifier.notifyInformation(project, "Leakage Analysis Complete.");
-//         ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Data Leakage Analysis");
-//      }
    }
 
    private Runnable createRunnable(VirtualFile file) {

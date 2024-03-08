@@ -65,8 +65,8 @@
     </extensions>
     
 <!--    <actions>-->
-<!--        <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAnalysis"-->
-<!--                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAnalysis"-->
+<!--        <action id="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAction"-->
+<!--                class="com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAction"-->
 <!--                text="Check For Data Leakage"-->
 <!--                description="Check for data leakage"-->
 <!--                icon="AllIcons.Actions.Execute">-->
