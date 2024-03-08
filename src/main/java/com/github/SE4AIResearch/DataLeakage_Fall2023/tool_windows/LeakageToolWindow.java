@@ -87,29 +87,26 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          JPanel mainPanel, summaryPanel, instancePanel, timePanel, controlsPanel;
          GridBagLayout layout;
          GridBagConstraints gbc;
-         int toolWindowWidth;
+         int toolWindowWidth, row;
 
          toolWindowWidth = toolWindow.getComponent().getWidth();
          mainPanel = new JPanel();
          layout = new GridBagLayout();
          gbc = new GridBagConstraints();
          mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-         mainPanel.setBackground(JBColor.GREEN);
-         mainPanel.setPreferredSize(new Dimension(toolWindowWidth, mainPanel.getPreferredSize().height));
-
 
          summaryPanel = createSummaryPanel(new String[]{"Leakage Type", "Leakage Count"});
          instancePanel = createInstancePanel(new String[]{"Leakage Type", "Line Number", "Variable Associated", "Cause"});
          timePanel = createTimePanel();
          controlsPanel = createControlsPanel(toolWindow);
 
+         row = 0;
          gbc.fill = GridBagConstraints.BOTH;
-         GridAdder.addObject(summaryPanel, mainPanel, layout, gbc, 0, 0, 1, 1, 1, 0);
-//         gbc.fill = GridBagConstraints.HORIZONTAL;
-         GridAdder.addObject(instancePanel, mainPanel, layout, gbc, 0, 1, 1, 1, 1, 1);
-         GridAdder.addObject(timePanel, mainPanel, layout, gbc, 0, 2, 1, 1, 1, 0);
-         GridAdder.addObject(controlsPanel, mainPanel, layout, gbc, 0, 3, 1, 1, 1, 0);
-
+         GridAdder.addObject(summaryPanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
+         GridAdder.addObject(instancePanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 1);
+         gbc.fill = GridBagConstraints.HORIZONTAL;
+         GridAdder.addObject(timePanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
+         GridAdder.addObject(controlsPanel, mainPanel, layout, gbc, 0, row, 1, 1, 1, 0);
 
          mainPanel.setLayout(layout);
 
@@ -164,7 +161,9 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
       @NotNull
       private JPanel createSummaryPanel(String[] columnNames) {
-         JPanel summaryPanel = new JPanel(new BorderLayout());
+         JPanel summaryPanel;
+
+         summaryPanel = new JPanel(new BorderLayout());
          summaryTableModel = new DefaultTableModel(columnNames, 3) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -173,12 +172,15 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             }
          };
          summaryTable = new JBTable(summaryTableModel);
+         summaryTable.setPreferredScrollableViewportSize(new Dimension (2,3));
 
          summaryTable.setValueAt("Pre-Processing", 0, 0);
          summaryTable.setValueAt("Multi-Test", 1, 0);
          summaryTable.setValueAt("Overlap", 2, 0);
 
-         JBScrollPane scrollPane = new JBScrollPane(summaryTable);
+         JBScrollPane scrollPane = new JBScrollPane();
+         scrollPane.setViewportView(summaryTable);
+
          scrollPane.setBorder(BorderFactory.createTitledBorder("Leakage Summary"));
 
          summaryPanel.add(scrollPane, BorderLayout.CENTER);
