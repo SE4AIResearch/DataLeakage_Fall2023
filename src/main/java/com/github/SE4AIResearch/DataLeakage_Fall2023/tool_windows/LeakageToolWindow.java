@@ -5,12 +5,16 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
+import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.popup.Balloon;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.JBColor;
@@ -87,6 +91,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          JPanel mainPanel, summaryPanel, instancePanel, timePanel, controlsPanel;
          GridBagLayout layout;
          GridBagConstraints gbc;
+         ActionToolbar toolbar;
          int toolWindowWidth, row;
 
          toolWindowWidth = toolWindow.getComponent().getWidth();
@@ -94,15 +99,20 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          layout = new GridBagLayout();
          gbc = new GridBagConstraints();
          mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+         toolbar = createToolBar(mainPanel);
 
          summaryPanel = createSummaryPanel(new String[]{"Leakage Type", "Leakage Count"});
          instancePanel = createInstancePanel(new String[]{"Leakage Type", "Line Number", "Variable Associated", "Cause"});
          timePanel = createTimePanel();
          controlsPanel = createControlsPanel(toolWindow);
+         JComponent toolbarComp = toolbar.getComponent();
 
          row = 0;
+         gbc.fill = GridBagConstraints.HORIZONTAL;
+         gbc.anchor = GridBagConstraints.EAST;
+         GridAdder.addObject(toolbarComp, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
          gbc.fill = GridBagConstraints.BOTH;
-         GridAdder.addObject(summaryPanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
+         GridAdder.addObject(summaryPanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 1);
          GridAdder.addObject(instancePanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 1);
          gbc.fill = GridBagConstraints.HORIZONTAL;
          GridAdder.addObject(timePanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
@@ -113,18 +123,68 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          return mainPanel;
       }
 
+      private ActionToolbar createToolBar(JPanel targetPanel) {
+         ActionToolbar toolbar;
 
-//      private JPanel createToolBarPanel() {
-//         DefaultActionGroup actionGroup = new DefaultActionGroup();
-//         actionGroup.add(new RunLeakageAnalysis());
+         // Create a button with an IntelliJ icon
+         AnAction helpAction = new AnAction("Help", "Show help", AllIcons.General.ContextHelp) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+               // Show help message when button is clicked
+               Messages.showInfoMessage(
+                     project,
+                     "HELP MESSAGE",
+                     ""
+               );
+
+               openWebpage("https://se4airesearch.github.io/DataLeakage_Website_Fall2023/pages/leakage/multi-test/");
+            }
+         };
+
+         DefaultActionGroup actionGroup = new DefaultActionGroup(
+               flexibleSpace,
+               helpAction);
+         toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLWINDOW_TITLE, actionGroup, true);
+         toolbar.setTargetComponent(targetPanel);
+
+         return toolbar;
+      }
+
+//      private JButton createHelpButton() {
+//         JButton helpButton;
 //
-//         ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("MyToolbar", actionGroup, true);
-//         JPanel toolbarPanel = new JPanel();
-//         toolbarPanel.add(toolbar.getComponent());
-//         toolbar.setTargetComponent(toolbarPanel);
+//         helpButton = new JButton(AllIcons.General.ContextHelp);
 //
-//         return toolbarPanel;
+//         helpButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//               // Show help message when button is clicked TODO fix with a link action
+//               Messages.showErrorDialog(
+//                     project,
+//                     "HELP MESSAGE",
+//                     ""
+//               );
+//            }
+//         });
+//
+//         return helpButton;
 //      }
+//
+//      private static class myAction extends AnAction {
+//         private final JButton button;
+//
+//         public myAction(JButton button) {
+//            super("");
+//            this.button = button;
+//         }
+//
+//         @Override
+//         public void actionPerformed(@NotNull AnActionEvent e) {
+//            // Button's action performed
+//            button.doClick();
+//         }
+//      }
+
 
       @NotNull
       private JPanel createControlsPanel(ToolWindow toolWindow) {
@@ -172,7 +232,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             }
          };
          summaryTable = new JBTable(summaryTableModel);
-         summaryTable.setPreferredScrollableViewportSize(new Dimension (2,3));
+         summaryTable.setPreferredScrollableViewportSize(new Dimension(2, 3));
 
          summaryTable.setValueAt("Pre-Processing", 0, 0);
          summaryTable.setValueAt("Multi-Test", 1, 0);
