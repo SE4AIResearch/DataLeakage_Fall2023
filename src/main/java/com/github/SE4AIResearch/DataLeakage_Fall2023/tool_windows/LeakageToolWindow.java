@@ -117,13 +117,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          AnAction helpAction = new AnAction("Help", "Show help", AllIcons.General.ContextHelp) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
-               // Show help message when button is clicked
-               Messages.showInfoMessage(
-                     project,
-                     "HELP MESSAGE",
-                     ""
-               );
-
+               // Open Help site when button clicked
                openWebpage("https://se4airesearch.github.io/DataLeakage_Website_Fall2023/pages/leakage/multi-test/");
             }
          };
