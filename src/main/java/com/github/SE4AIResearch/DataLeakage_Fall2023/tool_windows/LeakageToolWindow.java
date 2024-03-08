@@ -32,6 +32,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +51,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       contentPanel.setLayout(new BorderLayout(0, 5));
       contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
-      contentPanel.add(toolWindowContent.createControlsPanel(toolWindow), BorderLayout.SOUTH);
+//      contentPanel.add(toolWindowContent.createControlsPanel(toolWindow), BorderLayout.SOUTH);
 
       Content content = ContentFactory.getInstance().createContent(toolWindowContent.getContentPanel(), "", false);
       toolWindow.getContentManager().addContent(content);
@@ -64,29 +66,56 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       private DefaultTableModel summaryTableModel;
       private final Project project;
       private List<LeakageInstance> leakageInstances;
+      private int execTime;
+      private String formattedStartTime;
+      private JBLabel timeLabel;
 
       public LeakageToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
          this.project = project;
-         contentPanel = new JPanel();
-         contentPanel.setLayout(new BorderLayout(0, 10));
-         contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+         this.contentPanel = createContentPanel(toolWindow);
+         this.execTime = -1;
+         this.formattedStartTime = "";
 
-//         contentPanel.add(createToolBarPanel());
+         // TODO declare everything in here
 
-         contentPanel.add(createSummaryPanel(new String[]{"Leakage Type", "Leakage Count"}), BorderLayout.NORTH);
-         contentPanel.add(createInstancePanel(new String[]{"Leakage Type", "Line Number", "Variable Associated", "Cause"}), BorderLayout.CENTER);
-
-//         contentPanel.add(createInfoPanel(), BorderLayout.CENTER);
-
-
-         JPanel southComponent = new JPanel();
-//         southComponent.add(createInfoPanel(), BorderLayout.NORTH);
-         southComponent.add(createControlsPanel(toolWindow), BorderLayout.CENTER);
-
-         contentPanel.add(southComponent, BorderLayout.SOUTH);
+         toolWindow.getComponent().add(contentPanel);
 
          updateTableData();
       }
+
+      private JPanel createContentPanel(@NotNull ToolWindow toolWindow) {
+         JPanel mainPanel, summaryPanel, instancePanel, timePanel, controlsPanel;
+         GridBagLayout layout;
+         GridBagConstraints gbc;
+         int toolWindowWidth;
+
+         toolWindowWidth = toolWindow.getComponent().getWidth();
+         mainPanel = new JPanel();
+         layout = new GridBagLayout();
+         gbc = new GridBagConstraints();
+         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+         mainPanel.setBackground(JBColor.GREEN);
+         mainPanel.setPreferredSize(new Dimension(toolWindowWidth, mainPanel.getPreferredSize().height));
+
+
+         summaryPanel = createSummaryPanel(new String[]{"Leakage Type", "Leakage Count"});
+         instancePanel = createInstancePanel(new String[]{"Leakage Type", "Line Number", "Variable Associated", "Cause"});
+         timePanel = createTimePanel();
+         controlsPanel = createControlsPanel(toolWindow);
+
+         gbc.fill = GridBagConstraints.BOTH;
+         GridAdder.addObject(summaryPanel, mainPanel, layout, gbc, 0, 0, 1, 1, 1, 0);
+//         gbc.fill = GridBagConstraints.HORIZONTAL;
+         GridAdder.addObject(instancePanel, mainPanel, layout, gbc, 0, 1, 1, 1, 1, 1);
+         GridAdder.addObject(timePanel, mainPanel, layout, gbc, 0, 2, 1, 1, 1, 0);
+         GridAdder.addObject(controlsPanel, mainPanel, layout, gbc, 0, 3, 1, 1, 1, 0);
+
+
+         mainPanel.setLayout(layout);
+
+         return mainPanel;
+      }
+
 
 //      private JPanel createToolBarPanel() {
 //         DefaultActionGroup actionGroup = new DefaultActionGroup();
@@ -104,32 +133,33 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       private JPanel createControlsPanel(ToolWindow toolWindow) {
          JPanel controlsPanel = new JPanel();
          JButton runAnalysisButton = new JButton("Run Leakage Analysis");
-         JButton refreshTableButton = new JButton("Refresh Table");
+//         JButton refreshTableButton = new JButton("Refresh Table");
 
-         refreshTableButton.addActionListener(e -> updateTableData());
+//         refreshTableButton.addActionListener(e -> updateTableData());
 
          runAnalysisButton.addActionListener(e -> {
+            long startTime = System.currentTimeMillis();
+
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            formattedStartTime = now.format(formatter);
+
             DataContext dataContext = DataManager.getInstance().getDataContext(toolWindow.getComponent());
             AnActionEvent actionEvent = AnActionEvent.createFromDataContext("MyAction", null, dataContext);
-
             new RunLeakageAnalysis(project).actionPerformed(actionEvent);
 
+            long endTime = System.currentTimeMillis();
+            double executionTimeSeconds = (endTime - startTime) / 1000.0;
+            this.execTime = (int) executionTimeSeconds;
+
             updateTableData();
+            updateTimeLabel();
          });
 
-         controlsPanel.add(runAnalysisButton, BorderLayout.EAST);
-         controlsPanel.add(refreshTableButton, BorderLayout.WEST);
+         controlsPanel.add(runAnalysisButton, BorderLayout.CENTER);
+//         controlsPanel.add(refreshTableButton, BorderLayout.WEST);
 
          return controlsPanel;
-      }
-
-      @NotNull
-      private JPanel createInfoPanel() {
-         JPanel infoPanel = new JPanel(new BorderLayout());
-         JBLabel moreInfo = new JBLabel("More information on types of Data Leakage can be found bellow");
-         infoPanel.add(moreInfo);
-
-         return infoPanel;
       }
 
       @NotNull
@@ -148,13 +178,36 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          summaryTable.setValueAt("Multi-Test", 1, 0);
          summaryTable.setValueAt("Overlap", 2, 0);
 
-
          JBScrollPane scrollPane = new JBScrollPane(summaryTable);
          scrollPane.setBorder(BorderFactory.createTitledBorder("Leakage Summary"));
 
          summaryPanel.add(scrollPane, BorderLayout.CENTER);
 
          return summaryPanel;
+      }
+
+
+      private void updateTimeLabel() {
+         String newText = "Showing results from " +
+               this.formattedStartTime +
+               " | Analysis completed in " +
+               execTime
+               + " seconds";
+
+         this.timeLabel.setText(newText);
+      }
+
+      private JPanel createTimePanel() {
+         JPanel panel = new JPanel(new BorderLayout());
+
+         String labelString = "";
+
+         JBLabel timeLabel = new JBLabel(labelString, SwingConstants.CENTER);
+         this.timeLabel = timeLabel;
+
+         panel.add(timeLabel);
+
+         return panel;
       }
 
       private static JPanel createNewInfoPanel() {
@@ -164,7 +217,6 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          JBLabel multi = createNewLinkLabel("Multi-Test Leakage Info", "https://se4airesearch.github.io/DataLeakage_Website_Fall2023/pages/leakage/multi-test/");
          JBLabel preprop = createNewLinkLabel("Preprocessing Leakage Info", "https://se4airesearch.github.io/DataLeakage_Website_Fall2023/pages/leakage/preprocessing/");
          JBLabel overlap = createNewLinkLabel("Overlap Leakage Info", "https://se4airesearch.github.io/DataLeakage_Website_Fall2023/pages/leakage/overlap/");
-
 
          panel.add(multi, BorderLayout.NORTH);
          panel.add(preprop, BorderLayout.CENTER);
@@ -213,8 +265,6 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          scrollPane.setBorder(BorderFactory.createTitledBorder("Leakage Instances"));
 
          instancesPanel.add(scrollPane, BorderLayout.CENTER);
-
-         instancesPanel.add(createNewInfoPanel(), BorderLayout.SOUTH);
 
          return instancesPanel;
       }
