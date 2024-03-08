@@ -79,9 +79,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          GridBagLayout layout;
          GridBagConstraints gbc;
          ActionToolbar toolbar;
-         int toolWindowWidth, row;
+         int row;
 
-         toolWindowWidth = toolWindow.getComponent().getWidth();
          mainPanel = new JPanel();
          layout = new GridBagLayout();
          gbc = new GridBagConstraints();
@@ -129,50 +128,10 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          return toolbar;
       }
 
-//      private JButton createHelpButton() {
-//         JButton helpButton;
-//
-//         helpButton = new JButton(AllIcons.General.ContextHelp);
-//
-//         helpButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//               // Show help message when button is clicked TODO fix with a link action
-//               Messages.showErrorDialog(
-//                     project,
-//                     "HELP MESSAGE",
-//                     ""
-//               );
-//            }
-//         });
-//
-//         return helpButton;
-//      }
-//
-//      private static class myAction extends AnAction {
-//         private final JButton button;
-//
-//         public myAction(JButton button) {
-//            super("");
-//            this.button = button;
-//         }
-//
-//         @Override
-//         public void actionPerformed(@NotNull AnActionEvent e) {
-//            // Button's action performed
-//            button.doClick();
-//         }
-//      }
-
-
       @NotNull
       private JPanel createControlsPanel(ToolWindow toolWindow) {
          JPanel controlsPanel = new JPanel();
          JButton runAnalysisButton = new JButton("Run Data Leakage Analysis");
-//         JButton refreshTableButton = new JButton("Refresh Table");
-
-//         refreshTableButton.addActionListener(e -> updateTableData());
-
          runAnalysisButton.addActionListener(e -> {
             long startTime = System.currentTimeMillis();
 
@@ -188,8 +147,9 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             double executionTimeSeconds = (endTime - startTime) / 1000.0;
             this.execTime = (int) executionTimeSeconds;
 
-            updateTableData();
-            updateTimeLabel();
+            // Check to make sure a python file is open before updating the tables and time label
+
+            update();
          });
 
          controlsPanel.add(runAnalysisButton, BorderLayout.CENTER);
@@ -310,7 +270,12 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          return instancesPanel;
       }
 
-      public void updateTableData() {
+      private void update() {
+         updateTableData();
+         updateTimeLabel();
+      }
+
+      private void updateTableData() {
          // Update Instance
          instanceTable.removeAll();
          instanceTableModel.setRowCount(0);
