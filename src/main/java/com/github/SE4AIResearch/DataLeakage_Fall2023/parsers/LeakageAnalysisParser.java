@@ -33,8 +33,7 @@ public class LeakageAnalysisParser {
         List<LeakageInstance> instances = new ArrayList<>();
         for (LeakageDetector detector : leakageDetectors) {
             instances.addAll(detector.FindLeakageInstances());
-        }
-        return instances;
+        } return instances;
 
     }
 

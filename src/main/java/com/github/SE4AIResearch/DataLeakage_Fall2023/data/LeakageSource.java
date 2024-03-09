@@ -39,7 +39,7 @@ public class LeakageSource {
         //TODO: revise
         if (taints.stream().anyMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("vector"))) {
             return LeakageCause.VectorizingTextData;
-        } else if (taints.stream().allMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("split"))) {
+        } else if (taints.stream().allMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("split") || taint.getPyCallExpression().toLowerCase().contains("sample"))) {
             return LeakageCause.SplitBeforeSample;
         } else if (taints.stream().allMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("flow"))) {
             return LeakageCause.DataAugmentation;

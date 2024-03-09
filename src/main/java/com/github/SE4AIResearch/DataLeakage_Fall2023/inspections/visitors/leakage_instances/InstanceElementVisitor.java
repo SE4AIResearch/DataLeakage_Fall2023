@@ -3,6 +3,7 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leaka
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
+import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
@@ -25,6 +26,18 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
         return leakageInstances.stream().anyMatch(leakageInstanceIsAssociatedWithNode(node));
     }
 
+    public T getLeakageInstanceAssociatedWithNode(List<T> leakageInstances, @NotNull PsiElement node) {
+        return leakageInstances.stream().filter(leakageInstanceIsAssociatedWithNode(node)).findFirst().get();
+    }
+
+
+    public void renderInspectionOnLeakageInstance(List<T> leakageInstances, PsiElement node, LocalQuickFix fix) {
+        if (leakageIsAssociatedWithNode(leakageInstances, node)) {
+            LeakageType leakageType = getLeakageType();
+            holder.registerProblem(node, InspectionBundle.get(leakageType.getInspectionTextKey()), ProblemHighlightType.WARNING, fix);
+
+        }
+    }
 
     public void renderInspectionOnLeakageInstance(List<T> leakageInstances, PsiElement node) {
         if (leakageIsAssociatedWithNode(leakageInstances, node)) {

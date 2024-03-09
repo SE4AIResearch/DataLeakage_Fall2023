@@ -37,6 +37,10 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
         return leakageInstances.stream().anyMatch(leakageSourceAssociatedWithNode(node));
     }
 
+    public T getInstanceForLeakageSourceAssociatedWithNode(List<T> leakageInstances, @NotNull PsiElement node) {
+        return leakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().get();
+    }
+
     public void renderInspectionOnTaintForInstanceWithKeyword(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder,
                                                               U keyword) {
 
