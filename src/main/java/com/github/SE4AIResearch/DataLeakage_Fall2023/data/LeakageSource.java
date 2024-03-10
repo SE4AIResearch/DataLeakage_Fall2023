@@ -3,13 +3,14 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.taints.Taint;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.taints.TaintUtils;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.TaintLabel;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType.PreprocessingLeakage;
 
 
 /**
@@ -25,8 +26,9 @@ public class LeakageSource {
 
     public LeakageSource(LeakageType leakageType) {
         this.taints = setTaints(leakageType).stream().distinct().toList();
-        this.cause = setCause();
         this.lineNumbers = setLineNumbers();
+        this.cause = setCause(leakageType);
+
 
 
     }
@@ -35,25 +37,41 @@ public class LeakageSource {
         return cause;
     }
 
-    private LeakageCause setCause() {
+    private LeakageCause setCause(LeakageType leakageType) {
         //TODO: revise
-        if (taints.stream().anyMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("vector"))) {
+        if (taints.stream().anyMatch(taint -> taint.containsText("vector"))) {
             return LeakageCause.VectorizingTextData;
-        } else if (taints.stream().allMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("split") || taint.getPyCallExpression().toLowerCase().contains("sample"))) {
+        } else if (taints.stream().allMatch(taint -> taint.containsText("split") || taint.containsText("sample"))) {
             return LeakageCause.SplitBeforeSample;
-        } else if (taints.stream().allMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("flow"))) {
+        } else if (taints.stream().allMatch(taint -> taint.containsText("flow"))) {
             return LeakageCause.DataAugmentation;
-        }else if (taints.stream().allMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("select"))) {
+        } else if (taints.stream().allMatch(taint -> taint.containsText("select"))) {
             return LeakageCause.UsingTestDataForFeatureSelection;
         }
+
+//        if (taints.stream().allMatch(taint -> Arrays.stream(getKeyword(leakageType))
+//                .anyMatch(text -> taint.containsText(text.getTaintKeyword()))))
+//        {
+//            return Arrays.stream(getKeyword(leakageType))
+//                    .filter(leakageSourceKeyword ->
+//                            taints.stream().allMatch(taint ->
+//                                    taint.containsText(leakageSourceKeyword.getTaintKeyword()))).findFirst()
+//                    .get().getPotentialCauses().get(0);
+//
+//        }
+
         return LeakageCause.unknown;
     }
 
+    private LeakageSourceKeyword[] getKeyword(LeakageType type) {
+        if (type.equals(PreprocessingLeakage)) {
+            return PreprocessingLeakageSourceKeyword.values();
+        }
+        return OverlapLeakageSourceKeyword.values();
+    }
+
     private List<Integer> setLineNumbers() {
-        return taints.stream().map(taint ->
-                Utils.getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(),
-                        Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(),
-                                taint.getInvocation()))
+        return taints.stream().map(taint -> Utils.getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), taint.getInvocation()))
 
         ).collect(Collectors.toList());
 
@@ -67,12 +85,10 @@ public class LeakageSource {
     private List<Taint> setTaints(LeakageType leakageType) {
         List<Taint> taints;
         switch (leakageType) {
-            case OverlapLeakage -> taints = TaintUtils.getTaintsFromFile(TaintLabel.dup).stream()
-                    .map(taintString -> new Taint(taintString, TaintLabel.dup))
-                    .collect(Collectors.toList());
-            case PreprocessingLeakage -> taints = TaintUtils.getTaintsFromFile(TaintLabel.rowset).stream()
-                    .map(taintString -> new Taint(taintString, TaintLabel.rowset))
-                    .collect(Collectors.toList());
+            case OverlapLeakage ->
+                    taints = TaintUtils.getTaintsFromFile(TaintLabel.dup).stream().map(taintString -> new Taint(taintString, TaintLabel.dup)).collect(Collectors.toList());
+            case PreprocessingLeakage ->
+                    taints = TaintUtils.getTaintsFromFile(TaintLabel.rowset).stream().map(taintString -> new Taint(taintString, TaintLabel.rowset)).collect(Collectors.toList());
 
             default -> taints = new ArrayList<>();
         }
@@ -86,8 +102,7 @@ public class LeakageSource {
     }
 
     public Taint findTaintThatMatchesText(String text) {
-        return this.getTaints().stream().filter(
-                taint -> taint.getPyCallExpression().equalsIgnoreCase(text) //equalsIgnoreCase MUST be used here
+        return this.getTaints().stream().filter(taint -> taint.getPyCallExpression().equalsIgnoreCase(text) //equalsIgnoreCase MUST be used here
                 //TODO: the pycall expression in the leakage analysis tool does not match what is actually in the test file
         ).findFirst().orElse(new Taint("", TaintLabel.dup));//TODO: better error handling
     }

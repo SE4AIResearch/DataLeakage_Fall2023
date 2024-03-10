@@ -4,7 +4,7 @@ import java.util.List;
 
 public enum PreprocessingLeakageSourceKeyword implements LeakageSourceKeyword {
 
-    predict("predict"),
+    vector("vector"),
 
     select("select");
 
@@ -18,7 +18,7 @@ public enum PreprocessingLeakageSourceKeyword implements LeakageSourceKeyword {
     @Override
     public String getTaintKeyword() {
         return switch (this) {
-            case predict -> "transform";
+            case vector -> "vector";
             case select -> "select";
         };
     }
@@ -26,7 +26,7 @@ public enum PreprocessingLeakageSourceKeyword implements LeakageSourceKeyword {
     @Override
     public List<LeakageCause> getPotentialCauses() {
         return switch (this) {
-            case predict -> List.of(LeakageCause.VectorizingTextData);
+            case vector -> List.of(LeakageCause.VectorizingTextData);
             case select -> List.of(LeakageCause.UsingTestDataForFeatureSelection);
         };
     }
