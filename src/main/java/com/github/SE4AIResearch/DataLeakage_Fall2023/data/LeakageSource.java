@@ -41,7 +41,7 @@ public class LeakageSource {
         //TODO: revise
         if (taints.stream().anyMatch(taint -> taint.containsText("vector"))) {
             return LeakageCause.VectorizingTextData;
-        } else if (taints.stream().allMatch(taint -> taint.containsText("split") || taint.containsText("sample"))) {
+        } else if (taints.stream().allMatch(taint-> taint.containsText("sample"))) {
             return LeakageCause.SplitBeforeSample;
         } else if (taints.stream().allMatch(taint -> taint.containsText("flow"))) {
             return LeakageCause.DataAugmentation;
@@ -59,6 +59,7 @@ public class LeakageSource {
 //                    .get().getPotentialCauses().get(0);
 //
 //        }
+        //doesn't work. need to have anyMatch for vectorizing text data
 
         return LeakageCause.unknown;
     }

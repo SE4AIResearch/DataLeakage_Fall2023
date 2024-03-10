@@ -21,7 +21,7 @@ public enum OverlapLeakageSourceKeyword implements LeakageSourceKeyword {
     public String getTaintKeyword() {
         return switch (this) {
             case flow -> "flow"; //TODO: add keyword
-            case sample -> "split";
+            case sample -> "sample";
         };
     }
 
