@@ -4,6 +4,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.ConnectClient;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.FileChanger;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.notifiers.LeakageNotifier;
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileTypes.FileType;
@@ -184,6 +185,9 @@ public class RunLeakageAction extends AnAction {
 
          indicator.stop();
       };
+
+      DaemonCodeAnalyzer.getInstance(project).restart();//TODO: restart only for psifile
+
       return runLeakage;
    }
 }
