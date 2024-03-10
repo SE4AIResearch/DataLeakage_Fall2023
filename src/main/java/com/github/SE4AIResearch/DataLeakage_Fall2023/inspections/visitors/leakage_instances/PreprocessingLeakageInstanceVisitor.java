@@ -121,8 +121,7 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
                 int offset = document.getLineStartOffset(lineNumber);
 
                 @Nullable
-                PsiElement statement = psiFile.findElementAt(offset
-                );
+                PsiElement statement = psiFile.findElementAt(offset);
                 //won't work if assignment is split on multiple lines
 
                 document.insertString(offset, "split()\n");

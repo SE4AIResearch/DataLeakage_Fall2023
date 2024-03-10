@@ -7,6 +7,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.quick_fixes.OverlapLeakageQuickFix;
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
@@ -71,6 +72,8 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
             }
 
             renderInspectionOnTaints(node, holder, Arrays.stream(OverlapLeakageSourceKeyword.values()).toList());
+
+
         }
     }
 
@@ -165,8 +168,20 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
                 PsiManager manager = PsiManager.getInstance(project);
                 var myFacade = PyPsiFacade.getInstance(project);
 
+                var lineContentOfSplitCall = holder.getResults().stream().map(
+                        problem -> problem.getPsiElement().getParent().getText()
+                ).filter(taint-> taint.toLowerCase().contains("split")).findFirst().get();
 
-                document.insertString(offset, "split()\n");
+                var offsetOfSplitCall = holder.getResults().stream().map(
+                        problem -> problem.getPsiElement().getParent()
+                ).filter(taint-> taint.getText().toLowerCase().contains("split"))
+                        .map(taint->taint.getTextOffset()).findFirst().get();
+
+                document.replaceString(offsetOfSplitCall,offsetOfSplitCall+
+                        lineContentOfSplitCall.length(), "");
+
+                document.insertString(offset, lineContentOfSplitCall+"\n");
+                DaemonCodeAnalyzer.getInstance(project).restart(); //TODO: restart only for this file
 
 
             }

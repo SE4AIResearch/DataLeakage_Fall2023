@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class LeakageSource {
 
-    private final List<Taint> taints;
+    private  List<Taint> taints;
     private final List<Integer> lineNumbers;
     private final LeakageCause cause;
 
@@ -96,4 +96,8 @@ public class LeakageSource {
     }
 
 
+    public void addTaint(String lineContent){
+        Taint newTaint = new Taint(new Invocation("$invo4"),lineContent);
+        this.taints.add(newTaint);
+    }
 }

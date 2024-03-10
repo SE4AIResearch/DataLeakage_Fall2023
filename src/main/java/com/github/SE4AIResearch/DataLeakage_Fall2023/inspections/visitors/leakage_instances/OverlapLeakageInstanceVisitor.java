@@ -125,7 +125,6 @@ public class OverlapLeakageInstanceVisitor extends InstanceElementVisitor<Overla
                 PsiElement statement = psiFile.findElementAt(offset
                 );
 
-
             }
 
 
