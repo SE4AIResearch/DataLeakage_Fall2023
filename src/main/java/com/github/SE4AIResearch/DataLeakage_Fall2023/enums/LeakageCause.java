@@ -4,6 +4,8 @@ public enum LeakageCause {
     SplitBeforeSample,
     DataAugmentation,
     VectorizingTextData,
+
+    RepeatDataEvaluation,
     unknown;
 
     public String getInspectionTextKey() {
@@ -11,6 +13,7 @@ public enum LeakageCause {
             case DataAugmentation -> "inspectionText.dataAugmentationWarning.text";
             case SplitBeforeSample -> "inspectionText.splitBeforeSampleReminder.text";
             case VectorizingTextData -> "inspectionText.vectorizerFitWarning.text";
+            case RepeatDataEvaluation -> "inspectionText.repeatDataEvaluationWarning.text";
             case unknown -> "inspectionText.generalWarning.text";
         };
     }
