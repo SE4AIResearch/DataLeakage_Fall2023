@@ -39,37 +39,8 @@ class PreprocessingLeakageQuickFix extends LeakageQuickFix<PreprocessingLeakageI
     @Override
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
 
-        var lineNumber = descriptor.getLineNumber();
 
-        var descriptionText = descriptor.getDescriptionTemplate();
-        var psiElement = descriptor.getPsiElement();
-        var psiFile = psiElement.getContainingFile();
-        PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
-        Document document = documentManager.getDocument(psiFile);
 
-        //Source not linked to instance
-
-        //Sample
-        if (descriptionText.equals(InspectionBundle.get("inspectionText.preprocessingLeakage.text"))
-                && psiElement.getText().contains(OverlapLeakageSourceKeyword.sample.toString())) {
-
-        }
-
-//won't work if assignment is split on multiple lines
-        var instance = getLeakageInstanceAssociatedWithNode(preprocessingLeakageInstances, psiElement);
-        var source = instance.getLeakageSource();
-        if (source.getCause().equals(LeakageCause.VectorizingTextData)) {
-
-            int offset = document.getLineStartOffset(lineNumber);
-
-            @Nullable
-            PsiElement statement = psiFile.findElementAt(offset
-            );
-            //won't work if assignment is split on multiple lines
-
-            document.insertString(offset, "split()\n");
-
-        }
 
 
     }
