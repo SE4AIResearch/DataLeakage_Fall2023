@@ -25,7 +25,9 @@ import com.jetbrains.python.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,13 +35,24 @@ import java.util.List;
  * such as {@link PyReferenceExpression}s.
  */
 public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLeakageInstance, OverlapLeakageSourceKeyword> {
-    private final List<OverlapLeakageInstance> overlapLeakageInstances;
+    private  List<OverlapLeakageInstance> overlapLeakageInstances;
     private final PsiRecursiveElementVisitor recursiveElementVisitor;
 
     private final OverlapLeakageQuickFix myQuickFix = new OverlapLeakageQuickFix();
 
+    protected void removeInstance(OverlapLeakageInstance instance){
+        var newArr = new ArrayList<OverlapLeakageInstance>();
+        var it = this.overlapLeakageInstances.iterator();
+        while(it.hasNext()){
+            if(!it.next().equals(instance)){
+                newArr.add(it.next());
+
+            }
+        }
+        this.overlapLeakageInstances= newArr;
+    }
     public OverlapLeakageSourceVisitor(List<OverlapLeakageInstance> overlapLeakageInstances, @NotNull ProblemsHolder holder) {
-        this.overlapLeakageInstances = overlapLeakageInstances;
+        this.overlapLeakageInstances = new ArrayList<>(overlapLeakageInstances);
         this.holder = holder;
         this.recursiveElementVisitor = new PsiRecursiveElementVisitor() {
 
@@ -170,18 +183,21 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
                 var lineContentOfSplitCall = holder.getResults().stream().map(
                         problem -> problem.getPsiElement().getParent().getText()
-                ).filter(taint-> taint.toLowerCase().contains("split")).findFirst().get();
+                ).filter(taint -> taint.toLowerCase().contains("split")).findFirst().get();
 
                 var offsetOfSplitCall = holder.getResults().stream().map(
-                        problem -> problem.getPsiElement().getParent()
-                ).filter(taint-> taint.getText().toLowerCase().contains("split"))
-                        .map(taint->taint.getTextOffset()).findFirst().get();
+                                problem -> problem.getPsiElement().getParent()
+                        ).filter(taint -> taint.getText().toLowerCase().contains("split"))
+                        .map(taint -> taint.getTextOffset()).findFirst().get();
 
-                document.replaceString(offsetOfSplitCall,offsetOfSplitCall+
+                document.replaceString(offsetOfSplitCall, offsetOfSplitCall +
                         lineContentOfSplitCall.length(), "");
 
-                document.insertString(offset, lineContentOfSplitCall+"\n");
-                DaemonCodeAnalyzer.getInstance(project).restart(); //TODO: restart only for this file
+                document.insertString(offset, lineContentOfSplitCall + "\n");
+
+
+                //Remove split sample from leakage instances
+                removeInstance(instance);
 
 
             }
