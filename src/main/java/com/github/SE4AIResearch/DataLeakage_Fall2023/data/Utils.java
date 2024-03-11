@@ -1,10 +1,14 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
 
+import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.regex.Pattern;
 
 public class Utils {
 
@@ -43,6 +47,27 @@ public class Utils {
     }
 
 
+    public static String getTestVariableNameWithoutSuffix(LeakageType type) {
+        final Pattern variablePattern = Pattern.compile(".*_[0-9]");
+
+        String testFromFile = "";
+
+        if (type.equals(LeakageType.MultiTestLeakage)) {
+            testFromFile = getTestFromMultiUseTestLeakTelemetryFile();
+        } else if (type.equals(LeakageType.OverlapLeakage)) {
+            testFromFile = getTestFromOverlapLeakTelemetryFile();
+        }
+
+        var matcher = variablePattern.matcher(testFromFile);
+
+        if (matcher.find()) {
+            var split = testFromFile.split("_");
+
+            return String.join("_", Arrays.stream(split).toList().subList(0, split.length - 1));
+        } else {
+            return testFromFile;
+        }
+    }
 
     public static String getTestFromMultiUseTestLeakTelemetryFile() {
         String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_MultiUseTestLeak.csv").toString();
@@ -100,7 +125,7 @@ public class Utils {
                 var ctx1 = columns[4];
                 var testModel = columns[5];
                 var test = columns[6];
-                var testInvo  = columns[7];
+                var testInvo = columns[7];
                 var testMeth = columns[8];
                 var ctx2 = columns[9];
                 var des = columns[10];
