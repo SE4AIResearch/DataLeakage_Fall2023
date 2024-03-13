@@ -13,13 +13,14 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseEvent;
 
 public class MyTableMouseListener extends MouseInputAdapter {
-   private JBTable table;
-   private Project project;
-//   private VirtualFile file;
+   private final JBTable table;
+   private final Project project;
+   private final int lineNumCol;
 
-   public MyTableMouseListener(JBTable table, Project project) {
+   public MyTableMouseListener(JBTable table, Project project, int lineNumCol) {
       this.table = table;
       this.project = project;
+      this.lineNumCol = lineNumCol;
 //      this.file = project.getProjectFile();
    }
 
@@ -33,7 +34,7 @@ public class MyTableMouseListener extends MouseInputAdapter {
 
       // If the selected cell isn't a valid number do nothing
       try {
-         String cellValue = (String) model.getValueAt(row, column);
+         String cellValue = (String) model.getValueAt(row, lineNumCol);
          cellValueInt = Integer.parseInt(cellValue);
       } catch (NumberFormatException | ArrayIndexOutOfBoundsException err) {
          return;

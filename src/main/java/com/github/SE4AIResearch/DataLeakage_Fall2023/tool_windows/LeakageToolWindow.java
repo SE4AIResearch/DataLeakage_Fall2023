@@ -2,6 +2,8 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.tool_windows;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
@@ -30,6 +32,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 
 // implementing DumbAware makes the tool window not available until indexing is complete
@@ -344,7 +347,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          }
 
          // Mouse listener for line number navigation
-         MyTableMouseListener myTableMouseListener = new MyTableMouseListener(instanceTable, project);
+         int lineNumCol = 1;
+         MyTableMouseListener myTableMouseListener = new MyTableMouseListener(instanceTable, project, lineNumCol);
          instanceTable.addMouseListener(myTableMouseListener);
 
          // Refresh table view
@@ -359,6 +363,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          List<LeakageInstance> leakageInstances = leakageAnalysisParser.LeakageInstances();
          int row = leakageInstances.size();
          int col = instanceTableModel.getColumnCount();
+         HashMap<LeakageCause, String> causeMap = CauseMapFactory.getCauseMap();
+         HashMap<LeakageType, String> leakageTypeMap = LeakageTypeMapFactory.getLeakageTypeMap();
 
          if (row == 0) {
             return new String[1][4];
@@ -373,11 +379,11 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             String[] newDataRow = new String[col];
             LeakageSource source = instance.getLeakageSource();
 
-            newDataRow[0] = instance.type().toString(); // Leakage Type
+            newDataRow[0] = leakageTypeMap.get(instance.type()); // Leakage Type
             newDataRow[1] = String.valueOf(instance.lineNumber()); //Line Number
             newDataRow[2] = instance.variableName(); // Variable Associated
             if (source != null) {
-               newDataRow[3] = source.getCause().name(); // Cause
+               newDataRow[3] = causeMap.get(source.getCause()); // Cause
             }
 
             data.add(curRow, newDataRow);

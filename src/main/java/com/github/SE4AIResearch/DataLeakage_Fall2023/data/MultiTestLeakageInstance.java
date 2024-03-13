@@ -41,7 +41,7 @@ public class MultiTestLeakageInstance implements LeakageInstance {
 
     @Override
     public LeakageSource getLeakageSource() {
-        return null;
+        return new LeakageSource(this.type());
     }
 
     @Override
