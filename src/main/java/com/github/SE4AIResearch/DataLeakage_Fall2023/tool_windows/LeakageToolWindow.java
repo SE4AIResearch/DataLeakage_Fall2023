@@ -105,10 +105,10 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
          row = 0;
          gbc.fill = GridBagConstraints.HORIZONTAL;
-         gbc.anchor = GridBagConstraints.EAST;
+         gbc.anchor = GridBagConstraints.NORTHWEST;
          GridAdder.addObject(toolbarComp, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
          gbc.fill = GridBagConstraints.BOTH;
-         GridAdder.addObject(summaryPanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0.15);
+         GridAdder.addObject(summaryPanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
          GridAdder.addObject(instancePanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 1);
          gbc.fill = GridBagConstraints.HORIZONTAL;
          GridAdder.addObject(fileNamePanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
@@ -219,6 +219,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          scrollPane.setBorder(BorderFactory.createTitledBorder("Leakage Summary"));
 
          summaryPanel.add(scrollPane, BorderLayout.CENTER);
+         summaryPanel.setMinimumSize(new Dimension(0, summaryTable.getRowHeight() * 4 + summaryTable.getTableHeader().getPreferredSize().height));
+
 
          return summaryPanel;
       }
