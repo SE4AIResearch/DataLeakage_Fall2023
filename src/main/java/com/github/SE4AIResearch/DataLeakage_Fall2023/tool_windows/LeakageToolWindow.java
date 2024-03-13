@@ -3,6 +3,7 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.tool_windows;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
@@ -363,6 +364,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          int row = leakageInstances.size();
          int col = instanceTableModel.getColumnCount();
          HashMap<LeakageCause, String> causeMap = CauseMapFactory.getCauseMap();
+         HashMap<LeakageType, String> leakageTypeMap = LeakageTypeMapFactory.getLeakageTypeMap();
 
          if (row == 0) {
             return new String[1][4];
@@ -377,7 +379,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             String[] newDataRow = new String[col];
             LeakageSource source = instance.getLeakageSource();
 
-            newDataRow[0] = instance.type().toString(); // Leakage Type
+            newDataRow[0] = leakageTypeMap.get(instance.type()); // Leakage Type
             newDataRow[1] = String.valueOf(instance.lineNumber()); //Line Number
             newDataRow[2] = instance.variableName(); // Variable Associated
             if (source != null) {
