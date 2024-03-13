@@ -25,6 +25,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -321,6 +323,24 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          updateFileNamePanel(fileName);
       }
 
+      // Method to resize columns to fit data
+      private void packColumns(JBTable table) {
+         for (int i = 0; i < table.getColumnCount(); i++) {
+            TableColumn column = table.getColumnModel().getColumn(i);
+            int maxWidth = 0;
+
+            // Determine the maximum width of the column
+            for (int row = 0; row < table.getRowCount(); row++) {
+               TableCellRenderer renderer = table.getCellRenderer(row, i);
+               Component comp = table.prepareRenderer(renderer, row, i);
+               maxWidth = Math.max(comp.getPreferredSize().width, maxWidth);
+            }
+
+            // Set the column width to the maximum width
+            column.setPreferredWidth(maxWidth);
+         }
+      }
+
       private void updateTableData() {
          // Update Instance
          instanceTable.removeAll();
@@ -335,6 +355,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          // Refresh table view
          instanceTable.revalidate();
          instanceTable.repaint();
+         packColumns(instanceTable);
 
          // Update Summary
          summaryTable.removeAll();
