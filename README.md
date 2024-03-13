@@ -30,35 +30,34 @@ First version of a plugin that detects data leakage in Python code for ML.
 
 ## Installation
 
-- Prerequisite:
-  Please have Docker **INSTALLED** and **RUNNING** BEFORE you run the Data Leakage Plugin. Links to the documents explaining how to install Docker and videos down below. 
+- **<ins>Prerequisite:</ins>**
+  Please have Docker **INSTALLED** and **RUNNING BEFORE** you run the Data Leakage Plugin. Links to the documents explaining how to install Docker and videos down below. 
 
-  Documents:
+  **<ins>Documents:</ins>**
   https://docs.google.com/document/d/1deSKzRfFrcQvi1nLRVJI5ASzi7WKHJ3PlrdtxZf3bbI/edit?usp=sharing
 
-  Installing Docker on Mac Video (first half):
+  **<ins>Installing Docker on Mac Video (first half):</ins>**
   https://www.youtube.com/watch?v=3fiYHaaz5eQ
 
-  Installing Docker on Windows 11 Video:
+  **<ins>Installing Docker on Windows 11 Video:</ins>**
   https://www.youtube.com/watch?v=8qQeODFSPQ4
   
-- Data Leakage Plugin Download:
+- **<ins>Data Leakage Plugin Download:</ins>**
   Please follow the directions on the documents and the videos in order to download the plugin. Instructions provided for both Mac and Windows OS Systems. 
 
-  Documents:
+  **<ins>Documents:</ins>**
   https://docs.google.com/document/d/1FFwkdSlUPQfNzlNyBjiKDZxQPmASghxG8njG05N_9lQ/edit?usp=sharing
 
-  Installation for Mac (second half of the video):
+  **<ins>Installation for Mac (second half of the video):</ins>**
   https://www.youtube.com/watch?v=3fiYHaaz5eQ
 
-  Installation for Windows 11 Video:
+  **<ins>Installation for Windows 11 Video:</ins>**
   https://www.youtube.com/watch?v=l-dHJxA3S0c
 
 ## Usage
 
-- Data Leakage Plugin Usage:
+- **<ins>Data Leakage Plugin Usage:</ins>**
   Video down below shows how to run the data leakage plugin for a given python file in pycharm. 
-
   https://youtu.be/gb9sF-MTsM8
 
 
