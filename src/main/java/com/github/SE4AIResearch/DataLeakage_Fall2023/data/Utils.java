@@ -48,7 +48,7 @@ public class Utils {
 
 
     public static String getTestVariableNameWithoutSuffix(LeakageType type) {
-        final Pattern variablePattern = Pattern.compile(".*_[0-9]");
+        final Pattern variablePattern = Pattern.compile(".*_[0-9]*");
 
         String testFromFile = "";
 
