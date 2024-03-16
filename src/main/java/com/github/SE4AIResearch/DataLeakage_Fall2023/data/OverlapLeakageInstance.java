@@ -16,7 +16,7 @@ public class OverlapLeakageInstance implements LeakageInstance {
       this.lineNumber = lineNumber;
       this.type = LeakageType.OverlapLeakage;
       this.invocation = invocation;
-      this.test = Utils.getTestFromOverlapLeakTelemetryFile();
+      this.test = Utils.getTestVariableNameWithoutSuffix(type);
       this.leakageSource = new LeakageSource(this.type);
    }
 

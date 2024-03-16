@@ -12,11 +12,12 @@ public class MultiTestLeakageInstance implements LeakageInstance {
 
     private final Invocation invocation;
 
+
     public MultiTestLeakageInstance(int lineNumber, Invocation invocation) {
         this.lineNumber = lineNumber;
         this.type = LeakageType.MultiTestLeakage;
         this.invocation = invocation;
-        this.test = Utils.getTestFromMultiUseTestLeakTelemetryFile();
+        this.test = Utils.getTestVariableNameWithoutSuffix(type);
     }
     @Override
     public int lineNumber() {
@@ -40,7 +41,7 @@ public class MultiTestLeakageInstance implements LeakageInstance {
 
     @Override
     public LeakageSource getLeakageSource() {
-        return null;
+        return new LeakageSource(this.type());
     }
 
     @Override
@@ -48,7 +49,7 @@ public class MultiTestLeakageInstance implements LeakageInstance {
         if (obj == null || getClass() != obj.getClass()) return false;
         MultiTestLeakageInstance otherInstance = (MultiTestLeakageInstance) obj;
         return this.lineNumber() == otherInstance.lineNumber()
-              && this.invocation().getNumber() == otherInstance.invocation().getNumber();
+                && this.invocation().getNumber() == otherInstance.invocation().getNumber();
     }
 
     @Override
