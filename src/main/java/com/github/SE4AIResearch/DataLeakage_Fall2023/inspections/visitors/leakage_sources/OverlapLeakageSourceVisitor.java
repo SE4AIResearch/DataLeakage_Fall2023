@@ -148,7 +148,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
         @Override
         public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
 
-            var lineNumber = descriptor.getLineNumber();
+            var lineNumber = descriptor.getLineNumber()+1;//was off by one
 
             var descriptionText = descriptor.getDescriptionTemplate();
             var psiElement = descriptor.getPsiElement();
@@ -188,7 +188,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
                 var offsetOfSplitCall = holder.getResults().stream().map(
                                 problem -> problem.getPsiElement().getParent()
                         ).filter(taint -> taint.getText().toLowerCase().contains("split"))
-                        .map(taint -> taint.getTextOffset()).findFirst().get();
+                        .map(taint -> taint.getTextOffset()).filter(splitOffset -> splitOffset >offset ).findFirst().get();
 
                 document.replaceString(offsetOfSplitCall, offsetOfSplitCall +
                         lineContentOfSplitCall.length(), "");
