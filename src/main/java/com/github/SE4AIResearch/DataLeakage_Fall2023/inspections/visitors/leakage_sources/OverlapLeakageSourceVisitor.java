@@ -173,7 +173,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
             if (source.getCause().equals(LeakageCause.SplitBeforeSample)) {
                 Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
 
-                int offset = document.getLineStartOffset(lineNumber);
+                int offset = document.getLineStartOffset(lineNumber-1);
 
                 @Nullable
                 PsiElement firstElementOnLine = psiFile.findElementAt(offset

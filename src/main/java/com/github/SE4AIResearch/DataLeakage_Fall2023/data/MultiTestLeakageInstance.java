@@ -1,12 +1,14 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
 
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry.MultiTestLeakageTelemetry;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 
 import java.util.Objects;
 
 public class MultiTestLeakageInstance implements LeakageInstance {
 
-    private final String test;
+    private final MultiTestLeakageTelemetry telemetry = new MultiTestLeakageTelemetry();
+
     private final int lineNumber;
     private final LeakageType type;
 
@@ -17,7 +19,6 @@ public class MultiTestLeakageInstance implements LeakageInstance {
         this.lineNumber = lineNumber;
         this.type = LeakageType.MultiTestLeakage;
         this.invocation = invocation;
-        this.test = Utils.getTestVariableNameWithoutSuffix(type);
     }
     @Override
     public int lineNumber() {
@@ -36,7 +37,7 @@ public class MultiTestLeakageInstance implements LeakageInstance {
 
     @Override
     public String variableName() {
-        return test;
+        return telemetry.getTest();
     }
 
     @Override
