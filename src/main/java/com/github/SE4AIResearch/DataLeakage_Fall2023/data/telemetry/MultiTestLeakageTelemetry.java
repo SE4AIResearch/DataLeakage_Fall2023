@@ -16,6 +16,7 @@ public class MultiTestLeakageTelemetry {
     public MultiTestLeakageTelemetry(){
         String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_MultiUseTestLeak.csv").toString();
         File file = new File(filePath);
+       this.test="";
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
@@ -45,7 +46,6 @@ public class MultiTestLeakageTelemetry {
             e.printStackTrace();
 
         }
-        this.test= "";
     }
 
     public String getTest() {

@@ -8,7 +8,7 @@ import java.util.Objects;
 public class MultiTestLeakageInstance implements LeakageInstance {
 
     private final MultiTestLeakageTelemetry telemetry = new MultiTestLeakageTelemetry();
-
+    private final String test = telemetry.getTest();
     private final int lineNumber;
     private final LeakageType type;
 
@@ -37,7 +37,7 @@ public class MultiTestLeakageInstance implements LeakageInstance {
 
     @Override
     public String variableName() {
-        return telemetry.getTest();
+        return this.test;
     }
 
     @Override
