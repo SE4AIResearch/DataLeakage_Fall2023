@@ -139,14 +139,28 @@ public class RunLeakageAction extends AnAction {
                   throw new RuntimeException(e);
                }
             }
-         } catch (UnsatisfiedLinkError | NoClassDefFoundError e) {
-
+         } catch (NoClassDefFoundError e) {
             // Wrap UI call around runnable to invokeLater to prevent thread error
             Runnable showMessage = () -> {
                // UI-related code here
                Messages.showErrorDialog(
                      this.project,
                      "Please start the Docker Engine before running leakage analysis.",
+                     ""
+               );
+            };
+
+            SwingUtilities.invokeLater(showMessage);
+
+            return;
+         }
+         catch (UnsatisfiedLinkError e) {
+            // Wrap UI call around runnable to invokeLater to prevent thread error
+            Runnable showMessage = () -> {
+               // UI-related code here
+               Messages.showErrorDialog(
+                     this.project,
+                     "Please reconfigure or restart the Docker Engine.",
                      ""
                );
             };
@@ -185,12 +199,17 @@ public class RunLeakageAction extends AnAction {
          try {
             indicator.setText("Running analysis on " + fileName);
             indicator.setText2("Running");
-            connectClient.runLeakageAnalysis(tempDirectory, fileName);
+            try {
+               connectClient.runLeakageAnalysis(tempDirectory, fileName);
+               isCompleted = true;
+            } catch (RuntimeException e) {
+               isCompleted = false;
+               LeakageNotifier.notifyError(project, "File contains a syntax error");
+            }
             indicator.setFraction(1);
          } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            LeakageNotifier.notifyError(project, "Leakage analysis interrupted");
          }
-         isCompleted = true;
 
          indicator.stop();
       };
