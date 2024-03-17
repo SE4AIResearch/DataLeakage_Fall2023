@@ -66,6 +66,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       private DefaultTableModel instanceTableModel, summaryTableModel;
       private int execTime;
       private String formattedTimeString;
+      private RunLeakageAction runLeakageAction;
 
       public LeakageToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
          this.project = project;
@@ -77,6 +78,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 //         this.summaryTableModel = new DefaultTableModel();
          this.execTime = -1;
          this.formattedTimeString = "";
+         this.runLeakageAction = new RunLeakageAction(project);
 
          toolWindow.getComponent().add(contentPanel);
 
@@ -87,7 +89,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          JPanel mainPanel, summaryPanel, instancePanel, timePanel, controlsPanel, fileNamePanel;
          GridBagLayout layout;
          GridBagConstraints gbc;
-         ActionToolbar toolbar;
+         JComponent toolbar;
          int row;
 
          mainPanel = new JPanel();
@@ -101,12 +103,11 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          fileNamePanel = createFileNamePanel();
          timePanel = createTimePanel();
          controlsPanel = createControlsPanel(toolWindow);
-         JComponent toolbarComp = toolbar.getComponent();
 
          row = 0;
          gbc.fill = GridBagConstraints.HORIZONTAL;
          gbc.anchor = GridBagConstraints.NORTHWEST;
-         GridAdder.addObject(toolbarComp, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
+         GridAdder.addObject(toolbar, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
          gbc.fill = GridBagConstraints.BOTH;
          GridAdder.addObject(summaryPanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
          GridAdder.addObject(instancePanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 1);
@@ -120,11 +121,11 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          return mainPanel;
       }
 
-      private ActionToolbar createToolBar(JPanel targetPanel) {
+      private JComponent createToolBar(JPanel targetPanel) {
          ActionToolbar toolbar;
 
          // Create a button with an IntelliJ icon
-         AnAction helpAction = new AnAction("Help", "Show help", AllIcons.General.ContextHelp) {
+         AnAction helpAction = new AnAction("Help"/*, "Show help", AllIcons.General.ContextHelp*/) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
                // Open Help site when button clicked
@@ -136,7 +137,13 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLWINDOW_TITLE, actionGroup, true);
          toolbar.setTargetComponent(targetPanel);
 
-         return toolbar;
+         return toolbar.getComponent();
+//         JPanel panel;
+//         JButton helpButton;
+//
+//         help
+
+
       }
 
       @NotNull
@@ -152,7 +159,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
             DataContext dataContext = DataManager.getInstance().getDataContext(toolWindow.getComponent());
             AnActionEvent actionEvent = AnActionEvent.createFromDataContext("Data Leakage Analysis", null, dataContext);
-            new RunLeakageAction(project).actionPerformed(actionEvent);
+            runLeakageAction.actionPerformed(actionEvent);
+
 
             long endTime = System.currentTimeMillis();
             double executionTimeSeconds = (endTime - startTime) / 1000.0;
@@ -160,7 +168,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
             // Check to make sure a python file is open before updating the tables and time label
             String fileName = getOnlyPythonFileName();
-            if(fileName != null) {
+            if(fileName != null && runLeakageAction.isCompleted()) {
                update(fileName);
             }
 

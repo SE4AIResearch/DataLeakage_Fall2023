@@ -25,11 +25,13 @@ public class RunLeakageAction extends AnAction {
 
    private final ConnectClient connectClient = new ConnectClient();
    private final FileChanger fileChanger = new FileChanger();
-   private boolean isCompleted = false;
+   private boolean isCompleted;
    private Project project;
+//   private boolean isCompleted;
 
    /**
     * Constructor when created from the IDE (plugin.xml)
+    * Not used anymore
     */
    public RunLeakageAction() {
       super("Run Leakage Analysis");
@@ -43,6 +45,11 @@ public class RunLeakageAction extends AnAction {
    public RunLeakageAction(Project project) {
       super("Run Leakage Analysis");
       this.project = project;
+      this.isCompleted = false;
+   }
+
+   public boolean isCompleted() {
+      return this.isCompleted;
    }
 
    private static Project getProjectForFile(VirtualFile file) {
@@ -66,6 +73,8 @@ public class RunLeakageAction extends AnAction {
 
    @Override
    public void actionPerformed(@NotNull AnActionEvent event) {
+      this.isCompleted = false;
+
       if (this.project == null) {
          try {
             this.project = event.getProject();
