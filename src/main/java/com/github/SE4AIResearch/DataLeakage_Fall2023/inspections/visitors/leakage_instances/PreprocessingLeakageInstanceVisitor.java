@@ -116,7 +116,6 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
 //won't work if assignment is split on multiple lines
             var instance = getLeakageInstanceAssociatedWithNode(preprocessingLeakageInstances, psiElement);
             var source = instance.getLeakageSource();
-            if (source.getCause().equals(LeakageCause.VectorizingTextData)) {
 
                 int offset = document.getLineStartOffset(lineNumber);
 
@@ -126,7 +125,7 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
 
                 document.insertString(offset, "split()\n");
 
-            }
+
 
 
         }
