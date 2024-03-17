@@ -4,7 +4,9 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry.OverlapLeakageTelemetry;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -54,17 +56,9 @@ public class OverlapLeakageDetector extends LeakageDetector {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    String[] columns = line.split(("\t"));
-                    Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
-                    int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
-                    int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
+                    var leakageInstance = createLeakageInstanceFromLine(line);
 
-                    var leakageInstance = new OverlapLeakageInstance(actualLineNumber, invocation);
-
-                    var existingInstances = leakageInstances();
-                    if (!existingInstances.contains(leakageInstance)) {
-                        addLeakageInstance(leakageInstance);
-                    }
+                    addLeakageInstanceIfNotPresent(leakageInstance);
 
                     reader.close();
                 }
@@ -72,6 +66,28 @@ public class OverlapLeakageDetector extends LeakageDetector {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void addLeakageInstanceIfNotPresent(LeakageInstance leakageInstance) {
+
+
+        var existingInstances = leakageInstances();
+        if (!existingInstances.contains(leakageInstance)) {
+            addLeakageInstance(leakageInstance);
+        }
+    }
+
+    @NotNull
+    private OverlapLeakageInstance createLeakageInstanceFromLine(String line) {
+        String[] columns = line.split(("\t"));
+        Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
+        int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
+        int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
+
+
+        final var telemetry = new OverlapLeakageTelemetry();
+
+        return new OverlapLeakageInstance(actualLineNumber, invocation);
     }
 
 
