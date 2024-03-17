@@ -5,12 +5,15 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
+import com.intellij.ui.components.ActionLink;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAction;
@@ -96,7 +99,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          layout = new GridBagLayout();
          gbc = new GridBagConstraints();
          mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-         toolbar = createToolBar(mainPanel);
+//         toolbar = createToolBar(mainPanel); // CHANGETOOLBAR
+         toolbar = createHelpPanel();
 
          summaryPanel = createSummaryPanel(new String[]{"Leakage Type", "Leakage Count"});
          instancePanel = createInstancePanel(new String[]{"Leakage Type", "Line Number", "Variable Associated", "Cause"});
@@ -121,10 +125,31 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          return mainPanel;
       }
 
+      private JPanel createHelpPanel() {
+         JPanel panel = new JPanel();
+         JBLabel needHelp = new JBLabel("Need help?");
+         JBLabel clickHere = createNewLinkLabel("Click here to learn more about data leakage",
+               "https://se4airesearch.github.io/DataLeakage_Website_Fall2023/pages/resources/");
+
+
+         Icon icon = AllIcons.Ide.External_link_arrow;
+//         Icon icon = IconLoader.getIcon("/actions/externalLink.png", getClass());
+         JBLabel iconLabel = new JBLabel(icon);
+
+//         panel.add(needHelp);
+//         panel.add((Component) icon);
+         panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+         panel.add(needHelp, BorderLayout.EAST);
+         panel.add(iconLabel, BorderLayout.CENTER);
+         panel.add(clickHere, BorderLayout.WEST);
+
+         return panel;
+      }
+
       private JComponent createToolBar(JPanel targetPanel) {
          ActionToolbar toolbar;
 
-         // Create a button with an IntelliJ icon
+
          AnAction helpAction = new AnAction("Help"/*, "Show help", AllIcons.General.ContextHelp*/) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
@@ -168,7 +193,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
             // Check to make sure a python file is open before updating the tables and time label
             String fileName = getOnlyPythonFileName();
-            if(fileName != null && runLeakageAction.isCompleted()) {
+            if (fileName != null && runLeakageAction.isCompleted()) {
                update(fileName);
             }
 
@@ -193,11 +218,10 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             file = selectedFiles[0];
             fileName = file.getName();
             fileType = file.getFileType();
-            if(!fileType.getName().equals("Python")) {
+            if (!fileType.getName().equals("Python")) {
                return null;
             }
          }
-
 
 
          return fileName;
@@ -283,8 +307,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       }
 
       private static JBLabel createNewLinkLabel(String name, String url) {
-         JBLabel label = new JBLabel("<html><u>" + name + "</u></html>");
-         label.setForeground(Color.LIGHT_GRAY);
+         JBLabel label = new JBLabel("<html><a href=\"" + url + "\">" + name + "</a><html>");
          label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
          label.addMouseListener(new MouseAdapter() {
