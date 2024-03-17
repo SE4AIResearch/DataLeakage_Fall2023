@@ -5,12 +5,15 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
+import com.intellij.ui.components.ActionLink;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAction;
@@ -66,6 +69,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       private DefaultTableModel instanceTableModel, summaryTableModel;
       private int execTime;
       private String formattedTimeString;
+      private RunLeakageAction runLeakageAction;
 
       public LeakageToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
          this.project = project;
@@ -77,6 +81,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 //         this.summaryTableModel = new DefaultTableModel();
          this.execTime = -1;
          this.formattedTimeString = "";
+         this.runLeakageAction = new RunLeakageAction(project);
 
          toolWindow.getComponent().add(contentPanel);
 
@@ -87,26 +92,26 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          JPanel mainPanel, summaryPanel, instancePanel, timePanel, controlsPanel, fileNamePanel;
          GridBagLayout layout;
          GridBagConstraints gbc;
-         ActionToolbar toolbar;
+         JComponent toolbar;
          int row;
 
          mainPanel = new JPanel();
          layout = new GridBagLayout();
          gbc = new GridBagConstraints();
          mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-         toolbar = createToolBar(mainPanel);
+//         toolbar = createToolBar(mainPanel); // CHANGETOOLBAR
+         toolbar = createHelpPanel();
 
          summaryPanel = createSummaryPanel(new String[]{"Leakage Type", "Leakage Count"});
          instancePanel = createInstancePanel(new String[]{"Leakage Type", "Line Number", "Variable Associated", "Cause"});
          fileNamePanel = createFileNamePanel();
          timePanel = createTimePanel();
          controlsPanel = createControlsPanel(toolWindow);
-         JComponent toolbarComp = toolbar.getComponent();
 
          row = 0;
          gbc.fill = GridBagConstraints.HORIZONTAL;
          gbc.anchor = GridBagConstraints.NORTHWEST;
-         GridAdder.addObject(toolbarComp, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
+         GridAdder.addObject(toolbar, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
          gbc.fill = GridBagConstraints.BOTH;
          GridAdder.addObject(summaryPanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 0);
          GridAdder.addObject(instancePanel, mainPanel, layout, gbc, 0, row++, 1, 1, 1, 1);
@@ -120,11 +125,32 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          return mainPanel;
       }
 
-      private ActionToolbar createToolBar(JPanel targetPanel) {
+      private JPanel createHelpPanel() {
+         JPanel panel = new JPanel();
+         JBLabel needHelp = new JBLabel("Need help?");
+         JBLabel clickHere = createNewLinkLabel("Click here to learn more about data leakage",
+               "https://se4airesearch.github.io/DataLeakage_Website_Fall2023/pages/resources/");
+
+
+         Icon icon = AllIcons.Ide.External_link_arrow;
+//         Icon icon = IconLoader.getIcon("/actions/externalLink.png", getClass());
+         JBLabel iconLabel = new JBLabel(icon);
+
+//         panel.add(needHelp);
+//         panel.add((Component) icon);
+         panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+         panel.add(needHelp, BorderLayout.EAST);
+         panel.add(iconLabel, BorderLayout.CENTER);
+         panel.add(clickHere, BorderLayout.WEST);
+
+         return panel;
+      }
+
+      private JComponent createToolBar(JPanel targetPanel) {
          ActionToolbar toolbar;
 
-         // Create a button with an IntelliJ icon
-         AnAction helpAction = new AnAction("Help", "Show help", AllIcons.General.ContextHelp) {
+
+         AnAction helpAction = new AnAction("Help"/*, "Show help", AllIcons.General.ContextHelp*/) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
                // Open Help site when button clicked
@@ -136,7 +162,13 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
          toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLWINDOW_TITLE, actionGroup, true);
          toolbar.setTargetComponent(targetPanel);
 
-         return toolbar;
+         return toolbar.getComponent();
+//         JPanel panel;
+//         JButton helpButton;
+//
+//         help
+
+
       }
 
       @NotNull
@@ -152,7 +184,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
             DataContext dataContext = DataManager.getInstance().getDataContext(toolWindow.getComponent());
             AnActionEvent actionEvent = AnActionEvent.createFromDataContext("Data Leakage Analysis", null, dataContext);
-            new RunLeakageAction(project).actionPerformed(actionEvent);
+            runLeakageAction.actionPerformed(actionEvent);
+
 
             long endTime = System.currentTimeMillis();
             double executionTimeSeconds = (endTime - startTime) / 1000.0;
@@ -160,7 +193,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
             // Check to make sure a python file is open before updating the tables and time label
             String fileName = getOnlyPythonFileName();
-            if(fileName != null) {
+            if (fileName != null && runLeakageAction.isCompleted()) {
                update(fileName);
             }
 
@@ -185,11 +218,10 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             file = selectedFiles[0];
             fileName = file.getName();
             fileType = file.getFileType();
-            if(!fileType.getName().equals("Python")) {
+            if (!fileType.getName().equals("Python")) {
                return null;
             }
          }
-
 
 
          return fileName;
@@ -275,8 +307,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
       }
 
       private static JBLabel createNewLinkLabel(String name, String url) {
-         JBLabel label = new JBLabel("<html><u>" + name + "</u></html>");
-         label.setForeground(Color.LIGHT_GRAY);
+         JBLabel label = new JBLabel("<html><a href=\"" + url + "\">" + name + "</a><html>");
          label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
          label.addMouseListener(new MouseAdapter() {
