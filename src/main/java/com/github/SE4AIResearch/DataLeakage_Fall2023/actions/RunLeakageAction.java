@@ -160,7 +160,7 @@ public class RunLeakageAction extends AnAction {
                // UI-related code here
                Messages.showErrorDialog(
                      this.project,
-                     "Please reconfigure the Docker Engine.",
+                     "Please reconfigure or restart the Docker Engine.",
                      ""
                );
             };
