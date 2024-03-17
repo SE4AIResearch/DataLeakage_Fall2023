@@ -4,6 +4,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.finals.OverlapLeakageFinal;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry.OverlapLeakageTelemetry;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import org.jetbrains.annotations.NotNull;
@@ -84,10 +85,11 @@ public class OverlapLeakageDetector extends LeakageDetector {
         int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
         int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
 
+        final var leakageFinal = new OverlapLeakageFinal(columns);
+        final var telemetry = new OverlapLeakageTelemetry(leakageFinal);
 
-        final var telemetry = new OverlapLeakageTelemetry();
-
-        return new OverlapLeakageInstance(actualLineNumber, invocation);
+        return new OverlapLeakageInstance(actualLineNumber, invocation,
+                telemetry.getTest(), telemetry.getTrain());
     }
 
 

@@ -1,4 +1,6 @@
-package com.github.SE4AIResearch.DataLeakage_Fall2023.data.finals;
+package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
+
+import org.jetbrains.annotations.NotNull;
 
 public interface OverlapLeakageData  {
     String getTrainModel();
@@ -11,5 +13,7 @@ public interface OverlapLeakageData  {
 
     String getCtx();
 
-    String getCnt();
+
+
+    boolean equals(@NotNull OverlapLeakageData o);
 }

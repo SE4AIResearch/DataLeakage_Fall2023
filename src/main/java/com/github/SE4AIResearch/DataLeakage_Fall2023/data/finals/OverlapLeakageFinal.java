@@ -1,9 +1,9 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.data.finals;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry.OverlapLeakageTelemetry;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageData;
 import org.jetbrains.annotations.NotNull;
 
-public class OverlapLeakageFinal implements Comparable<OverlapLeakageTelemetry>, OverlapLeakageData{
+public class OverlapLeakageFinal implements OverlapLeakageData {
 
     private String trainModel;
     private String train;
@@ -13,24 +13,15 @@ public class OverlapLeakageFinal implements Comparable<OverlapLeakageTelemetry>,
     private String ctx;
     private String cnt;
 
-    public OverlapLeakageFinal(String trainModel,
-                               String train,
-                               String invo,
-                               String trainMeth,
-                               String ctx,
-                               String cnt) {
-        this.trainModel = trainModel;
-        this.train = train;
-        this.invo = invo;
-        this.trainMeth = trainMeth;
-        this.ctx = ctx;
-        this.cnt = cnt;
+    public OverlapLeakageFinal(String[] columns) {
+        this.trainModel = columns[0];
+        this.train = columns[1];
+        this.invo = columns[2];
+        this.trainMeth = columns[3];
+        this.ctx = columns[4];
+        this.cnt = columns[5];
     }
 
-    public boolean matches(OverlapLeakageTelemetry telemetry){
-        return this.trainMeth.equals(telemetry.getTrainMeth())
-                &&
-    }
 
     @Override
     public String getTrainModel() {
@@ -58,14 +49,11 @@ public class OverlapLeakageFinal implements Comparable<OverlapLeakageTelemetry>,
     }
 
     @Override
-    public String getCnt() {
-        return cnt;
-    }
-
-
-
-    @Override
-    public int compareTo(@NotNull OverlapLeakageTelemetry o) {
-        return 0;
+    public boolean equals(@NotNull OverlapLeakageData o) {
+        return (this.getTrainModel().equals(o.getTrainModel()) &&
+                this.getTrain().equals(o.getTrain()) &&
+                this.getInvo().equals(o.getInvo()) &&
+                this.getTrainMeth().equals(o.getTrainMeth()) &&
+                this.getCtx().equals(o.getCtx()));
     }
 }

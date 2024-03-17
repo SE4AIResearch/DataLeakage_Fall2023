@@ -1,8 +1,8 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Utils;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.finals.OverlapLeakageData;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageData;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.finals.OverlapLeakageFinal;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -24,7 +24,7 @@ public class OverlapLeakageTelemetry implements OverlapLeakageData {
     private String testMeth;
     private String ctx2;
 
-    public OverlapLeakageTelemetry() {
+    public OverlapLeakageTelemetry(OverlapLeakageFinal overlapLeakageFinal) {
         String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_OverlapLeak.csv").toString();
         File file = new File(filePath);
         try {
@@ -46,6 +46,9 @@ public class OverlapLeakageTelemetry implements OverlapLeakageData {
                 this.testMeth = columns[8];
                 this.ctx2 = columns[9];
 
+                if (this.equals(overlapLeakageFinal)) {
+                    break;
+                }
 
             }
             reader.close();
@@ -63,7 +66,7 @@ public class OverlapLeakageTelemetry implements OverlapLeakageData {
 
     @Override
     public String getTrainModel() {
-        return trainModel
+        return trainModel;
     }
 
     public String getTrain() {
@@ -72,7 +75,7 @@ public class OverlapLeakageTelemetry implements OverlapLeakageData {
 
     @Override
     public String getInvo() {
-        return invo;
+        return trainInvo;//not invo
     }
 
     @Override
@@ -82,16 +85,16 @@ public class OverlapLeakageTelemetry implements OverlapLeakageData {
 
     @Override
     public String getCtx() {
-        return ctx;
+        return ctx1;
     }
 
-    @Override
-    public String getCnt() {
-        return cnt;
-    }
 
     @Override
-    public int compareTo(@NotNull OverlapLeakageData o) {
-        return 0;
+    public boolean equals(@NotNull OverlapLeakageData o) {
+        return (this.getTrainModel()).equals(o.getTrainModel()) &&
+                this.getTrain().equals(o.getTrain()) &&
+                this.getInvo().equals(o.getInvo()) &&
+                this.getTrainMeth().equals(o.getTrainMeth());
+
     }
 }
