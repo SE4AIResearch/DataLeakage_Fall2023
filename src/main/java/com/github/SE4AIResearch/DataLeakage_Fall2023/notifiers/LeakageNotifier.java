@@ -29,5 +29,4 @@ public class LeakageNotifier {
                 .createNotification(content, NotificationType.WARNING)
                 .notify(project);
     }
-
 }
