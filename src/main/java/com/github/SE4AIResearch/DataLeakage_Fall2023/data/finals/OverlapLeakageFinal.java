@@ -3,6 +3,9 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.data.finals;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageData;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Corresponds to FinalOverlapLeak.csv
+ */
 public class OverlapLeakageFinal implements OverlapLeakageData {
 
     private String trainModel;

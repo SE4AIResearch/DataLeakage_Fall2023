@@ -11,8 +11,6 @@ import java.util.List;
 
 public abstract class LeakageDetector {
     public LeakageType leakageType;
-    //TODO: remove debug
-    protected final boolean debug = false;
 
     /**
      * @return The name of the CSV file that contains relevant information
@@ -28,6 +26,7 @@ public abstract class LeakageDetector {
 
     /**
      * Adds a {@code LeakageInstance} to this detector's {@code leakageInstances()}.
+     *
      * @param instance The {@link LeakageInstance} to add.
      */
     public abstract void addLeakageInstance(LeakageInstance instance);
@@ -44,14 +43,14 @@ public abstract class LeakageDetector {
 //        File file = new File(LeakageOutput.folderPath() + this.getCsvFileName());
         File file = new File(filePath);
 
-            findLeakageInstancesInFile(file);
+        findLeakageInstancesInFile(file);
 
-            return leakageInstances();
+        return leakageInstances();
 
 
     }
 
-    public abstract void findLeakageInstancesInFile(File file) ;
+    public abstract void findLeakageInstancesInFile(File file);
 
     public LeakageDetector() {
 

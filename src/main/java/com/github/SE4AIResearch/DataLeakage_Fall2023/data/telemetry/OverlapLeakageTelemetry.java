@@ -11,6 +11,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+/**
+ * Corresponds to Telemetry_OverlapLeak.csv
+ */
 public class OverlapLeakageTelemetry implements OverlapLeakageData {
     ;
     private String trainModel;

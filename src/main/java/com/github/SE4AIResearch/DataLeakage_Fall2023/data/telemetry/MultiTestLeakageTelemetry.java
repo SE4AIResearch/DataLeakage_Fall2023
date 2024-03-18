@@ -1,6 +1,7 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.MultiTestData;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Utils;
 
 import java.io.BufferedReader;
@@ -9,14 +10,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-public class MultiTestLeakageTelemetry {
+/**
+ * Corresponds to Telemetry_MultiUseTestLeak.csv
+ */
+public class MultiTestLeakageTelemetry implements MultiTestData {
 
     private String test;
 
-    public MultiTestLeakageTelemetry(){
+    public MultiTestLeakageTelemetry() {
         String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_MultiUseTestLeak.csv").toString();
         File file = new File(filePath);
-       this.test="";
+        this.test = "";
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
@@ -36,7 +40,7 @@ public class MultiTestLeakageTelemetry {
                 var meth2 = columns[8];
                 var ctx2 = columns[9];
 
-                this .test= Utils.stripSuffixFromVariableName(test);
+                this.test = Utils.stripSuffixFromVariableName(test);
 
 
             }
