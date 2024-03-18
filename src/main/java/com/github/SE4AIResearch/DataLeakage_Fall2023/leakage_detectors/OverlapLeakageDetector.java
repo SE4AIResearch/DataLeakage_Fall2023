@@ -81,12 +81,14 @@ public class OverlapLeakageDetector extends LeakageDetector {
     @NotNull
     private OverlapLeakageInstance createLeakageInstanceFromLine(String line) {
         String[] columns = line.split(("\t"));
-        Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
-        int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
-        int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
 
         final var leakageFinal = new OverlapLeakageFinal(columns);
         final var telemetry = new OverlapLeakageTelemetry(leakageFinal);
+        
+        Invocation invocation = new Invocation(leakageFinal.getInvo());
+        int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
+        int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
+
 
         return new OverlapLeakageInstance(actualLineNumber, invocation,
                 telemetry.getTest(), telemetry.getTrain());

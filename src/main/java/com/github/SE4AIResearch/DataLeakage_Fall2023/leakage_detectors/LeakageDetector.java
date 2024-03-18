@@ -38,9 +38,7 @@ public abstract class LeakageDetector {
 
     public List<LeakageInstance> FindLeakageInstances() {
 
-
         String filePath = Paths.get(LeakageOutput.folderPath()).resolve(this.getCsvFileName()).toString();
-//        File file = new File(LeakageOutput.folderPath() + this.getCsvFileName());
         File file = new File(filePath);
 
         findLeakageInstancesInFile(file);

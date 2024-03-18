@@ -2,7 +2,9 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.MultiTestData;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.MultiUseTestLeak;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,12 +17,18 @@ import java.nio.file.Paths;
  */
 public class MultiTestLeakageTelemetry implements MultiTestData {
 
+    private String invo;
+    private String meth;
+    private String ctx1;
     private String test;
 
-    public MultiTestLeakageTelemetry() {
+    public MultiTestLeakageTelemetry(MultiUseTestLeak multiUseTestLeak) {
         String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_MultiUseTestLeak.csv").toString();
         File file = new File(filePath);
         this.test = "";
+        this.invo = "";
+        this.ctx1 = "";
+
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
@@ -30,18 +38,19 @@ public class MultiTestLeakageTelemetry implements MultiTestData {
 
                 String[] columns = line.split(("\t"));
                 var testModel = columns[0];
-                var test = columns[1];
-                var invo = columns[2];
-                var meth = columns[3];
-                var ctx1 = columns[4];
+                var _test = columns[1];
+                var _invo = columns[2];
+                var _meth = columns[3];
+                var _ctx1 = columns[4];
                 var testModel2 = columns[5];
-                var test2 = columns[6];
-                var invo2 = columns[7];
-                var meth2 = columns[8];
-                var ctx2 = columns[9];
+                this.test = columns[6];
+                this.invo = columns[7];
+                this.meth = columns[8];
+                this.ctx1 = columns[9];
 
-                this.test = Utils.stripSuffixFromVariableName(test);
-
+                if (this.equals(multiUseTestLeak)) {
+                    break;
+                }
 
             }
             reader.close();
@@ -52,7 +61,34 @@ public class MultiTestLeakageTelemetry implements MultiTestData {
         }
     }
 
+    @Override
     public String getTest() {
         return this.test;
     }
+
+    @Override
+    public String getCtx1() {
+        return ctx1;
+    }
+
+    @Override
+    public String getMeth() {
+        return meth;
+    }
+
+    @Override
+    public String getInvo() {
+        return invo;
+    }
+
+    @Override
+    public boolean equals(@NotNull MultiTestData o) {
+        return this.getInvo().equals(o.getInvo())
+                && this.getTest().equals(o.getTest())
+                && this.getMeth().equals(o.getMeth())
+                && this.getCtx1().equals(o.getCtx1());
+
+    }
+
+
 }
