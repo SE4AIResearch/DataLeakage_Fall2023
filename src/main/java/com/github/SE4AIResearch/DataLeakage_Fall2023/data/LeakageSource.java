@@ -18,17 +18,24 @@ import java.util.stream.Collectors;
  */
 
 public class LeakageSource {
-
     private final List<Taint> taints;
     private final List<Integer> lineNumbers;
     private final LeakageCause cause;
+    private final LeakageType type;
 
     public LeakageSource(LeakageType leakageType) {
-        this.taints = setTaints(leakageType).stream().distinct().toList();
-        this.cause = setCause();
-        this.lineNumbers = setLineNumbers();
-
-
+        // I know this is bad but I don't see a better way to do it rn
+        this.type = leakageType;
+        if (leakageType == LeakageType.MultiTestLeakage) {
+            // TODO set cause to new LeakageCause type
+            this.cause = LeakageCause.RepeatDataEvaluation;
+            this.taints = new ArrayList<>();
+            this.lineNumbers = new ArrayList<>();
+        } else {
+            this.taints = setTaints(leakageType).stream().distinct().toList();
+            this.cause = setCause();
+            this.lineNumbers = setLineNumbers();
+        }
     }
 
     public LeakageCause getCause() {
@@ -44,7 +51,15 @@ public class LeakageSource {
         } else if (taints.stream().allMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("flow"))) {
             return LeakageCause.DataAugmentation;
         }
-        return LeakageCause.unknown;
+
+        if (type.equals(LeakageType.PreprocessingLeakage)) {
+            return LeakageCause.unknownPreprocessing;
+
+        } else if (type.equals(LeakageType.OverlapLeakage)) {
+            return LeakageCause.unknownOverlap;
+        } else {
+            return LeakageCause.unknown;
+        }
     }
 
     private List<Integer> setLineNumbers() {
@@ -96,4 +111,8 @@ public class LeakageSource {
     }
 
 
+    public void addTaint(String lineContent) {
+        Taint newTaint = new Taint(new Invocation("$invo4"), lineContent);
+        this.taints.add(newTaint);
+    }
 }

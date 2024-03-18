@@ -55,9 +55,9 @@ public class OverlapLeakageInstanceVisitor extends InstanceElementVisitor<Overla
     public Predicate<OverlapLeakageInstance> leakageInstanceIsAssociatedWithNode(@NotNull PsiElement node) {
         var nodeLineNumber = PsiUtils.getNodeLineNumber(node, holder);
 
-
-        return instance -> (instance.lineNumber() == nodeLineNumber) && node.getText().contains(instance.variableName());
-                //Objects.equals(instance.test(), node.getText()); //TODO: make sure it's ok to have text and not name
+        return instance -> (instance.lineNumber() == nodeLineNumber) && (node.getText().contains(instance.variableName())
+                ||node.getText().contains(instance.train()));
+        //Objects.equals(instance.test(), node.getText()); //TODO: make sure it's ok to have text and not name
 
     }
 
@@ -74,12 +74,7 @@ public class OverlapLeakageInstanceVisitor extends InstanceElementVisitor<Overla
     }
 
     private class OverlapLeakageQuickFix implements LocalQuickFix {
-//private final List<OverlapLeakageInstance> overlapLeakageInstances;
 
-//        public OverlapLeakageQuickFix(List<OverlapLeakageInstance> overlapLeakageInstances) {
-//
-//            this.overlapLeakageInstances = overlapLeakageInstances;
-//        }
 
         @NotNull
         @Override
@@ -94,39 +89,6 @@ public class OverlapLeakageInstanceVisitor extends InstanceElementVisitor<Overla
 
         @Override
         public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-
-            var lineNumber = descriptor.getLineNumber();
-
-            var descriptionText = descriptor.getDescriptionTemplate();
-            var psiElement = descriptor.getPsiElement();
-            var psiFile = psiElement.getContainingFile();
-            PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
-            Document document = documentManager.getDocument(psiFile);
-            //Split
-            if (descriptionText.equals(InspectionBundle.get("inspectionText.splitBeforeSampleReminder.text"))) {
-
-            }
-            //Source not linked to instance
-
-            //Sample
-            if (descriptionText.equals(InspectionBundle.get("inspectionText.overlapLeakage.text"))
-                    && psiElement.getText().contains(OverlapLeakageSourceKeyword.sample.toString())) {
-
-            }
-
-//won't work if assignment is split on multiple lines
-            var instance = getLeakageInstanceAssociatedWithNode(overlapLeakageInstances, psiElement);
-            var source = instance.getLeakageSource();
-            if (source.getCause().equals(LeakageCause.SplitBeforeSample)) {
-
-                int offset = document.getLineStartOffset(lineNumber);
-
-                @Nullable
-                PsiElement statement = psiFile.findElementAt(offset
-                );
-
-
-            }
 
 
         }

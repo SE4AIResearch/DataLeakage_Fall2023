@@ -19,6 +19,11 @@ public class Taint {
         this.pyCallExpression = getPyCallExpressionFromTaint(taintString);
     }
 
+    public Taint(Invocation invocation, String pyCallExpression){
+        this.taintType = TaintLabel.unknown;
+        this.pyCallExpression = pyCallExpression;
+        this.invocation= invocation;
+    }
     @Override
     public boolean equals(Object obj) {
         var t = (Taint)(obj);

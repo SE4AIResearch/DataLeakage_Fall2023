@@ -12,6 +12,7 @@ import com.jetbrains.python.psi.PyElementVisitor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.function.Predicate;
 
 public abstract class InstanceElementVisitor<T extends LeakageInstance> extends PyElementVisitor {
@@ -33,8 +34,34 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
 
     public void renderInspectionOnLeakageInstance(List<T> leakageInstances, PsiElement node, LocalQuickFix fix) {
         if (leakageIsAssociatedWithNode(leakageInstances, node)) {
+            var instance = getLeakageInstanceAssociatedWithNode(leakageInstances, node);
+            var sourceLineNumbers = instance.getLeakageSource().getLineNumbers();
             LeakageType leakageType = getLeakageType();
-            holder.registerProblem(node, InspectionBundle.get(leakageType.getInspectionTextKey()), ProblemHighlightType.WARNING, fix);
+            var sb = new StringBuilder();
+
+
+            sb.append(InspectionBundle.get(leakageType.getInspectionTextKey()));
+            sb.append(" ");
+
+            if (sourceLineNumbers.size() == 1) {
+                sb.append("See Line ");
+                sb.append(sourceLineNumbers.get(0));
+                sb.append(" which contains the source of the leakage.");
+            } else if (sourceLineNumbers.isEmpty()) {//for multitest leakage
+
+            } else {
+
+                sb.append("See Lines: ");
+                StringJoiner sj = new StringJoiner(", ");
+                for (var l : sourceLineNumbers) {
+                    sj.add(l.toString());
+                }
+                sb.append(sj);
+                sb.append(" which contain the source of the leakage.");
+            } //TODO: refactor
+
+
+            holder.registerProblem(node,sb.toString(), ProblemHighlightType.WARNING, fix);
 
         }
     }
