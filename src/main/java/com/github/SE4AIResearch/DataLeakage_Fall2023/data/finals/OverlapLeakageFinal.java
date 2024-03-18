@@ -48,6 +48,12 @@ public class OverlapLeakageFinal implements OverlapLeakageData {
         return ctx;
     }
 
+    public String getCnt() {
+        return cnt;
+    }
+
+
+
     @Override
     public boolean equals(@NotNull OverlapLeakageData o) {
         return (this.getTrainModel().equals(o.getTrainModel()) &&

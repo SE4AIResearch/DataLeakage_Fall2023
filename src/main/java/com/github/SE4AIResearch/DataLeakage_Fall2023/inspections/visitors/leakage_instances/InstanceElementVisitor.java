@@ -61,7 +61,7 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
             } //TODO: refactor
 
 
-            holder.registerProblem(node,sb.toString(), ProblemHighlightType.WARNING, fix);
+            holder.registerProblem(node, sb.toString(), ProblemHighlightType.WARNING, fix);
 
         }
     }
