@@ -44,8 +44,8 @@ public class OverlapLeakageTelemetry {
                 testMeth = columns[8];
                 ctx2 = columns[9];
 
-                this.test = Utils.stripSuffixFromVariableName(test);
-                this.train= Utils.stripSuffixFromVariableName(train);
+                this.test = (test);
+                this.train= (train);
 
             }
             reader.close();

@@ -36,7 +36,7 @@ public class MultiTestLeakageTelemetry {
                 var meth2 = columns[8];
                 var ctx2 = columns[9];
 
-                this .test= Utils.stripSuffixFromVariableName(test);
+                this .test= (test);
 
 
             }
