@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
@@ -242,9 +243,9 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             };
             summaryTable = new JBTable(summaryTableModel);
 
-            summaryTable.setValueAt("Pre-Processing", 0, 0);
-            summaryTable.setValueAt("Multi-Test", 1, 0);
-            summaryTable.setValueAt("Overlap", 2, 0);
+            summaryTable.setValueAt("Preprocessing Leakage", 0, 0);
+            summaryTable.setValueAt("Multi-Test Leakage", 1, 0);
+            summaryTable.setValueAt("Overlap Leakage", 2, 0);
 
             JBScrollPane scrollPane = new JBScrollPane();
             scrollPane.setViewportView(summaryTable);
@@ -375,6 +376,20 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             }
         }
 
+        private void packColumnsToHeader(JBTable table) {
+            JTableHeader header = table.getTableHeader();
+            for (int i = 0; i < table.getColumnCount() - 1; i++) {
+                TableColumn col = table.getColumnModel().getColumn(i);
+                TableCellRenderer headerRenderer = col.getHeaderRenderer();
+                if (headerRenderer == null) {
+                    headerRenderer = header.getDefaultRenderer();
+                }
+                Component headerComp = headerRenderer.getTableCellRendererComponent(table, col.getHeaderValue(), false, false, 0, i);
+                int width = (int) headerComp.getPreferredSize().width;
+                col.setPreferredWidth(width - 50);
+            }
+        }
+
         private void updateTableData() {
             // Update Instance
             instanceTable.removeAll();
@@ -389,7 +404,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             // Refresh table view
             instanceTable.revalidate();
             instanceTable.repaint();
-            packColumns(instanceTable);
+            packColumnsToHeader(instanceTable);
 
             // Update Summary
             summaryTable.removeAll();
