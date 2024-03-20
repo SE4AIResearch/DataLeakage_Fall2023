@@ -49,10 +49,14 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
         var attrs = EditorColorsManager.getInstance().getGlobalScheme().getAttributes(EditorColors.SEARCH_RESULT_ATTRIBUTES);//TODO: revise this line
         var attrKey = TextAttributesKey.createTextAttributesKey("highlight",EditorColors.SEARCH_RESULT_ATTRIBUTES);//TODO: find something similar EditorColors.SEARCH_RESULT_ATTRIBUTES that will achieve the highlight we want
         var editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+
+        TextAttributesKey betterColor = EditorColors. INJECTED_LANGUAGE_FRAGMENT;
+
         if (leakageIsAssociatedWithNode(leakageInstances, node)) {
             LeakageType leakageType = getLeakageType();
-            holder.registerProblem(node, InspectionBundle.get(leakageType.getInspectionTextKey()), ProblemHighlightType.WARNING, fix);
-            highlightManager.addOccurrenceHighlights(editor, nodes, attrKey, true, null);//TODO: revise this line
+           // holder.registerProblem(node, InspectionBundle.get(leakageType.getInspectionTextKey()), ProblemHighlightType.WARNING, fix);
+          // highlightManager.addOccurrenceHighlights(editor, nodes, betterColor, true, null);//TODO: revise this line
+        highlightManager.addOccurrenceHighlight(editor,node.getTextOffset(),node.getTextOffset()+100,attrKey,001,null);
         }
     }
 
