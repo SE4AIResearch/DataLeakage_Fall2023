@@ -8,9 +8,9 @@ public class LeakageTypeMapFactory {
    public static HashMap<LeakageType, String> getLeakageTypeMap() {
       HashMap<LeakageType, String> map = new HashMap<>();
 
-      map.put(LeakageType.OverlapLeakage, "Overlap Leakage");
-      map.put(LeakageType.PreprocessingLeakage, "Preprocessing Leakage");
-      map.put(LeakageType.MultiTestLeakage, "Multi-Test Leakage");
+      map.put(LeakageType.OverlapLeakage, "Overlap");
+      map.put(LeakageType.PreprocessingLeakage, "Preprocessing");
+      map.put(LeakageType.MultiTestLeakage, "Multi-Test");
 
       return map;
    }
