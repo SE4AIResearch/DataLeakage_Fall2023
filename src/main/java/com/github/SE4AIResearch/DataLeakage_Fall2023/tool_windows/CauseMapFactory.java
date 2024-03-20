@@ -12,6 +12,8 @@ public class CauseMapFactory {
       map.put(LeakageCause.DataAugmentation, "Use caution when performing data augmentation.");
       map.put(LeakageCause.VectorizingTextData, "Vectorizer fit on train and test data together.");
       map.put(LeakageCause.RepeatDataEvaluation, "Same data used for multiple evalutations");
+      map.put(LeakageCause.unknownPreprocessing, "Feature selection before split");
+      map.put(LeakageCause.unknownOverlap, "Test data not distinct from training data");
       map.put(LeakageCause.unknown, "Unknown");
 
       return map;
