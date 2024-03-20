@@ -12,19 +12,20 @@ public class OverlapLeakageInstance implements LeakageInstance {
 
     private final Invocation invocation;
     private final LeakageSource leakageSource;
-    private final OverlapLeakageTelemetry telemetry = new OverlapLeakageTelemetry();
-    private final String test = telemetry.getTest();
-    private final String train = telemetry.getTrain();
-    ;
+    private final String test;
+    private final String train;
 
-    public OverlapLeakageInstance(int lineNumber, Invocation invocation) {
+    public OverlapLeakageInstance(int lineNumber, Invocation invocation,
+                                  String test, String train) {
 
         this.lineNumber = lineNumber;
         this.type = LeakageType.OverlapLeakage;
         this.invocation = invocation;
 
         this.leakageSource = new LeakageSource(this.type);
-
+        this.test = Utils.stripSuffixFromVariableName(test);
+        this.train = Utils.stripSuffixFromVariableName(train);
+        ;
     }
 
     public LeakageSource getLeakageSource() {
