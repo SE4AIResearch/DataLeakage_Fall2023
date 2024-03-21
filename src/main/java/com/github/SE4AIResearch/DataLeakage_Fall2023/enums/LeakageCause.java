@@ -6,6 +6,8 @@ public enum LeakageCause {
     VectorizingTextData,
 
     RepeatDataEvaluation,
+    unknownOverlap,
+    unknownPreprocessing,
     unknown;
 
     public String getInspectionTextKey() {
@@ -14,6 +16,8 @@ public enum LeakageCause {
             case SplitBeforeSample -> "inspectionText.splitBeforeSampleReminder.text";
             case VectorizingTextData -> "inspectionText.vectorizerFitWarning.text";
             case RepeatDataEvaluation -> "inspectionText.repeatDataEvaluationWarning.text";
+            case unknownOverlap -> "inspectionText.generalOverlapWarning.text";
+            case unknownPreprocessing -> "inspectionText.generalPreprocessingWarning.text";
             case unknown -> "inspectionText.generalWarning.text";
         };
     }

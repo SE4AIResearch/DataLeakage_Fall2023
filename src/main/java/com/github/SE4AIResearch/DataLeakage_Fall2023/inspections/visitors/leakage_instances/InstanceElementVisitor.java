@@ -69,11 +69,13 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
             var sb = new StringBuilder();
 
 
+
             int startoffset = node.getTextRange().getStartOffset();
             int endoffset = node.getTextRange().getEndOffset();
             Editor editor =     PsiEditorUtil.findEditor(node); //Project curr_project = project[0];
             PsiFile containingFile = node.getContainingFile();
             Project project = containingFile.getProject();
+
 
 
             sb.append(InspectionBundle.get(leakageType.getInspectionTextKey()));
@@ -98,7 +100,9 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
 
 
             holder.registerProblem(node,sb.toString(), ProblemHighlightType.WARNING, fix);
+
             highlight(project, editor, startoffset, endoffset);
+
 
         }
     }

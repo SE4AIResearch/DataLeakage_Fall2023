@@ -25,11 +25,13 @@ public class RunLeakageAction extends AnAction {
 
    private final ConnectClient connectClient = new ConnectClient();
    private final FileChanger fileChanger = new FileChanger();
-   private boolean isCompleted = false;
+   private boolean isCompleted;
    private Project project;
+//   private boolean isCompleted;
 
    /**
     * Constructor when created from the IDE (plugin.xml)
+    * Not used anymore
     */
    public RunLeakageAction() {
       super("Run Leakage Analysis");
@@ -43,6 +45,11 @@ public class RunLeakageAction extends AnAction {
    public RunLeakageAction(Project project) {
       super("Run Leakage Analysis");
       this.project = project;
+      this.isCompleted = false;
+   }
+
+   public boolean isCompleted() {
+      return this.isCompleted;
    }
 
    private static Project getProjectForFile(VirtualFile file) {
@@ -66,6 +73,8 @@ public class RunLeakageAction extends AnAction {
 
    @Override
    public void actionPerformed(@NotNull AnActionEvent event) {
+      this.isCompleted = false;
+
       if (this.project == null) {
          try {
             this.project = event.getProject();
@@ -130,14 +139,28 @@ public class RunLeakageAction extends AnAction {
                   throw new RuntimeException(e);
                }
             }
-         } catch (UnsatisfiedLinkError | NoClassDefFoundError e) {
-
+         } catch (NoClassDefFoundError e) {
             // Wrap UI call around runnable to invokeLater to prevent thread error
             Runnable showMessage = () -> {
                // UI-related code here
                Messages.showErrorDialog(
                      this.project,
                      "Please start the Docker Engine before running leakage analysis.",
+                     ""
+               );
+            };
+
+            SwingUtilities.invokeLater(showMessage);
+
+            return;
+         }
+         catch (UnsatisfiedLinkError e) {
+            // Wrap UI call around runnable to invokeLater to prevent thread error
+            Runnable showMessage = () -> {
+               // UI-related code here
+               Messages.showErrorDialog(
+                     this.project,
+                     "Please reconfigure or restart the Docker Engine.",
                      ""
                );
             };
@@ -176,12 +199,17 @@ public class RunLeakageAction extends AnAction {
          try {
             indicator.setText("Running analysis on " + fileName);
             indicator.setText2("Running");
-            connectClient.runLeakageAnalysis(tempDirectory, fileName);
+            try {
+               connectClient.runLeakageAnalysis(tempDirectory, fileName);
+               isCompleted = true;
+            } catch (RuntimeException e) {
+               isCompleted = false;
+               LeakageNotifier.notifyError(project, "File contains a syntax error");
+            }
             indicator.setFraction(1);
          } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            LeakageNotifier.notifyError(project, "Leakage analysis interrupted");
          }
-         isCompleted = true;
 
          indicator.stop();
       };

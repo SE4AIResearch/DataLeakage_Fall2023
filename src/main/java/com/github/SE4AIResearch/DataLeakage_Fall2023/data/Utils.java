@@ -1,6 +1,5 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,62 +11,22 @@ import java.util.regex.Pattern;
 
 public class Utils {
 
-    public static String getTestFromOverlapLeakTelemetryFile() {
-        String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_OverlapLeak.csv").toString();
-//        File file = new File(LeakageOutput.folderPath() + "Telemetry_OverlapLeak.csv");
-        File file = new File(filePath);
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-
-            String line;
-
-            while (((line = reader.readLine()) != null)) {
-
-                String[] columns = line.split(("\t"));
-                var trainModel = columns[0];
-                var train = columns[1];
-                var trainInvo = columns[2];
-                var trainMeth = columns[3];
-                var ctx1 = columns[4];
-                var testModel = columns[5];
-                var test = columns[6];
-                var invo = columns[7];
-                var testMeth = columns[8];
-                var ctx2 = columns[9];
-                return test;
-
-            }
-            reader.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        }
-        return "";
-    }
+    public static String stripSuffixFromVariableName(String variableNameWithSuffix) {
+        final Pattern variablePattern = Pattern.compile(".*_[0-9]*");
 
 
-    public static String getTestVariableNameWithoutSuffix(LeakageType type) {
-        final Pattern variablePattern = Pattern.compile(".*_[0-9]");
 
-        String testFromFile = "";
-
-        if (type.equals(LeakageType.MultiTestLeakage)) {
-            testFromFile = getTestFromMultiUseTestLeakTelemetryFile();
-        } else if (type.equals(LeakageType.OverlapLeakage)) {
-            testFromFile = getTestFromOverlapLeakTelemetryFile();
-        }
-
-        var matcher = variablePattern.matcher(testFromFile);
+        var matcher = variablePattern.matcher(variableNameWithSuffix);
 
         if (matcher.find()) {
-            var split = testFromFile.split("_");
+            var split = variableNameWithSuffix.split("_");
 
             return String.join("_", Arrays.stream(split).toList().subList(0, split.length - 1));
         } else {
-            return testFromFile;
+            return variableNameWithSuffix;
         }
     }
+
 
     public static String getTestFromMultiUseTestLeakTelemetryFile() {
         String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_MultiUseTestLeak.csv").toString();
@@ -142,6 +101,7 @@ public class Utils {
         }
         return "";
     }
+
 
 
 }
