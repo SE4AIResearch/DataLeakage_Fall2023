@@ -15,20 +15,16 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.PsiRecursiveElementVisitor;
+import com.intellij.psi.*;
+import com.intellij.psi.util.PsiEditorUtil;
 import com.jetbrains.python.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A type of {@link PyElementVisitor} that visits different types of elements within the PSI tree,
@@ -39,6 +35,9 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
     private final PsiRecursiveElementVisitor recursiveElementVisitor;
 
     private final OverlapLeakageQuickFix myQuickFix = new OverlapLeakageQuickFix();
+
+    Collection<RangeHighlighter> collection = new ArrayList<>();
+
 
     protected void removeInstance(OverlapLeakageInstance instance){
         var newArr = new ArrayList<OverlapLeakageInstance>();
@@ -94,8 +93,17 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
     @Override
     public void renderInspectionOnLeakageSource(@NotNull PsiElement node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances) {
 //TODO: change name?
+        int startoffset = node.getTextRange().getStartOffset();
+        int endoffset = node.getTextRange().getEndOffset();
+        Editor editor =     PsiEditorUtil.findEditor(node); //Project curr_project = project[0];
+        PsiFile containingFile = node.getContainingFile();
+        Project project = containingFile.getProject();
         overlapLeakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().ifPresent(
-                instance -> holder.registerProblem(node, getInspectionMessageForLeakageSource(instance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText())), ProblemHighlightType.WARNING)
+                instance ->
+                {
+                    holder.registerProblem(node, getInspectionMessageForLeakageSource(instance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText())), ProblemHighlightType.WARNING);
+                    highlight(project, editor, startoffset, endoffset);
+                }
         );
 
 
@@ -103,8 +111,18 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
     public void renderInspectionOnLeakageSource(@NotNull PsiElement node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances, LocalQuickFix fix) {
 //TODO: change name?
+        int startoffset = node.getTextRange().getStartOffset();
+        int endoffset = node.getTextRange().getEndOffset();
+        Editor editor =     PsiEditorUtil.findEditor(node); //Project curr_project = project[0];
+        PsiFile containingFile = node.getContainingFile();
+        Project project = containingFile.getProject();
         overlapLeakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().ifPresent(
-                instance -> holder.registerProblem(node, getInspectionMessageForLeakageSource(instance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText())), ProblemHighlightType.WARNING, fix)
+                instance -> {
+                    holder.registerProblem(node, getInspectionMessageForLeakageSource(instance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText())), ProblemHighlightType.WARNING, fix);
+
+                    highlight(project, editor, startoffset, endoffset);
+
+                }
         );
 
 

@@ -12,10 +12,8 @@ import java.util.regex.Pattern;
 public class Utils {
 
     public static String stripSuffixFromVariableName(String variableNameWithSuffix) {
-        final Pattern variablePattern = Pattern.compile(".*_[0-9]*");
-
-
-
+        final Pattern variablePattern = Pattern.compile(".*_[0-9]+");
+        
         var matcher = variablePattern.matcher(variableNameWithSuffix);
 
         if (matcher.find()) {

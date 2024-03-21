@@ -42,7 +42,7 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
             @Override
             public void visitElement(@NotNull PsiElement element) {
                 //  super.visitElement(element);//TODO:
-                renderInspectionOnLeakageInstance(multiTestLeakageInstances, element);
+                renderInspectionOnLeakageInstance(multiTestLeakageInstances, element, myQuickFix);
             }
         };
     }
@@ -56,8 +56,7 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
     public Predicate<MultiTestLeakageInstance> leakageInstanceIsAssociatedWithNode(@NotNull PsiElement node) {
 
         return instance -> (instance.lineNumber() == PsiUtils.getNodeLineNumber(node, holder))
-                && Objects.equals(instance.variableName(), node.getText()
-        );
+                && instance.variableName().contains(node.getText());
 
     }
 
@@ -142,16 +141,16 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
             var lineNumber = descriptor.getLineNumber();
 
             int offset = document.getLineStartOffset(lineNumber);
-        //    document.replaceString(instance.getTextOffset(), instance.getTextOffset() + instance.getTextLength(), instance.getText() + "_1");
+            //    document.replaceString(instance.getTextOffset(), instance.getTextOffset() + instance.getTextLength(), instance.getText() + "_1");
 
             for (int i = 0; i < multiTestLeakageInstances.size(); i++) {
                 //Doesn't always reload contents of document from disk
                 var inst = multiTestLeakageInstances.get(i);
-                var line = inst.lineNumber()-1;
+                var line = inst.lineNumber() - 1;
                 var lineTextRange = DocumentUtil.getLineTextRange(document, line);
                 var lineContent = document.getText(lineTextRange);
                 var newStr = lineContent.replace(instance.getText(), instance.getText() + "_" + i);
-                document.replaceString(document.getLineStartOffset(line),document.getLineEndOffset(line),newStr);
+                document.replaceString(document.getLineStartOffset(line), document.getLineEndOffset(line), newStr);
             }
 
         }

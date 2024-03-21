@@ -1,7 +1,9 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Utils;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageData;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.finals.OverlapLeakageFinal;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,7 +11,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-public class OverlapLeakageTelemetry {
+/**
+ * Corresponds to Telemetry_OverlapLeak.csv
+ */
+public class OverlapLeakageTelemetry implements OverlapLeakageData {
     ;
     private String trainModel;
     private String train;
@@ -22,7 +27,7 @@ public class OverlapLeakageTelemetry {
     private String testMeth;
     private String ctx2;
 
-    public OverlapLeakageTelemetry() {
+    public OverlapLeakageTelemetry(OverlapLeakageFinal overlapLeakageFinal) {
         String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_OverlapLeak.csv").toString();
         File file = new File(filePath);
         try {
@@ -33,19 +38,22 @@ public class OverlapLeakageTelemetry {
             while (((line = reader.readLine()) != null)) {
 
                 String[] columns = line.split(("\t"));
-                trainModel = columns[0];
-                train = columns[1];
-                trainInvo = columns[2];
-                trainMeth = columns[3];
-                ctx1 = columns[4];
-                testModel = columns[5];
-                test = columns[6];
-                invo = columns[7];
-                testMeth = columns[8];
-                ctx2 = columns[9];
+                this.trainModel = columns[0];
+                this.train = columns[1];
+                this.trainInvo = columns[2];
+                this.trainMeth = columns[3];
+                this.ctx1 = columns[4];
+                this.testModel = columns[5];
+                this.test = columns[6];
+                this.invo = columns[7];
+                this.testMeth = columns[8];
+                this.ctx2 = columns[9];
 
-                this.test = Utils.stripSuffixFromVariableName(test);
-                this.train= Utils.stripSuffixFromVariableName(train);
+
+                if (this.equals(overlapLeakageFinal)) {
+                    break;
+                }
+
 
             }
             reader.close();
@@ -56,12 +64,42 @@ public class OverlapLeakageTelemetry {
         }
 
     }
-    public  String getTest() {
+
+    public String getTest() {
         return test;
     }
 
-    public  String getTrain() {
+    @Override
+    public String getTrainModel() {
+        return trainModel;
+    }
+
+    public String getTrain() {
         return train;
     }
 
+    @Override
+    public String getInvo() {
+        return trainInvo;//not invo
+    }
+
+    @Override
+    public String getTrainMeth() {
+        return trainMeth;
+    }
+
+    @Override
+    public String getCtx() {
+        return ctx1;
+    }
+
+
+    @Override
+    public boolean equals(@NotNull OverlapLeakageData o) {
+        return (this.getTrainModel()).equals(o.getTrainModel()) &&
+                this.getTrain().equals(o.getTrain()) &&
+                this.getInvo().equals(o.getInvo()) &&
+                this.getTrainMeth().equals(o.getTrainMeth());
+
+    }
 }
