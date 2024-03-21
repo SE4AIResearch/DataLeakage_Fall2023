@@ -124,7 +124,7 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
 
     public void highlight(Project project, Editor editor, int startoffset, int endoffset ){
                  HighlightManager h1 = HighlightManager.getInstance(project);
-                 TextAttributesKey betterColor = EditorColors.INJECTED_LANGUAGE_FRAGMENT;
+                 TextAttributesKey betterColor = EditorColors.SEARCH_RESULT_ATTRIBUTES;
                   //Project curr_project = project[0];
 
                 h1.addOccurrenceHighlight(editor, startoffset, endoffset, betterColor, 001, collection);
