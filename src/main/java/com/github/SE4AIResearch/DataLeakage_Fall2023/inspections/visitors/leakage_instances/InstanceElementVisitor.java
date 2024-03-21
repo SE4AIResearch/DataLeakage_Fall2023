@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.text.Highlighter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.function.Predicate;
 
 public abstract class InstanceElementVisitor<T extends LeakageInstance> extends PyElementVisitor {
@@ -53,9 +54,39 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
        // TextAttributesKey betterColor = EditorColors. INJECTED_LANGUAGE_FRAGMENT;
 
         if (leakageIsAssociatedWithNode(leakageInstances, node)) {
+            var instance = getLeakageInstanceAssociatedWithNode(leakageInstances, node);
+            var sourceLineNumbers = instance.getLeakageSource().getLineNumbers();
             LeakageType leakageType = getLeakageType();
-            holder.registerProblem(node, InspectionBundle.get(leakageType.getInspectionTextKey()), ProblemHighlightType.WARNING, fix);
+
         highlightManager.addOccurrenceHighlight(editor,node.getTextOffset(),node.getTextOffset()+node.getText().length(),attrKey,001,null);
+
+            var sb = new StringBuilder();
+
+
+            sb.append(InspectionBundle.get(leakageType.getInspectionTextKey()));
+            sb.append(" ");
+
+            if (sourceLineNumbers.size() == 1) {
+                sb.append("See Line ");
+                sb.append(sourceLineNumbers.get(0));
+                sb.append(" which contains the source of the leakage.");
+            } else if (sourceLineNumbers.isEmpty()) {//for multitest leakage
+
+            } else {
+
+                sb.append("See Lines: ");
+                StringJoiner sj = new StringJoiner(", ");
+                for (var l : sourceLineNumbers) {
+                    sj.add(l.toString());
+                }
+                sb.append(sj);
+                sb.append(" which contain the source of the leakage.");
+            } //TODO: refactor
+
+
+            holder.registerProblem(node, sb.toString(), ProblemHighlightType.WARNING, fix);
+
+
         }
     }
 

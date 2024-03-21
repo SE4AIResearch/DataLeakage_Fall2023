@@ -7,18 +7,19 @@ import java.util.Objects;
 
 public class MultiTestLeakageInstance implements LeakageInstance {
 
-    private final MultiTestLeakageTelemetry telemetry = new MultiTestLeakageTelemetry();
-
+    private final String test ;
     private final int lineNumber;
     private final LeakageType type;
 
     private final Invocation invocation;
 
 
-    public MultiTestLeakageInstance(int lineNumber, Invocation invocation) {
+    public MultiTestLeakageInstance(int lineNumber, Invocation invocation,
+                                    String test) {
         this.lineNumber = lineNumber;
         this.type = LeakageType.MultiTestLeakage;
         this.invocation = invocation;
+        this.test = Utils.stripSuffixFromVariableName(test);
     }
     @Override
     public int lineNumber() {
@@ -37,7 +38,7 @@ public class MultiTestLeakageInstance implements LeakageInstance {
 
     @Override
     public String variableName() {
-        return telemetry.getTest();
+        return this.test;
     }
 
     @Override
