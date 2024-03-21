@@ -42,7 +42,7 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
             @Override
             public void visitElement(@NotNull PsiElement element) {
                 //  super.visitElement(element);//TODO:
-                renderInspectionOnLeakageInstance(multiTestLeakageInstances, element);
+                renderInspectionOnLeakageInstance(multiTestLeakageInstances, element, myQuickFix);
             }
         };
     }
