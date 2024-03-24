@@ -11,13 +11,13 @@ import java.util.List;
 
 public class LeakageAnalysisParser {
     private final List<LeakageDetector> leakageDetectors;
-
+private  List<LeakageInstance> leakageInstances;
     public LeakageAnalysisParser() {
         this.leakageDetectors = new ArrayList<>();
         leakageDetectors.add(new OverlapLeakageDetector());
         leakageDetectors.add(new MultiTestLeakageDetector());
         leakageDetectors.add(new PreprocessingLeakageDetector());
-
+this.leakageInstances = LeakageInstances();
     }
 
     public boolean isLeakageDetected() {
@@ -35,6 +35,14 @@ public class LeakageAnalysisParser {
             instances.addAll(detector.FindLeakageInstances());
         } return instances;
 
+    }
+
+    public List<LeakageInstance> GetLeakageInstances(){
+        return this.leakageInstances;
+    }
+
+    public List<LeakageInstance> SetLeakageInstances(List<LeakageInstance> leakageInstances){
+        return this.leakageInstances;
     }
 
 }

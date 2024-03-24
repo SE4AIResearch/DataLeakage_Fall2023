@@ -102,7 +102,8 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
                 instance ->
                 {
                     holder.registerProblem(node, getInspectionMessageForLeakageSource(instance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText())), ProblemHighlightType.WARNING);
-                    highlight(project, editor, startoffset, endoffset);
+
+                    highlight(project, editor, startoffset, endoffset,collection);
                 }
         );
 
@@ -120,7 +121,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
                 instance -> {
                     holder.registerProblem(node, getInspectionMessageForLeakageSource(instance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText())), ProblemHighlightType.WARNING, fix);
 
-                    highlight(project, editor, startoffset, endoffset);
+                    highlight(project, editor, startoffset, endoffset,collection);
 
                 }
         );

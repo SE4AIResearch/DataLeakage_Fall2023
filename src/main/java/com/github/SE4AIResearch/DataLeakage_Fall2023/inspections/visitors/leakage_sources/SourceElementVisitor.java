@@ -31,7 +31,6 @@ import java.util.function.Predicate;
 public abstract class SourceElementVisitor<T extends LeakageInstance, U extends LeakageSourceKeyword> extends PyElementVisitor {
     public ProblemsHolder holder;
 
-    Collection<RangeHighlighter> collection = new ArrayList<>();
 
 
     public abstract LeakageType getLeakageType();
@@ -117,7 +116,7 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
         return null;
 
     }
-    public void highlight(Project project, Editor editor, int startoffset, int endoffset ){
+    public void highlight(Project project, Editor editor, int startoffset, int endoffset,Collection<RangeHighlighter> collection ){
         HighlightManager h1 = HighlightManager.getInstance(project);
         TextAttributesKey betterColor = EditorColors.SEARCH_RESULT_ATTRIBUTES;
         //Project curr_project = project[0];
