@@ -1,8 +1,10 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leakage_instances;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
 import com.intellij.codeInsight.highlighting.HighlightManager;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemHighlightType;
@@ -18,6 +20,11 @@ import com.intellij.psi.util.PsiEditorUtil;
 import com.jetbrains.python.psi.PyElementVisitor;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -81,14 +88,63 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
                 sb.append(" which contain the source of the leakage.");
             } //TODO: refactor
 
+            if (!anyLinesAreOnExclusionList(instance, PsiUtils.getNodeLineNumber(node,holder))) {
+                holder.registerProblem(node, sb.toString(), ProblemHighlightType.WARNING, fix);
 
-            holder.registerProblem(node, sb.toString(), ProblemHighlightType.WARNING, fix);
-
-            highlight(project, editor, startoffset, endoffset);
-
+                highlight(project, editor, startoffset, endoffset);
+            }
 
         }
     }
+    private boolean anyLinesAreOnExclusionList(LeakageInstance leakageInstance, int nodeLineNumber) {
+        List<Integer> linesOnExlcusionList = linesOnExclusionList();
+
+        if (linesOnExlcusionList.contains(leakageInstance.lineNumber())) {
+            return true;
+        }
+        if (linesOnExlcusionList.contains(nodeLineNumber)) {
+            return true;
+        }
+
+        var source = leakageInstance.getLeakageSource();
+
+        for (Integer lineNo : source.getLineNumbers()) {
+            if (linesOnExlcusionList.contains(lineNo)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private List<Integer> linesOnExclusionList() {
+        String exclusionFilePath = Paths.get(LeakageOutput.folderPath()).resolve(LeakageOutput.getExclusionFileName()).toString();
+        File file = new File(exclusionFilePath);
+
+
+        List<Integer> linesToExclude = new ArrayList<>();
+        if (file.exists()) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    try {
+                        linesToExclude.add(Integer.parseInt(line.strip()));
+                    } catch (NumberFormatException e) {
+                        //ignore
+                    }
+
+
+                }
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return linesToExclude;
+    }
+
 
 
     public void renderInspectionOnLeakageInstance(List<T> leakageInstances, PsiElement node) {

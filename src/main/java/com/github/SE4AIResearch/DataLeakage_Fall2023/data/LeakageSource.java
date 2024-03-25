@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class LeakageSource {
     private final List<Taint> taints;
-    private final List<Integer> lineNumbers;
+    private List<Integer> lineNumbers;
     private final LeakageCause cause;
     private final LeakageType type;
 
@@ -105,6 +105,18 @@ public class LeakageSource {
         ).findFirst().orElse(new Taint("", TaintLabel.dup));//TODO: better error handling
     }
 
+    public void setLineNumber(int oldLineNumber, int newLineNumber) {
+        for (int i = 0; i < this.lineNumbers.size(); i++) {
+            if (this.lineNumbers.get(i) == oldLineNumber) {
+                lineNumbers.set(i, newLineNumber);
+            }
+        }
+    }
+
+    public void removeLineNumbers(List<Integer> lineNumbersToRemove) {
+        this.lineNumbers =
+                lineNumbers.stream().filter(lineNumber -> !lineNumbersToRemove.contains(lineNumber)).toList();
+    }
 
     public List<Integer> getLineNumbers() {
         return lineNumbers;

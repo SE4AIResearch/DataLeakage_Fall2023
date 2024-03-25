@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,11 +72,58 @@ public class OverlapLeakageDetector extends LeakageDetector {
 
     private void addLeakageInstanceIfNotPresent(LeakageInstance leakageInstance) {
 
-
         var existingInstances = leakageInstances();
         if (!existingInstances.contains(leakageInstance)) {
-            addLeakageInstance(leakageInstance);
+            if (!anyLinesAreOnExclusionList(leakageInstance)) {
+                addLeakageInstance(leakageInstance);
+            }
         }
+    }
+
+    private boolean anyLinesAreOnExclusionList(LeakageInstance leakageInstance) {
+        List<Integer> linesOnExlcusionList = linesOnExclusionList();
+
+        if (linesOnExlcusionList.contains(leakageInstance.lineNumber())) {
+            return true;
+        }
+
+        var source = leakageInstance.getLeakageSource();
+
+        for (Integer lineNo : source.getLineNumbers()) {
+            if (linesOnExlcusionList.contains(lineNo)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private List<Integer> linesOnExclusionList() {
+        String exclusionFilePath = Paths.get(LeakageOutput.folderPath()).resolve(LeakageOutput.getExclusionFileName()).toString();
+        File file = new File(exclusionFilePath);
+
+
+        List<Integer> linesToExclude = new ArrayList<>();
+        if (file.exists()) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    try {
+                        linesToExclude.add(Integer.parseInt(line.strip()));
+                    } catch (NumberFormatException e) {
+                        //ignore
+                    }
+
+
+                }
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return linesToExclude;
     }
 
     @NotNull
@@ -84,7 +132,7 @@ public class OverlapLeakageDetector extends LeakageDetector {
 
         final var leakageFinal = new OverlapLeakageFinal(columns);
         final var telemetry = new OverlapLeakageTelemetry(leakageFinal);
-        
+
         Invocation invocation = new Invocation(leakageFinal.getInvo());
         int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
         int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
