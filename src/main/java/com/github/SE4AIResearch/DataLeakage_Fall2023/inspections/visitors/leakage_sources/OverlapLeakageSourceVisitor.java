@@ -233,6 +233,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
                 var lineNumbersToRemove = new ArrayList<Integer>();
                 lineNumbersToRemove.add(document.getLineNumber(offset));
+                lineNumbersToRemove.add(document.getLineNumber(lineNumber-1));
                 lineNumbersToRemove.add(document.getLineNumber(offset) + 1);
                 lineNumbersToRemove.add(document.getLineNumber(offsetOfSplitCall)+1);
 //                overlapLeakageInstances.stream().forEach(thisInstance ->
