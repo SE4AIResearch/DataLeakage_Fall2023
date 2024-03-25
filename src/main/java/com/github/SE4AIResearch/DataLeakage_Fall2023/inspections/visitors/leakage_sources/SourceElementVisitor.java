@@ -1,6 +1,7 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leakage_sources;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.taints.Taint;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
@@ -23,6 +24,11 @@ import com.jetbrains.python.psi.PyCallExpression;
 import com.jetbrains.python.psi.PyElementVisitor;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -32,6 +38,7 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
     public ProblemsHolder holder;
 
 
+    Collection<RangeHighlighter> collection = new ArrayList<>();
 
     public abstract LeakageType getLeakageType();
 
@@ -69,10 +76,11 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
             PsiFile containingFile = node.getContainingFile();
             Project project = containingFile.getProject();
 
+            if (!anyLinesAreOnExclusionList(PsiUtils.getNodeLineNumber(node,holder))) {
 
-            holder.registerProblem(node, InspectionBundle.get(key), ProblemHighlightType.WARNING);
-            highlight(project, editor, startoffset, endoffset);
-
+                holder.registerProblem(node, InspectionBundle.get(key), ProblemHighlightType.WARNING);
+                highlight(project, editor, startoffset, endoffset);
+            }
 
         }
     }
@@ -89,10 +97,10 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
             PsiFile containingFile = node.getContainingFile();
             Project project = containingFile.getProject();
 
-
-            holder.registerProblem(node, InspectionBundle.get(key), ProblemHighlightType.WARNING);
-            highlight(project, editor, startoffset, endoffset);
-
+            if (!anyLinesAreOnExclusionList(PsiUtils.getNodeLineNumber(node,holder))) {
+                holder.registerProblem(node, InspectionBundle.get(key), ProblemHighlightType.WARNING);
+                highlight(project, editor, startoffset, endoffset);
+            }
 
         }//TODO: the split call isn't flagged as a taint by the leakage tool, but it is considered as a taint here
     }
@@ -116,7 +124,7 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
         return null;
 
     }
-    public void highlight(Project project, Editor editor, int startoffset, int endoffset,Collection<RangeHighlighter> collection ){
+    public void highlight(Project project, Editor editor, int startoffset, int endoffset){
         HighlightManager h1 = HighlightManager.getInstance(project);
         TextAttributesKey betterColor = EditorColors.SEARCH_RESULT_ATTRIBUTES;
         //Project curr_project = project[0];
@@ -124,6 +132,67 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
         h1.addOccurrenceHighlight(editor, startoffset, endoffset, betterColor, 001, collection);
 
     }
+    private boolean anyLinesAreOnExclusionList( int nodeLineNumber) {
+        List<Integer> linesOnExlcusionList = linesOnExclusionList();
+
+
+        if (linesOnExlcusionList.contains(nodeLineNumber)) {
+            return true;
+        }
+
+
+
+        return false;
+    }
+    private boolean anyLinesAreOnExclusionList(LeakageInstance leakageInstance, int nodeLineNumber) {
+        List<Integer> linesOnExlcusionList = linesOnExclusionList();
+
+        if (linesOnExlcusionList.contains(leakageInstance.lineNumber())) {
+            return true;
+        }
+        if (linesOnExlcusionList.contains(nodeLineNumber)) {
+            return true;
+        }
+
+        var source = leakageInstance.getLeakageSource();
+
+        for (Integer lineNo : source.getLineNumbers()) {
+            if (linesOnExlcusionList.contains(lineNo)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private List<Integer> linesOnExclusionList() {
+        String exclusionFilePath = Paths.get(LeakageOutput.folderPath()).resolve(LeakageOutput.getExclusionFileName()).toString();
+        File file = new File(exclusionFilePath);
+
+
+        List<Integer> linesToExclude = new ArrayList<>();
+        if (file.exists()) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    try {
+                        linesToExclude.add(Integer.parseInt(line.strip()));
+                    } catch (NumberFormatException e) {
+                        //ignore
+                    }
+
+
+                }
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return linesToExclude;
+    }
+
 
 
 }

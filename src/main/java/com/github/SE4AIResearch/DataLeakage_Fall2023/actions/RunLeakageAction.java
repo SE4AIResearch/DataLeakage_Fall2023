@@ -13,6 +13,7 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectLocator;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,6 +21,8 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+
+import static com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput.getExclusionFileName;
 
 public class RunLeakageAction extends AnAction {
 
@@ -192,6 +195,11 @@ public class RunLeakageAction extends AnAction {
 
             String factFolderPath = tempDirectory.toPath().resolve(file.getNameWithoutExtension() + "-fact").toString();
             LeakageOutput.setFactFolderPath(Paths.get(tempDirectory.getCanonicalPath(), file.getNameWithoutExtension()) + "-fact");
+
+
+
+
+
          } catch (IOException e) {
             throw new RuntimeException(e);
          }
@@ -211,6 +219,10 @@ public class RunLeakageAction extends AnAction {
             LeakageNotifier.notifyError(project, "Leakage analysis interrupted");
          }
 
+         String exclusionFilePath = Paths.get(LeakageOutput.folderPath()).resolve(LeakageOutput.getExclusionFileName()).toString();
+         File exclusionFile = new File(exclusionFilePath);
+
+         FileUtilRt.createIfNotExists(exclusionFile);
          indicator.stop();
       };
 

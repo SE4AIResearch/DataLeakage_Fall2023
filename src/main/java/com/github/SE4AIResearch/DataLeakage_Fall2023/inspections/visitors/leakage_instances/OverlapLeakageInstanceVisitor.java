@@ -1,5 +1,7 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leakage_instances;
 
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
@@ -20,6 +22,12 @@ import com.jetbrains.python.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -73,6 +81,55 @@ public class OverlapLeakageInstanceVisitor extends InstanceElementVisitor<Overla
         this.recursiveElementVisitor.visitElement(node);
 
     }
+    private boolean anyLinesAreOnExclusionList(LeakageInstance leakageInstance, int nodeLineNumber) {
+        List<Integer> linesOnExlcusionList = linesOnExclusionList();
+
+        if (linesOnExlcusionList.contains(leakageInstance.lineNumber())) {
+            return true;
+        }
+        if (linesOnExlcusionList.contains(nodeLineNumber)) {
+            return true;
+        }
+
+        var source = leakageInstance.getLeakageSource();
+
+        for (Integer lineNo : source.getLineNumbers()) {
+            if (linesOnExlcusionList.contains(lineNo)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private List<Integer> linesOnExclusionList() {
+        String exclusionFilePath = Paths.get(LeakageOutput.folderPath()).resolve(LeakageOutput.getExclusionFileName()).toString();
+        File file = new File(exclusionFilePath);
+
+
+        List<Integer> linesToExclude = new ArrayList<>();
+        if (file.exists()) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    try {
+                        linesToExclude.add(Integer.parseInt(line.strip()));
+                    } catch (NumberFormatException e) {
+                        //ignore
+                    }
+
+
+                }
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return linesToExclude;
+    }
+
 
     private class OverlapLeakageQuickFix implements LocalQuickFix {
 
