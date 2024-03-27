@@ -7,6 +7,8 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
  */
 public  class LeakageOutput {
     private static String folderPath =  "";;
+
+    private static String exclusionFileName="LinesToExclude.txt";
     public static String folderPath() {
         return folderPath;
     }
@@ -16,4 +18,7 @@ public  class LeakageOutput {
         folderPath = path;
     }
 
+    public static String getExclusionFileName() {
+        return exclusionFileName;
+    }
 }

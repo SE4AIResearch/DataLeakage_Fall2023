@@ -4,6 +4,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.ConnectClient;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.FileChanger;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.notifiers.LeakageNotifier;
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileTypes.FileType;
@@ -12,6 +13,7 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectLocator;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,15 +22,19 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+import static com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput.getExclusionFileName;
+
 public class RunLeakageAction extends AnAction {
 
    private final ConnectClient connectClient = new ConnectClient();
    private final FileChanger fileChanger = new FileChanger();
-   private boolean isCompleted = false;
+   private boolean isCompleted;
    private Project project;
+//   private boolean isCompleted;
 
    /**
     * Constructor when created from the IDE (plugin.xml)
+    * Not used anymore
     */
    public RunLeakageAction() {
       super("Run Leakage Analysis");
@@ -42,6 +48,11 @@ public class RunLeakageAction extends AnAction {
    public RunLeakageAction(Project project) {
       super("Run Leakage Analysis");
       this.project = project;
+      this.isCompleted = false;
+   }
+
+   public boolean isCompleted() {
+      return this.isCompleted;
    }
 
    private static Project getProjectForFile(VirtualFile file) {
@@ -65,6 +76,8 @@ public class RunLeakageAction extends AnAction {
 
    @Override
    public void actionPerformed(@NotNull AnActionEvent event) {
+      this.isCompleted = false;
+
       if (this.project == null) {
          try {
             this.project = event.getProject();
@@ -129,14 +142,28 @@ public class RunLeakageAction extends AnAction {
                   throw new RuntimeException(e);
                }
             }
-         } catch (UnsatisfiedLinkError | NoClassDefFoundError e) {
-
+         } catch (NoClassDefFoundError e) {
             // Wrap UI call around runnable to invokeLater to prevent thread error
             Runnable showMessage = () -> {
                // UI-related code here
                Messages.showErrorDialog(
                      this.project,
                      "Please start the Docker Engine before running leakage analysis.",
+                     ""
+               );
+            };
+
+            SwingUtilities.invokeLater(showMessage);
+
+            return;
+         }
+         catch (UnsatisfiedLinkError e) {
+            // Wrap UI call around runnable to invokeLater to prevent thread error
+            Runnable showMessage = () -> {
+               // UI-related code here
+               Messages.showErrorDialog(
+                     this.project,
+                     "Please reconfigure or restart the Docker Engine.",
                      ""
                );
             };
@@ -168,6 +195,11 @@ public class RunLeakageAction extends AnAction {
 
             String factFolderPath = tempDirectory.toPath().resolve(file.getNameWithoutExtension() + "-fact").toString();
             LeakageOutput.setFactFolderPath(Paths.get(tempDirectory.getCanonicalPath(), file.getNameWithoutExtension()) + "-fact");
+
+
+
+
+
          } catch (IOException e) {
             throw new RuntimeException(e);
          }
@@ -175,15 +207,27 @@ public class RunLeakageAction extends AnAction {
          try {
             indicator.setText("Running analysis on " + fileName);
             indicator.setText2("Running");
-            connectClient.runLeakageAnalysis(tempDirectory, fileName);
+            try {
+               connectClient.runLeakageAnalysis(tempDirectory, fileName);
+               isCompleted = true;
+            } catch (RuntimeException e) {
+               isCompleted = false;
+               LeakageNotifier.notifyError(project, "File contains a syntax error");
+            }
             indicator.setFraction(1);
          } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            LeakageNotifier.notifyError(project, "Leakage analysis interrupted");
          }
-         isCompleted = true;
 
+         String exclusionFilePath = Paths.get(LeakageOutput.folderPath()).resolve(LeakageOutput.getExclusionFileName()).toString();
+         File exclusionFile = new File(exclusionFilePath);
+
+         FileUtilRt.createIfNotExists(exclusionFile);
          indicator.stop();
       };
+
+      DaemonCodeAnalyzer.getInstance(project).restart();//TODO: restart only for psifile
+
       return runLeakage;
    }
 }

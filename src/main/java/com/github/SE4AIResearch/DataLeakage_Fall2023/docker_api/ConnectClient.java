@@ -11,6 +11,8 @@ import com.github.dockerjava.api.command.WaitContainerResultCallback;
 import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
+import com.github.dockerjava.core.command.AttachContainerResultCallback;
+import com.github.dockerjava.core.command.LogContainerResultCallback;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -26,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.io.File;
 import java.time.Duration;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 
@@ -104,8 +107,10 @@ public class ConnectClient {
      * @param fileName - The name of the file to run the LAT on
      * @return String containing the container ID
      */
-    public Boolean runLeakageAnalysis(File filePath, String fileName) throws InterruptedException {
+    public Boolean runLeakageAnalysis(File filePath, String fileName) throws RuntimeException, InterruptedException {
         // Get the path to the file on the users machine
+        final Boolean[] success = {true}; // Making this an array just so it can be accessed in final context
+
         String path2file = filePath.toString();
         List<String> commands = Arrays.asList("/execute/" + fileName, "-o");
 
@@ -120,10 +125,57 @@ public class ConnectClient {
 
         // Execute the container by ID
         dockerClient.startContainerCmd(containerId).exec();
+
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        final String[] exceptionString = new String[1];
+
+        ResultCallback<Frame> resultCallback = new ResultCallback<>() {
+            @Override
+            public void onStart(Closeable closeable) {
+                success[0] = true;
+            }
+
+            @Override
+            public void onNext(Frame object) {
+                String objString = object.toString();
+                if(objString.contains("SyntaxError")) {
+                    success[0] = false;
+                    exceptionString[0] = "Syntax Error";
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                System.out.println("YOU FOUND ME!");
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onComplete() {
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void close() throws IOException {
+                // Close any resources here
+            }
+        };
+
+        dockerClient.attachContainerCmd(containerId)
+              .withStdOut(true)
+              .withStdErr(true)
+              .withFollowStream(true)
+              .exec(resultCallback);
+
+        countDownLatch.await(120, TimeUnit.SECONDS); // Adjust timeout as per your requirement
+
         close(containerId);
 
-        // Return the ID of the newly created container
-        return true;
+        if (exceptionString[0] != null) {
+            throw new RuntimeException(exceptionString[0]);
+        }
+
+        return success[0];
     }
 
     private ArrayList<String> getRunningContainers() {

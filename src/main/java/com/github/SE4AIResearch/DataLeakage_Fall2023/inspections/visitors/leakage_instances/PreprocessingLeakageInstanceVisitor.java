@@ -56,7 +56,7 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
     public Predicate<PreprocessingLeakageInstance> leakageInstanceIsAssociatedWithNode(@NotNull PsiElement node) {
         var nodeLineNumber = PsiUtils.getNodeLineNumber(node, holder);
         return instance -> (instance.lineNumber() == nodeLineNumber)
-                && Objects.equals(instance.variableName(), node.getText()); //TODO: make sure it's ok to have text and not name
+                && (instance.variableName().contains(node.getText())); //TODO: make sure it's ok to have text and not name
     }
 
     @Override
@@ -124,17 +124,14 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
 //won't work if assignment is split on multiple lines
             var instance = getLeakageInstanceAssociatedWithNode(preprocessingLeakageInstances, psiElement);
             var source = instance.getLeakageSource();
-            if (source.getCause().equals(LeakageCause.VectorizingTextData)) {
 
-                int offset = document.getLineStartOffset(lineNumber);
+            int offset = document.getLineStartOffset(lineNumber);
 
-                @Nullable
-                PsiElement statement = psiFile.findElementAt(offset);
-                //won't work if assignment is split on multiple lines
+            @Nullable
+            PsiElement statement = psiFile.findElementAt(offset);
+            //won't work if assignment is split on multiple lines
 
-                document.insertString(offset, "split()\n");
-
-            }
+            document.insertString(offset, "split()\n");
 
 
         }

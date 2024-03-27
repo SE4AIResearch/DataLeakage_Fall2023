@@ -1,9 +1,9 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.MultiTestLeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.*;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.finals.OverlapLeakageFinal;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry.MultiTestLeakageTelemetry;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry.OverlapLeakageTelemetry;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 
 import java.io.BufferedReader;
@@ -50,18 +50,9 @@ public class MultiTestLeakageDetector extends LeakageDetector {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    String[] columns = line.split(("\t"));
-                    Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
-                    int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
-                    int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
+                    var leakageInstance = createLeakageInstanceFromLine(line);
 
-                    var leakageInstance = new MultiTestLeakageInstance(actualLineNumber, invocation);
-
-                    var existingInstances = leakageInstances();
-                    if (!existingInstances.contains(leakageInstance)) {
-                        addLeakageInstance(leakageInstance);
-                    }
-
+                    addLeakageInstanceIfNotPresent(leakageInstance);
 
                 }
                 reader.close();
@@ -69,6 +60,29 @@ public class MultiTestLeakageDetector extends LeakageDetector {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void addLeakageInstanceIfNotPresent(MultiTestLeakageInstance leakageInstance) {
+        var existingInstances = leakageInstances();
+        if (!existingInstances.contains(leakageInstance)) {
+            addLeakageInstance(leakageInstance);
+        }
+
+    }
+
+    private MultiTestLeakageInstance createLeakageInstanceFromLine(String line) {
+        String[] columns = line.split(("\t"));
+
+        final var multiUseTestLeak = new MultiUseTestLeak(columns);
+        final var telemetry = new MultiTestLeakageTelemetry(multiUseTestLeak);
+
+        Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
+        int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
+        int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
+
+
+        return new MultiTestLeakageInstance(actualLineNumber, invocation, telemetry.getTest());
+
     }
 
     public MultiTestLeakageDetector() {
