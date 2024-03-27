@@ -1,11 +1,8 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.listeners;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.ConnectClient;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.FileChanger;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors.LeakageDetector;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectLocator;

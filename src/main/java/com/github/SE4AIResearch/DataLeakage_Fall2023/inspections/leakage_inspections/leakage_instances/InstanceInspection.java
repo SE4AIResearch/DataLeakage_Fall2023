@@ -1,7 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_instances;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.LeakageInspection;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leakage_instances.InstanceElementVisitor;
 import com.intellij.codeInspection.ProblemsHolder;

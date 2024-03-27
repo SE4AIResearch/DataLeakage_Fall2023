@@ -1,10 +1,10 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors;
 
+import com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.PreprocessingLeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 
 import java.io.BufferedReader;

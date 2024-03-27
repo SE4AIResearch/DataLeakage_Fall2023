@@ -4,7 +4,6 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.MultiTestLeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInspection.LocalQuickFix;
@@ -12,29 +11,25 @@ import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.find.FindManager;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
-import com.intellij.psi.*;
-import com.intellij.psi.search.searches.ReferencesSearch;
-import com.intellij.refactoring.Refactoring;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.intellij.refactoring.RefactoringFactory;
-import com.intellij.refactoring.rename.RenamePsiElementProcessor;
 import com.intellij.util.DocumentUtil;
 import com.jetbrains.python.psi.PyPsiFacade;
 import com.jetbrains.python.psi.PyReferenceExpression;
-import com.jetbrains.python.refactoring.rename.RenamePyElementProcessor;
 import org.jetbrains.annotations.NotNull;
-import com.intellij.psi.util.PsiTreeUtil;
 
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Predicate;
+
+import static com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionUtils.addLinesToExclusion;
 
 public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<MultiTestLeakageInstance> {
     private final List<MultiTestLeakageInstance> multiTestLeakageInstances;
@@ -54,10 +49,6 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
         };
     }
 
-    @Override
-    public List<MultiTestLeakageInstance> getLeakageInstances(){
-        return multiTestLeakageInstances;
-    }
 
     @Override
     public LeakageType getLeakageType() {
@@ -74,11 +65,10 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
 
     @Override
     public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {
-
         renderInspectionOnLeakageInstance(multiTestLeakageInstances, node, myQuickFix);
     }
 
-
+    class MultiTestLeakageQuickFix implements LocalQuickFix {
         @Override
         public @IntentionFamilyName @NotNull String getFamilyName() {
             return getName();
@@ -162,86 +152,13 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
 
             }
             lineNumbersToRemove.add(document.getLineNumber(offset) + 1);
-         try {
                 addLinesToExclusion(lineNumbersToRemove);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+
             DaemonCodeAnalyzer.getInstance(project).restart();
         }
 
 
     }
-    private static void addLinesToExclusion(List<Integer> lines) throws IOException {
-        // File destinationFile = new File(String.valueOf(Paths.get(LeakageOutput.folderPath()).resolve(LeakageOutput.getExclusionFileName())));
 
 
-        String exclusionFilePath = Paths.get(LeakageOutput.folderPath()).resolve(LeakageOutput.getExclusionFileName()).toString();
-        File exclusionFile = new File(exclusionFilePath);
-
-        FileUtilRt.createIfNotExists(exclusionFile);
-
-
-        try {
-            FileWriter fr = new FileWriter(exclusionFile.getPath(), true);
-            for (var line : lines) {
-                fr.write(line.toString());
-                fr.write("\n");
-
-            }
-            fr.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private boolean anyLinesAreOnExclusionList(LeakageInstance leakageInstance,int nodeLineNumber) {
-        List<Integer> linesOnExlcusionList = linesOnExclusionList();
-
-        if (linesOnExlcusionList.contains(leakageInstance.lineNumber())) {
-            return true;
-        }
-        if (linesOnExlcusionList.contains(nodeLineNumber)) {
-            return true;
-        }
-
-        var source = leakageInstance.getLeakageSource();
-
-        for (Integer lineNo : source.getLineNumbers()) {
-            if (linesOnExlcusionList.contains(lineNo)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private List<Integer> linesOnExclusionList() {
-        String exclusionFilePath = Paths.get(LeakageOutput.folderPath()).resolve(LeakageOutput.getExclusionFileName()).toString();
-        File file = new File(exclusionFilePath);
-
-
-        List<Integer> linesToExclude = new ArrayList<>();
-        if (file.exists()) {
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    try {
-                        linesToExclude.add(Integer.parseInt(line.strip()));
-                    } catch (NumberFormatException e) {
-                        //ignore
-                    }
-
-
-                }
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return linesToExclude;
-    }
 }

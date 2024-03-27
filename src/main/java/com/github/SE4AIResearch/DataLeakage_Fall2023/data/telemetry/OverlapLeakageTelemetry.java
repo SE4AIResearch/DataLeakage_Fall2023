@@ -15,7 +15,6 @@ import java.nio.file.Paths;
  * Corresponds to Telemetry_OverlapLeak.csv
  */
 public class OverlapLeakageTelemetry implements OverlapLeakageData {
-    ;
     private String trainModel;
     private String train;
     private String trainInvo;

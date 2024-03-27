@@ -1,9 +1,7 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.*;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.finals.OverlapLeakageFinal;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry.MultiTestLeakageTelemetry;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry.OverlapLeakageTelemetry;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 
 import java.io.BufferedReader;

@@ -1,7 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leakage_instances;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.PreprocessingLeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
@@ -23,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<PreprocessingLeakageInstance> {
@@ -59,10 +57,7 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
                 && (instance.variableName().contains(node.getText())); //TODO: make sure it's ok to have text and not name
     }
 
-    @Override
-    public List<PreprocessingLeakageInstance> getLeakageInstances() {
-        return preprocessingLeakageInstances;
-    }
+
 
     @Override
     public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {

@@ -1,7 +1,5 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
