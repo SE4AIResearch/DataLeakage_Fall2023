@@ -3,19 +3,11 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leaka
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
-import com.intellij.codeInsight.highlighting.HighlightManager;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.warning_renderers.DataLeakageWarningRenderer;
 import com.intellij.codeInspection.LocalQuickFix;
-import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.colors.EditorColors;
-import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.util.PsiEditorUtil;
 import com.jetbrains.python.psi.PyElementVisitor;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,8 +17,6 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
 
-import static com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionUtils.anyLinesAreOnExclusionList;
-
 public abstract class InstanceElementVisitor<T extends LeakageInstance> extends PyElementVisitor {
     public ProblemsHolder holder;
 
@@ -35,8 +25,6 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
     public abstract Predicate<T> leakageInstanceIsAssociatedWithNode(@NotNull PsiElement node);
 
     Collection<RangeHighlighter> collection = new ArrayList<>();
-
-
 
 
     public boolean leakageIsAssociatedWithNode(List<T> leakageInstances, @NotNull PsiElement node) {
@@ -52,56 +40,41 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
             var instance = getLeakageInstanceAssociatedWithNode(leakageInstances, node);
             var sourceLineNumbers = instance.getLeakageSource().getLineNumbers();
             LeakageType leakageType = getLeakageType();
-            var sb = new StringBuilder();
+            var sb = getViewSourceMessage(leakageType, sourceLineNumbers);
 
+            DataLeakageWarningRenderer.renderDataLeakageWarning(instance, node,
+                    holder, sb, fix, collection
+            );
 
-
-            int startoffset = node.getTextRange().getStartOffset();
-            int endoffset = node.getTextRange().getEndOffset();
-            Editor editor =     PsiEditorUtil.findEditor(node); //Project curr_project = project[0];
-            PsiFile containingFile = node.getContainingFile();
-            Project project = containingFile.getProject();
-
-
-
-            sb.append(InspectionBundle.get(leakageType.getInspectionTextKey()));
-            sb.append(" ");
-
-            if (sourceLineNumbers.size() == 1) {
-                sb.append("See Line ");
-                sb.append(sourceLineNumbers.get(0));
-                sb.append(" which contains the source of the leakage.");
-            } else if (sourceLineNumbers.isEmpty()) {//for multitest leakage
-
-            } else {
-
-                sb.append("See Lines: ");
-                StringJoiner sj = new StringJoiner(", ");
-                for (var l : sourceLineNumbers) {
-                    sj.add(l.toString());
-                }
-                sb.append(sj);
-                sb.append(" which contain the source of the leakage.");
-            } //TODO: refactor
-
-            if (!anyLinesAreOnExclusionList(instance, PsiUtils.getNodeLineNumber(node,holder))) {
-                holder.registerProblem(node, sb.toString(), ProblemHighlightType.WARNING, fix);
-
-                highlight(project, editor, startoffset, endoffset);
-            }
 
         }
     }
 
+    @NotNull
+    private static String getViewSourceMessage(LeakageType leakageType, List<Integer> sourceLineNumbers) {
+        var sb = new StringBuilder();
 
 
-    public void highlight(Project project, Editor editor, int startoffset, int endoffset ){
-                 HighlightManager h1 = HighlightManager.getInstance(project);
-                 TextAttributesKey betterColor = EditorColors.SEARCH_RESULT_ATTRIBUTES;
-                  //Project curr_project = project[0];
+        sb.append(InspectionBundle.get(leakageType.getInspectionTextKey()));
+        sb.append(" ");
 
-                h1.addOccurrenceHighlight(editor, startoffset, endoffset, betterColor, 001, collection);
+        if (sourceLineNumbers.size() == 1) {
+            sb.append("See Line ");
+            sb.append(sourceLineNumbers.get(0));
+            sb.append(" which contains the source of the leakage.");
+        } else if (sourceLineNumbers.isEmpty()) {//for multitest leakage
 
+        } else {
+
+            sb.append("See Lines: ");
+            StringJoiner sj = new StringJoiner(", ");
+            for (var l : sourceLineNumbers) {
+                sj.add(l.toString());
+            }
+            sb.append(sj);
+            sb.append(" which contain the source of the leakage.");
+        }
+        return sb.toString();
     }
 
 

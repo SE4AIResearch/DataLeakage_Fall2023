@@ -80,50 +80,6 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
             var instance = descriptor.getPsiElement();
             var myFactory = RefactoringFactory.getInstance(project);
 
-            //PyReference expression is not a PsiNamedElement, nor does it have writeable metadata
-
-            //  var references = instance.getReferences();
-            //does not get all references
-//            PsiElement parentOfType = PsiTreeUtil.getParentOfType(instance, instance.getClass());
-            //   var references = ReferencesSearch.search(parentOfType);
-//
-//            var references = instance.getReferences();//Does not get references
-            //            var usages = myRefactoring.findUsages();//Does not find any usages
-//
-
-            //  PsiNamedElement namedElement = PsiTreeUtil.getParentOfType(instance, PsiNamedElement.class);
-
-//            var myRefactoring = myFactory.createRename((PsiElement) instance, instance.getText() + "_1",
-//                    true, true);
-//            var usages = myRefactoring.findUsages();
-//            var processor = RenamePyElementProcessor.forElement(instance);
-//            processor.renameElement(instance, instance.getText()+"_1", usages,null);
-//
-
-
-//
-//            ApplicationManager.getApplication().executeOnPooledThread(()->{
-//                ApplicationManager.getApplication().invokeLater(()->{
-//                    myRefactoring.run();
-//                });
-//            });
-
-
-//            CommandProcessor.getInstance().executeCommand(project, new Runnable() {
-//                @Override
-//                public void run() {
-//                    ApplicationManager.getApplication().runWriteAction(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            myRefactoring.run();
-//                        }
-//                    });
-//                }
-//            }, "Rename", "Rename action");
-
-
-//            myRefactoring.doRefactoring(usages); //Cannot perform refactoring and throws an error
-//            // java.lang.Throwable: Unknown element type : PyReferenceExpression: X_test
 
             FindManager myFindManager = FindManager.getInstance(project);
             var possible = myFindManager.canFindUsages(instance);

@@ -37,7 +37,8 @@ public class DataLeakageWarningRenderer {
             highlight(project, editor, startoffset, endoffset, collection);
         }
     }
-    public static void renderDataLeakageWarning( PsiElement node, @NotNull ProblemsHolder holder, String inspectionMessage, Collection<RangeHighlighter> collection) {
+
+    public static void renderDataLeakageWarning(PsiElement node, @NotNull ProblemsHolder holder, String inspectionMessage, Collection<RangeHighlighter> collection) {
         int startoffset = node.getTextRange().getStartOffset();
         int endoffset = node.getTextRange().getEndOffset();
         Editor editor = PsiEditorUtil.findEditor(node); //Project curr_project = project[0];
@@ -45,7 +46,7 @@ public class DataLeakageWarningRenderer {
         Project project = containingFile.getProject();
         if (!
 
-                anyLinesAreOnExclusionList( PsiUtils.getNodeLineNumber(node, holder))) {
+                anyLinesAreOnExclusionList(PsiUtils.getNodeLineNumber(node, holder))) {
             holder.registerProblem(node, inspectionMessage, ProblemHighlightType.WARNING);
 
             highlight(project, editor, startoffset, endoffset, collection);
@@ -61,7 +62,22 @@ public class DataLeakageWarningRenderer {
         if (!
 
                 anyLinesAreOnExclusionList(instance, PsiUtils.getNodeLineNumber(node, holder))) {
-            holder.registerProblem(node, inspectionMessage, ProblemHighlightType.WARNING,fix);
+            holder.registerProblem(node, inspectionMessage, ProblemHighlightType.WARNING, fix);
+
+            highlight(project, editor, startoffset, endoffset, collection);
+        }
+    }
+
+    public static void renderDataLeakageWarning(PsiElement node, @NotNull ProblemsHolder holder, String inspectionMessage, LocalQuickFix fix, Collection<RangeHighlighter> collection) {
+        int startoffset = node.getTextRange().getStartOffset();
+        int endoffset = node.getTextRange().getEndOffset();
+        Editor editor = PsiEditorUtil.findEditor(node); //Project curr_project = project[0];
+        PsiFile containingFile = node.getContainingFile();
+        Project project = containingFile.getProject();
+        if (!
+
+                anyLinesAreOnExclusionList(PsiUtils.getNodeLineNumber(node, holder))) {
+            holder.registerProblem(node, inspectionMessage, ProblemHighlightType.WARNING, fix);
 
             highlight(project, editor, startoffset, endoffset, collection);
         }

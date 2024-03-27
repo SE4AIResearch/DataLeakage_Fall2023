@@ -5,12 +5,14 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.warning_renderers.DataLeakageWarningRenderer;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
@@ -21,6 +23,8 @@ import com.jetbrains.python.psi.PyReferenceExpression;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -28,7 +32,8 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
     private final List<PreprocessingLeakageInstance> preprocessingLeakageInstances;
     private final PsiRecursiveElementVisitor recursiveElementVisitor;
 
-    private final PreprocessingLeakageQuickFix myQuickFix ;
+    private final PreprocessingLeakageQuickFix myQuickFix;
+    Collection<RangeHighlighter> collection = new ArrayList<>();
 
     public PreprocessingLeakageInstanceVisitor(List<PreprocessingLeakageInstance> preprocessingLeakageInstances, @NotNull ProblemsHolder holder) {
         this.preprocessingLeakageInstances = preprocessingLeakageInstances;
@@ -53,10 +58,8 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
     @Override
     public Predicate<PreprocessingLeakageInstance> leakageInstanceIsAssociatedWithNode(@NotNull PsiElement node) {
         var nodeLineNumber = PsiUtils.getNodeLineNumber(node, holder);
-        return instance -> (instance.lineNumber() == nodeLineNumber)
-                && (instance.variableName().contains(node.getText())); //TODO: make sure it's ok to have text and not name
+        return instance -> (instance.lineNumber() == nodeLineNumber) && (instance.variableName().contains(node.getText())); //TODO: make sure it's ok to have text and not name
     }
-
 
 
     @Override
@@ -72,9 +75,11 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
     public void visitPyNamedParameter(@NotNull PyNamedParameter node) {
 
         if (leakageIsAssociatedWithNode(preprocessingLeakageInstances, node)) {
-            holder.registerProblem(node, InspectionBundle.get(LeakageType.PreprocessingLeakage.getInspectionTextKey()), ProblemHighlightType.WARNING, myQuickFix);
+            var inspectionMessage = InspectionBundle.get(LeakageType.PreprocessingLeakage.getInspectionTextKey());
+            DataLeakageWarningRenderer.renderDataLeakageWarning(node, holder, inspectionMessage, myQuickFix, collection);
 
         }
+
     }
 
     @Override
@@ -111,8 +116,7 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
             //Source not linked to instance
 
             //Sample
-            if (descriptionText.equals(InspectionBundle.get("inspectionText.preprocessingLeakage.text"))
-                    && psiElement.getText().contains(OverlapLeakageSourceKeyword.sample.toString())) {
+            if (descriptionText.equals(InspectionBundle.get("inspectionText.preprocessingLeakage.text")) && psiElement.getText().contains(OverlapLeakageSourceKeyword.sample.toString())) {
 
             }
 
@@ -122,8 +126,7 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
 
             int offset = document.getLineStartOffset(lineNumber);
 
-            @Nullable
-            PsiElement statement = psiFile.findElementAt(offset);
+            @Nullable PsiElement statement = psiFile.findElementAt(offset);
             //won't work if assignment is split on multiple lines
 
             document.insertString(offset, "split()\n");
