@@ -66,8 +66,9 @@ public class PreprocessingLeakageDetector extends LeakageDetector {
 
                     }
 
-                    reader.close();
+
                 }
+                reader.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

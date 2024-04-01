@@ -18,7 +18,8 @@ public class PreprocessingLeakageSourceInspection extends SourceInspection<Prepr
     }
 
     @Override
-    public SourceElementVisitor<PreprocessingLeakageInstance, PreprocessingLeakageSourceKeyword> sourceElementVisitor(List<PreprocessingLeakageInstance> leakageInstances, @NotNull ProblemsHolder holder) {
+    public SourceElementVisitor<PreprocessingLeakageInstance, PreprocessingLeakageSourceKeyword>
+    sourceElementVisitor(List<PreprocessingLeakageInstance> leakageInstances, @NotNull ProblemsHolder holder) {
         return new PreprocessingLeakageSourceVisitor(leakageInstances, holder);
 
     }

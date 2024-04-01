@@ -6,6 +6,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionUtils;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
@@ -93,14 +94,6 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
         }
     }
-
-
-    @Override
-    public void renderInspectionOnLeakageSource(@NotNull PsiElement node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances) {
-
-
-    }
-
 
 
 
@@ -191,6 +184,14 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
                 InspectionUtils.addLinesToExclusion(lineNumbersToRemove);
                 DaemonCodeAnalyzer.getInstance(project).restart();
+                QuickFixActionNotifier publisher = project.getMessageBus()
+                        .syncPublisher(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC);
+                publisher.beforeAction();
+                try {
+                    // do action
+                } finally {
+                    publisher.afterAction();
+                }
             }
 
 

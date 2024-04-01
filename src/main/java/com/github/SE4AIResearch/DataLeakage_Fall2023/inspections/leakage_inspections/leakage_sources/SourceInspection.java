@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public abstract class SourceInspection<T extends LeakageInstance, U extends LeakageSourceKeyword> extends LeakageInspection<T> {
-    public ProblemsHolder holder;
 
     public abstract SourceElementVisitor<T, U> sourceElementVisitor(List<T> leakageInstances, @NotNull ProblemsHolder holder);
 

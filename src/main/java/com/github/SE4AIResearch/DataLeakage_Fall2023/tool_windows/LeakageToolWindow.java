@@ -6,6 +6,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
@@ -83,7 +84,19 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             this.runLeakageAction = new RunLeakageAction(project);
 
             toolWindow.getComponent().add(contentPanel);
+            project.getMessageBus().connect().subscribe(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC, new QuickFixActionNotifier(){
+                @Override
+                public void beforeAction(){
 
+                }
+
+                @Override
+
+                public void afterAction(){
+                    updateTableData();
+                }
+
+            });
             updateTableData();
         }
 

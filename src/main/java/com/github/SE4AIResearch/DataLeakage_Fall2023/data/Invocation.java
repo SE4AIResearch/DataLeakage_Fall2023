@@ -61,17 +61,18 @@ public class Invocation {
 //        File file = new File(folderPath + "InvokeLineno.facts");
         File file = new File(filePath);
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
             int lineNumber = invocation.getNumber() + 1;
             String line = "";
+            BufferedReader reader = new BufferedReader(new FileReader(file));
 
             for (int i = 1; i <= lineNumber; i++) {
                 line = reader.readLine();
 
             }
+            reader.close();
+
             String[] columns = line.split(("\t"));
 
-            reader.close();
             return Integer.parseInt(columns[1]);
 
 
@@ -87,14 +88,16 @@ public class Invocation {
 //        File file = new File(LeakageOutput.folderPath() + "Invoke.facts");
         File file = new File(filePath);
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
             int lineNumber = this.getNumber() + 1;
             String line = "";
+
+            BufferedReader reader = new BufferedReader(new FileReader(file));
 
             for (int i = 1; i <= lineNumber; i++) {
                 line = reader.readLine();
 
             }
+            reader.close();
             String[] columns = line.split(("\t"));
 
             var functionCall = columns[1];
@@ -102,7 +105,7 @@ public class Invocation {
                 return functionCall.split("\\.")[1];
             }
 
-            reader.close();
+
             return columns[1];
 
         } catch (IOException e) {
