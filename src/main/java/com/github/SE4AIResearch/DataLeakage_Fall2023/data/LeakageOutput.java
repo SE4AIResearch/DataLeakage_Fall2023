@@ -6,7 +6,7 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
  * //TODO: make the path point to the output of the leakage tool binary.
  */
 public  class LeakageOutput {
-    private static String folderPath =  "";;
+    private static String folderPath =  "";
 
     private static String exclusionFileName="LinesToExclude.txt";
     public static String folderPath() {

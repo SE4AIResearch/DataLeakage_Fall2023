@@ -5,7 +5,9 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.ConnectClient;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.FileChanger;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.notifiers.LeakageNotifier;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -21,8 +23,6 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-
-import static com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput.getExclusionFileName;
 
 public class RunLeakageAction extends AnAction {
 

@@ -1,6 +1,5 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry.OverlapLeakageTelemetry;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 
 import java.util.Objects;
@@ -25,7 +24,6 @@ public class OverlapLeakageInstance implements LeakageInstance {
         this.leakageSource = new LeakageSource(this.type);
         this.test = Utils.stripSuffixFromVariableName(test);
         this.train = Utils.stripSuffixFromVariableName(train);
-        ;
     }
 
     public LeakageSource getLeakageSource() {

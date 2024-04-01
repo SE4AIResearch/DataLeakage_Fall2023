@@ -1,6 +1,5 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.notifiers;
 
-import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;

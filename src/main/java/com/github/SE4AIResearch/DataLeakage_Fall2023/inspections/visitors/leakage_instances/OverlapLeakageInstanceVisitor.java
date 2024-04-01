@@ -3,24 +3,20 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leaka
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.codeInspection.util.IntentionFamilyName;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiRecursiveElementVisitor;
-import com.jetbrains.python.psi.*;
+import com.jetbrains.python.psi.PyElementVisitor;
+import com.jetbrains.python.psi.PyFunction;
+import com.jetbrains.python.psi.PyReferenceExpression;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -68,6 +64,10 @@ public class OverlapLeakageInstanceVisitor extends InstanceElementVisitor<Overla
                         || (instance.train().contains(node.getText())));
         //Objects.equals(instance.test(), node.getText()); //TODO: make sure it's ok to have text and not name
 
+    }
+
+    public List<OverlapLeakageInstance> getLeakageInstances() {
+        return overlapLeakageInstances;
     }
 
     @Override

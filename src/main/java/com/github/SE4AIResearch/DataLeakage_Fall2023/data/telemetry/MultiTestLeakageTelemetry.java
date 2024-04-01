@@ -3,7 +3,6 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.MultiTestData;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.MultiUseTestLeak;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
