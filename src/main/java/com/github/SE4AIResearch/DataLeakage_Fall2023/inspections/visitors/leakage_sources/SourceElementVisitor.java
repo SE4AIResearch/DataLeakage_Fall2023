@@ -25,26 +25,27 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public abstract class SourceElementVisitor<T extends LeakageInstance, U extends LeakageSourceKeyword> extends PyElementVisitor {
-    private ProblemsHolder holder;
+
 
     Collection<RangeHighlighter> collection = new ArrayList<>();
 
     public abstract LeakageType getLeakageType();
 
-    public Predicate<T> leakageSourceAssociatedWithNode(@NotNull PsiElement node) {
+    public Predicate<T> leakageSourceAssociatedWithNode(@NotNull PsiElement node,
+    @NotNull ProblemsHolder holder) {
         var nodeLineNumber = PsiUtils.getNodeLineNumber(node, holder);
 
         return instance -> (instance.getLeakageSource().getLineNumbers().stream().anyMatch(leakageSourceLineNumber -> leakageSourceLineNumber == nodeLineNumber));
 
     }
 
-    public T getInstanceForLeakageSourceAssociatedWithNode(List<T> leakageInstances, @NotNull PsiElement node) {
-        return leakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().get();
+    public T getInstanceForLeakageSourceAssociatedWithNode(List<T> leakageInstances, @NotNull PsiElement node,@NotNull ProblemsHolder holder) {
+        return leakageInstances.stream().filter(leakageSourceAssociatedWithNode(node,holder)).findFirst().get();
     }
 
 
-    public boolean leakageSourceIsAssociatedWithNode(List<T> leakageInstances, @NotNull PyCallExpression node) {
-        return leakageInstances.stream().anyMatch(leakageSourceAssociatedWithNode(node));
+    public boolean leakageSourceIsAssociatedWithNode(List<T> leakageInstances, @NotNull PyCallExpression node,@NotNull ProblemsHolder holder) {
+        return leakageInstances.stream().anyMatch(leakageSourceAssociatedWithNode(node,holder));
     }
 
     @NotNull
@@ -62,7 +63,7 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
     public void renderInspectionOnLeakageSource(@NotNull PsiElement node, @NotNull ProblemsHolder holder, List<T> leakageInstances) {
         //TODO: change name?
 
-        leakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().ifPresent(
+        leakageInstances.stream().filter(leakageSourceAssociatedWithNode(node,holder)).findFirst().ifPresent(
                 instance ->
                 {
                     var inspectionMessage = getInspectionMessageForLeakageSource(instance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText()));
@@ -76,7 +77,7 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
     public void renderInspectionOnLeakageSource(@NotNull PsiElement node, @NotNull ProblemsHolder holder, List<T> leakageInstances, LocalQuickFix fix) {
 //TODO: change name?
 
-        leakageInstances.stream().filter(leakageSourceAssociatedWithNode(node)).findFirst().ifPresent(
+        leakageInstances.stream().filter(leakageSourceAssociatedWithNode(node,holder)).findFirst().ifPresent(
                 instance -> {
                     var inspectionMessage = getInspectionMessageForLeakageSource(instance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText()));
                     DataLeakageWarningRenderer.renderDataLeakageWarning(instance, node, holder, inspectionMessage, fix, collection);

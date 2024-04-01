@@ -54,7 +54,7 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
         //TODO: extract
 
         if (!preprocessingLeakageInstances.isEmpty()) {
-            if (leakageSourceIsAssociatedWithNode(preprocessingLeakageInstances, node)) {
+            if (leakageSourceIsAssociatedWithNode(preprocessingLeakageInstances, node,holder)) {
                 if (holder.getResults().stream().noneMatch(problemDescriptor -> problemDescriptor.getLineNumber() + 1/*need plus one to account for zero based line number*/ == PsiUtils.getNodeLineNumber(node, holder))) {//TODO: naive solution, should refactor to look more closely at method calls. need to check if the correct psi element is being highlighted
                     renderInspectionOnLeakageSource(node, holder, preprocessingLeakageInstances);
                 }

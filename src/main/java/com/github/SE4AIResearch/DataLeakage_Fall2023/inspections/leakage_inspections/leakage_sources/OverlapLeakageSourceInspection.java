@@ -11,8 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class OverlapLeakageSourceInspection extends SourceInspection<OverlapLeakageInstance, OverlapLeakageSourceKeyword> {
-    private List<OverlapLeakageInstance> overlapLeakageInstances;
-    private ProblemsHolder holder;
 
     @Override
     public LeakageType getLeakageType() {
@@ -22,8 +20,7 @@ public class OverlapLeakageSourceInspection extends SourceInspection<OverlapLeak
 
     @Override
     public SourceElementVisitor<OverlapLeakageInstance, OverlapLeakageSourceKeyword> sourceElementVisitor(List<OverlapLeakageInstance> overlapLeakageInstances, @NotNull ProblemsHolder holder) {
-        this.overlapLeakageInstances = overlapLeakageInstances;
-        this.holder = holder;
+
         return new OverlapLeakageSourceVisitor(overlapLeakageInstances, holder);
     }
 

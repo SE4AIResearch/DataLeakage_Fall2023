@@ -83,7 +83,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
         //TODO: extract
 
         if (!overlapLeakageInstances.isEmpty()) {
-            if (leakageSourceIsAssociatedWithNode(overlapLeakageInstances, node)) {
+            if (leakageSourceIsAssociatedWithNode(overlapLeakageInstances, node,holder)) {
 
                 renderInspectionOnLeakageSource(node, holder, overlapLeakageInstances, myQuickFix);
             }
@@ -94,12 +94,6 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
         }
     }
 
-
-    @Override
-    public void renderInspectionOnLeakageSource(@NotNull PsiElement node, @NotNull ProblemsHolder holder, List<OverlapLeakageInstance> overlapLeakageInstances) {
-
-
-    }
 
 
 
@@ -150,7 +144,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
             }
 
 //won't work if assignment is split on multiple lines
-            var instance = getInstanceForLeakageSourceAssociatedWithNode(overlapLeakageInstances, psiElement);
+            var instance = getInstanceForLeakageSourceAssociatedWithNode(overlapLeakageInstances, psiElement,holder);
             var source = instance.getLeakageSource();
             if (source.getCause().equals(LeakageCause.SplitBeforeSample)) {
                 Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();

@@ -60,14 +60,14 @@ public class PreprocessingLeakageDetector extends LeakageDetector {
                     var leakageInstance = new PreprocessingLeakageInstance(actualLineNumber, invocation);
 
                     var existingInstances = leakageInstances();
-//                    if (!debug || !existingInstances.contains(leakageInstance)) {
                     if (!existingInstances.contains(leakageInstance)) {
                         addLeakageInstance(leakageInstance);
 
                     }
 
-                    reader.close();
+
                 }
+                reader.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
