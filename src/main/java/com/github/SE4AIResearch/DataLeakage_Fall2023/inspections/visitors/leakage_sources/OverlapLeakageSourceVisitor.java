@@ -10,6 +10,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.quick_fixes.OverlapLeakageQuickFix;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInspection.LocalQuickFix;
@@ -245,6 +246,15 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
                     throw new RuntimeException(e);
                 }
                 DaemonCodeAnalyzer.getInstance(project).restart();
+
+                QuickFixActionNotifier publisher = project.getMessageBus()
+                        .syncPublisher(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC);
+                publisher.beforeAction();
+                try {
+                    // do action
+                } finally {
+                    publisher.afterAction();
+                }
             }
 
 

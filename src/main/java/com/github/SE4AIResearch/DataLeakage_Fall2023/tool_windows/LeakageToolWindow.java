@@ -87,15 +87,15 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             this.runLeakageAction = new RunLeakageAction(project);
 
             toolWindow.getComponent().add(contentPanel);
-            project.getMessageBus().connect().subscribe(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC, new QuickFixActionNotifier(){
+            project.getMessageBus().connect().subscribe(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC, new QuickFixActionNotifier() {
                 @Override
-                public void beforeAction(){
+                public void beforeAction() {
 
                 }
 
                 @Override
 
-                public void afterAction(){
+                public void afterAction() {
                     updateTableData();
                 }
 
@@ -471,17 +471,24 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
                 data.add(curRow, newDataRow);
                 curRow++;
-                if (source != null) {
-                    for (int i = 0; i < source.getLineNumbers().size(); i++) {
-                        String[] subDataRow = newDataRow.clone();
-                        subDataRow[1] = source.getLineNumbers().get(i).toString();
+                curRow = addLeakageSourcesIfPresent(source, newDataRow, data, curRow);
+            }
+
+            return data.toArray(String[][]::new); // Convert data arraylist to array
+        }
+
+        private static int addLeakageSourcesIfPresent(LeakageSource source, String[] newDataRow, ArrayList<String[]> data, int curRow) {
+            if (source != null) {
+                for (int i = 0; i < source.getLineNumbers().size(); i++) {
+                    String[] subDataRow = newDataRow.clone();
+                    subDataRow[1] = source.getLineNumbers().get(i).toString();
+                    if (data.stream().noneMatch(r -> r[1].equals(subDataRow[1]))) {
                         data.add(curRow, subDataRow);
                         curRow++;
                     }
                 }
             }
-
-            return data.toArray(String[][]::new); // Convert data arraylist to array
+            return curRow;
         }
 
         private Object[][] fetchSummaryData() {
