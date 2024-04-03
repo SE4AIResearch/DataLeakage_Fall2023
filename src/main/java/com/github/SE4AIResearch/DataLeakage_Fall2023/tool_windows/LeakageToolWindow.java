@@ -114,8 +114,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 //         toolbar = createToolBar(mainPanel); // CHANGETOOLBAR
             toolbar = createHelpPanel();
 
-            summaryPanel = createSummaryPanel(new String[]{"Leakage Type", "Leakage Count"});
-            instancePanel = createInstancePanel(new String[]{"Leakage Type", "Line Number", "Variable Associated", "Cause"});
+            summaryPanel = createSummaryPanel(new String[]{"Type", "Leakage Count"});
+            instancePanel = createInstancePanel(new String[]{"Type", "Line", "Variable", "Cause"});
             fileNamePanel = createFileNamePanel();
             timePanel = createTimePanel();
             controlsPanel = createControlsPanel(toolWindow);
