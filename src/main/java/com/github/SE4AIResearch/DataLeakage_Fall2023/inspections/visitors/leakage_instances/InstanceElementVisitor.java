@@ -34,7 +34,20 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
     public T getLeakageInstanceAssociatedWithNode(List<T> leakageInstances, @NotNull PsiElement node) {
         return leakageInstances.stream().filter(leakageInstanceIsAssociatedWithNode(node)).findFirst().get();
     }
+    public void renderInspectionOnLeakageInstance(List<T> leakageInstances, PsiElement node) {
+        if (leakageIsAssociatedWithNode(leakageInstances, node)) {
+            var instance = getLeakageInstanceAssociatedWithNode(leakageInstances, node);
+            var sourceLineNumbers = instance.getLeakageSource().getLineNumbers();
+            LeakageType leakageType = getLeakageType();
+            var sb = getViewSourceMessage(leakageType, sourceLineNumbers);
 
+            DataLeakageWarningRenderer.renderDataLeakageWarning(instance, node,
+                    holder, sb, collection
+            );
+
+
+        }
+    }
     public void renderInspectionOnLeakageInstance(List<T> leakageInstances, PsiElement node, LocalQuickFix fix) {
         if (leakageIsAssociatedWithNode(leakageInstances, node)) {
             var instance = getLeakageInstanceAssociatedWithNode(leakageInstances, node);

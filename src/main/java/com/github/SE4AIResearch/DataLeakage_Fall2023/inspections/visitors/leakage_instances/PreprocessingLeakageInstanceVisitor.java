@@ -32,7 +32,6 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
     private final List<PreprocessingLeakageInstance> preprocessingLeakageInstances;
     private final PsiRecursiveElementVisitor recursiveElementVisitor;
 
-    private final PreprocessingLeakageQuickFix myQuickFix;
     Collection<RangeHighlighter> collection = new ArrayList<>();
 
     public PreprocessingLeakageInstanceVisitor(List<PreprocessingLeakageInstance> preprocessingLeakageInstances, @NotNull ProblemsHolder holder) {
@@ -43,11 +42,11 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
             @Override
             public void visitElement(@NotNull PsiElement element) {
                 //  super.visitElement(element);//TODO:
-                renderInspectionOnLeakageInstance(preprocessingLeakageInstances, element, myQuickFix);
+                renderInspectionOnLeakageInstance(preprocessingLeakageInstances, element);
             }
         };
 
-        this.myQuickFix = new PreprocessingLeakageQuickFix();
+
     }
 
     @Override
@@ -66,7 +65,7 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
     public void visitPyReferenceExpression(@NotNull PyReferenceExpression node) {
 //      var log=  Logger.getInstance(PreprocessingLeakageInstanceVisitor.class);
 //        log.warn("HERE***********************************************************");
-        renderInspectionOnLeakageInstance(preprocessingLeakageInstances, node, myQuickFix);
+        renderInspectionOnLeakageInstance(preprocessingLeakageInstances, node);
 
     }
 
@@ -76,7 +75,7 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
 
         if (leakageIsAssociatedWithNode(preprocessingLeakageInstances, node)) {
             var inspectionMessage = InspectionBundle.get(LeakageType.PreprocessingLeakage.getInspectionTextKey());
-            DataLeakageWarningRenderer.renderDataLeakageWarning(node, holder, inspectionMessage, myQuickFix, collection);
+            DataLeakageWarningRenderer.renderDataLeakageWarning(node, holder, inspectionMessage, collection);
 
         }
 
@@ -89,51 +88,6 @@ public class PreprocessingLeakageInstanceVisitor extends InstanceElementVisitor<
     }
 
 
-    private class PreprocessingLeakageQuickFix implements LocalQuickFix {
-
-        @NotNull
-        @Override
-        public String getName() {
-            return InspectionBundle.get("inspectionText.vectorizingTextData.quickfix.text");
-        }
-
-        @Override
-        public @IntentionFamilyName @NotNull String getFamilyName() {
-            return getName();
-        }
-
-        @Override
-        public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-
-            var lineNumber = descriptor.getLineNumber();
-
-            var descriptionText = descriptor.getDescriptionTemplate();
-            var psiElement = descriptor.getPsiElement();
-            var psiFile = psiElement.getContainingFile();
-            PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
-            Document document = documentManager.getDocument(psiFile);
-
-            //Source not linked to instance
-
-            //Sample
-            if (descriptionText.equals(InspectionBundle.get("inspectionText.preprocessingLeakage.text")) && psiElement.getText().contains(OverlapLeakageSourceKeyword.sample.toString())) {
-
-            }
-
-//won't work if assignment is split on multiple lines
-            var instance = getLeakageInstanceAssociatedWithNode(preprocessingLeakageInstances, psiElement);
-            var source = instance.getLeakageSource();
-
-            int offset = document.getLineStartOffset(lineNumber);
-
-            @Nullable PsiElement statement = psiFile.findElementAt(offset);
-            //won't work if assignment is split on multiple lines
-
-            document.insertString(offset, "split()\n");
-
-
-        }
-    }
 
 
 }
