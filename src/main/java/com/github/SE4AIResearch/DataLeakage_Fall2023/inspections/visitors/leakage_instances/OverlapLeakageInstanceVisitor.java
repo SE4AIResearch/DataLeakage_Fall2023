@@ -1,7 +1,7 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leakage_instances;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
@@ -103,7 +103,7 @@ public class OverlapLeakageInstanceVisitor extends InstanceElementVisitor<Overla
     }
 
     private List<Integer> linesOnExclusionList() {
-        String exclusionFilePath = Paths.get(LeakageOutput.folderPath()).resolve(LeakageOutput.getExclusionFileName()).toString();
+        String exclusionFilePath = Paths.get(LeakageResult.getFolderPath()).resolve(LeakageResult.getExclusionFileName()).toString();
         File file = new File(exclusionFilePath);
 
 

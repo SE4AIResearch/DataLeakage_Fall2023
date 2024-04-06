@@ -1,6 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.listeners;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.ConnectClient;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.FileChanger;
 import com.intellij.openapi.fileTypes.FileType;
@@ -58,7 +58,7 @@ public class PythonFileSaveListener implements BulkFileListener {
                         fileChanger.initializeTempDir();
                         tempDirectory = fileChanger.getTempDirectory();
                         fileName = fileChanger.copyToTempDir(file.getPath());
-                        LeakageOutput.setFactFolderPath(Paths.get(tempDirectory.getCanonicalPath(), file.getNameWithoutExtension()) + "-fact\\");
+                        LeakageResult.setFilePaths(file.getPath(),Paths.get(tempDirectory.getCanonicalPath(), file.getNameWithoutExtension()) + "-fact\\");
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

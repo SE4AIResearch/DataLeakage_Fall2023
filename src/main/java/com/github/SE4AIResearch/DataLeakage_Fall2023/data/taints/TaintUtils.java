@@ -1,6 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.data.taints;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.TaintLabel;
 
 import java.io.BufferedReader;
@@ -15,8 +15,8 @@ import java.util.Objects;
 public class TaintUtils {
 
     public static List<String> getTaintsFromFile(TaintLabel taintType) {
-        String filePath = Paths.get(LeakageOutput.folderPath()).resolve("TaintStartsTarget.csv").toString();
-//        File file = new File(LeakageOutput.folderPath() + "TaintStartsTarget.csv");
+        String filePath = Paths.get(LeakageResult.getFolderPath()).resolve("TaintStartsTarget.csv").toString();
+//        File file = new File(LeakageResult.getFolderPath() + "TaintStartsTarget.csv");
         File file = new File(filePath);
         List<String> taints = new ArrayList<>();
         try {

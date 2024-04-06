@@ -86,8 +86,8 @@ public class Invocation {
     }
 
     private String getFunctionCallFromInvocation() {
-        String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Invoke.facts").toString();
-//        File file = new File(LeakageOutput.folderPath() + "Invoke.facts");
+        String filePath = Paths.get(LeakageResult.getFolderPath()).resolve("Invoke.facts").toString();
+//        File file = new File(LeakageResult.getFolderPath() + "Invoke.facts");
         File file = new File(filePath);
         try {
             int lineNumber = this.getNumber() + 1;

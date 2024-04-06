@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 
 import static com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionUtils.anyLinesAreOnExclusionList;
-import static javax.swing.UIManager.getFont;
 
 public class DataLeakageWarningRenderer {
 

@@ -27,8 +27,8 @@ public class Utils {
 
 
     public static String getTestFromMultiUseTestLeakTelemetryFile() {
-        String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_MultiUseTestLeak.csv").toString();
-//        File file = new File(LeakageOutput.folderPath() + "Telemetry_MultiUseTestLeak.csv");
+        String filePath = Paths.get(LeakageResult.getFolderPath()).resolve("Telemetry_MultiUseTestLeak.csv").toString();
+//        File file = new File(LeakageResult.getFolderPath() + "Telemetry_MultiUseTestLeak.csv");
         File file = new File(filePath);
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -63,8 +63,8 @@ public class Utils {
 
 
     public static String getTrainFromPreprocessingLeakTelemetryFile() {
-        String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_PreProcessingLeak.csv").toString();
-//        File file = new File(LeakageOutput.folderPath() + "Telemetry_PreProcessingLeak.csv");
+        String filePath = Paths.get(LeakageResult.getFolderPath()).resolve("Telemetry_PreProcessingLeak.csv").toString();
+//        File file = new File(LeakageResult.getFolderPath() + "Telemetry_PreProcessingLeak.csv");
         File file = new File(filePath);
 
         try {
