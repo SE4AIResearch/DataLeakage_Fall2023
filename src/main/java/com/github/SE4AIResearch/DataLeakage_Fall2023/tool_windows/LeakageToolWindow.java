@@ -12,6 +12,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
@@ -84,16 +85,12 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             this.runLeakageAction = new RunLeakageAction(project);
 
             toolWindow.getComponent().add(contentPanel);
-            project.getMessageBus().connect().subscribe(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC, new QuickFixActionNotifier() {
+            project.getMessageBus().connect().subscribe(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC, (QuickFixActionNotifier) this::updateTableData);
+
+            project.getMessageBus().connect().subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, new FileEditorManagerListener() {
                 @Override
-                public void beforeAction() {
-
-                }
-
-                @Override
-
-                public void afterAction() {
-                    updateTableData();
+                public void fileClosed(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
+                    clearTableData();
                 }
 
             });
@@ -400,10 +397,33 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             }
         }
 
+        private void clearTableData() {
+            // Update Instance
+            clearTable(instanceTable, instanceTableModel);
+
+            // Refresh table view
+            instanceTable.revalidate();
+            instanceTable.repaint();
+            packColumnsToHeader(instanceTable);
+
+            // Update Summary
+            clearTable(summaryTable, summaryTableModel);
+
+
+            // Refresh table view
+            summaryTable.revalidate();
+            summaryTable.repaint();
+
+        }
+
+        private void clearTable(JBTable table, DefaultTableModel tableModel) {
+            table.removeAll();
+            tableModel.setRowCount(0);
+        }
+
         private void updateTableData() {
             // Update Instance
-            instanceTable.removeAll();
-            instanceTableModel.setRowCount(0);
+            clearTable(instanceTable, instanceTableModel);
 
             Object[][] newInstanceData = fetchInstanceData();
 
@@ -417,8 +437,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             packColumnsToHeader(instanceTable);
 
             // Update Summary
-            summaryTable.removeAll();
-            summaryTableModel.setRowCount(0);
+            clearTable(summaryTable, summaryTableModel);
 
             Object[][] newSummaryData = fetchSummaryData();
 

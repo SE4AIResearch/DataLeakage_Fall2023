@@ -1,7 +1,5 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.enums;
 
-import java.util.List;
-
 public class LeakageSourceKeywordFactory {
     public static LeakageSourceKeyword[] getSourceKeywordValuesForleakageType(LeakageType type) {
         return switch (type) {

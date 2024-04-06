@@ -1,6 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.actions;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.ConnectClient;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.docker_api.FileChanger;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.notifiers.LeakageNotifier;
@@ -193,10 +193,8 @@ public class RunLeakageAction extends AnAction {
             fileChanger.copyToTempDir(file.getPath());
             indicator.setFraction(indicator.getFraction() + 0.1);
 
-            String factFolderPath = tempDirectory.toPath().resolve(file.getNameWithoutExtension() + "-fact").toString();
-            LeakageOutput.setFactFolderPath(Paths.get(tempDirectory.getCanonicalPath(), file.getNameWithoutExtension()) + "-fact");
-
-
+             var factFolderPath =Paths.get(tempDirectory.getCanonicalPath(), file.getNameWithoutExtension()) + "-fact";
+             LeakageResult.setFilePaths(file.getPath(), factFolderPath);
 
 
 
@@ -219,7 +217,7 @@ public class RunLeakageAction extends AnAction {
             LeakageNotifier.notifyError(project, "Leakage analysis interrupted");
          }
 
-         String exclusionFilePath = Paths.get(LeakageOutput.folderPath()).resolve(LeakageOutput.getExclusionFileName()).toString();
+         String exclusionFilePath = Paths.get(LeakageResult.getFolderPath()).resolve(LeakageResult.getExclusionFileName()).toString();
          File exclusionFile = new File(exclusionFilePath);
 
          FileUtilRt.createIfNotExists(exclusionFile);

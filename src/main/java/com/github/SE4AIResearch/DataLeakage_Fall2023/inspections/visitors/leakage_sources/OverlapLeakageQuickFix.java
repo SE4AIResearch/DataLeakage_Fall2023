@@ -1,13 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leakage_sources;
 
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
-import com.intellij.codeInspection.LocalQuickFix;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.codeInspection.util.IntentionFamilyName;
-import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
-
 //private class OverlapLeakageQuickFix implements LocalQuickFix {
 //
 //

@@ -13,7 +13,7 @@ public class Utils {
 
     public static String stripSuffixFromVariableName(String variableNameWithSuffix) {
         final Pattern variablePattern = Pattern.compile(".*_[0-9]+");
-        
+
         var matcher = variablePattern.matcher(variableNameWithSuffix);
 
         if (matcher.find()) {
@@ -27,8 +27,8 @@ public class Utils {
 
 
     public static String getTestFromMultiUseTestLeakTelemetryFile() {
-        String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_MultiUseTestLeak.csv").toString();
-//        File file = new File(LeakageOutput.folderPath() + "Telemetry_MultiUseTestLeak.csv");
+        String filePath = Paths.get(LeakageResult.getFolderPath()).resolve("Telemetry_MultiUseTestLeak.csv").toString();
+//        File file = new File(LeakageResult.getFolderPath() + "Telemetry_MultiUseTestLeak.csv");
         File file = new File(filePath);
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -63,14 +63,15 @@ public class Utils {
 
 
     public static String getTrainFromPreprocessingLeakTelemetryFile() {
-        String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_PreProcessingLeak.csv").toString();
-//        File file = new File(LeakageOutput.folderPath() + "Telemetry_PreProcessingLeak.csv");
+        String filePath = Paths.get(LeakageResult.getFolderPath()).resolve("Telemetry_PreProcessingLeak.csv").toString();
+//        File file = new File(LeakageResult.getFolderPath() + "Telemetry_PreProcessingLeak.csv");
         File file = new File(filePath);
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
             String line;
+            String train_to_return = "";
 
             while (((line = reader.readLine()) != null)) {
 
@@ -88,18 +89,18 @@ public class Utils {
                 var des = columns[10];
                 var src = columns[11];
 
-                return train;
+                train_to_return = train;
+                break;
 
             }
             reader.close();
-
+            return train_to_return;
         } catch (IOException e) {
             e.printStackTrace();
 
         }
         return "";
     }
-
 
 
 }

@@ -189,7 +189,6 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
                 QuickFixActionNotifier publisher = project.getMessageBus()
                         .syncPublisher(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC);
-                publisher.beforeAction();
                 try {
                     // do action
                 } finally {

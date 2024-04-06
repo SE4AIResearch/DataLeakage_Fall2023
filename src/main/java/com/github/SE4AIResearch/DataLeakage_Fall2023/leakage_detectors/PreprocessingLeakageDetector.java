@@ -3,7 +3,7 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.PreprocessingLeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 
@@ -54,8 +54,8 @@ public class PreprocessingLeakageDetector extends LeakageDetector {
                 while ((line = reader.readLine()) != null) {
                     String[] columns = line.split(("\t"));
                     Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
-                    int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
-                    int actualLineNumber = Utils.getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
+                    int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageResult.getFolderPath(), invocation);
+                    int actualLineNumber = Utils.getActualLineNumberFromInternalLineNumber(LeakageResult.getFolderPath(), internalLineNumber);
 
                     var leakageInstance = new PreprocessingLeakageInstance(actualLineNumber, invocation);
 

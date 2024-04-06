@@ -1,6 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageData;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.finals.OverlapLeakageFinal;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +27,7 @@ public class OverlapLeakageTelemetry implements OverlapLeakageData {
     private String ctx2;
 
     public OverlapLeakageTelemetry(OverlapLeakageFinal overlapLeakageFinal) {
-        String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_OverlapLeak.csv").toString();
+        String filePath = Paths.get(LeakageResult.getFolderPath()).resolve("Telemetry_OverlapLeak.csv").toString();
         File file = new File(filePath);
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));

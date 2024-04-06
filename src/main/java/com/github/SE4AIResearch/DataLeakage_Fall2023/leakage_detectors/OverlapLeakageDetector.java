@@ -2,7 +2,7 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.finals.OverlapLeakageFinal;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry.OverlapLeakageTelemetry;
@@ -99,7 +99,7 @@ public class OverlapLeakageDetector extends LeakageDetector {
     }
 
     private List<Integer> linesOnExclusionList() {
-        String exclusionFilePath = Paths.get(LeakageOutput.folderPath()).resolve(LeakageOutput.getExclusionFileName()).toString();
+        String exclusionFilePath = Paths.get(LeakageResult.getFolderPath()).resolve(LeakageResult.getExclusionFileName()).toString();
         File file = new File(exclusionFilePath);
 
 
@@ -134,8 +134,8 @@ public class OverlapLeakageDetector extends LeakageDetector {
         final var telemetry = new OverlapLeakageTelemetry(leakageFinal);
 
         Invocation invocation = new Invocation(leakageFinal.getInvo());
-        int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
-        int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
+        int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageResult.getFolderPath(), invocation);
+        int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageResult.getFolderPath(), internalLineNumber);
 
 
         return new OverlapLeakageInstance(actualLineNumber, invocation,

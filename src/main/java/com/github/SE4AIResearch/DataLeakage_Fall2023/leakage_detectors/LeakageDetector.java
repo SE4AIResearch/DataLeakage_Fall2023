@@ -2,7 +2,7 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 
 import java.io.File;
@@ -38,9 +38,8 @@ public abstract class LeakageDetector {
 
     public List<LeakageInstance> FindLeakageInstances() {
 
-        String filePath = Paths.get(LeakageOutput.folderPath()).resolve(this.getCsvFileName()).toString();
-        File file = new File(filePath);
-
+        String csvFileName = Paths.get(LeakageResult.getFolderPath()).resolve(this.getCsvFileName()).toString();
+        File file = new File(csvFileName);
         findLeakageInstancesInFile(file);
 
         return leakageInstances();

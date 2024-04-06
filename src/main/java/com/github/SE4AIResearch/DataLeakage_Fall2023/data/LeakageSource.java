@@ -64,8 +64,8 @@ public class LeakageSource {
 
     private List<Integer> setLineNumbers() {
         return taints.stream().map(taint ->
-                Utils.getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(),
-                        Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(),
+                Utils.getActualLineNumberFromInternalLineNumber(LeakageResult.getFolderPath(),
+                        Invocation.getInternalLineNumberFromInvocation(LeakageResult.getFolderPath(),
                                 taint.getInvocation()))
 
         ).collect(Collectors.toList());

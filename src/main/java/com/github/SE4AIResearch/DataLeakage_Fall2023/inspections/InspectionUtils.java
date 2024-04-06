@@ -1,7 +1,7 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.intellij.openapi.util.io.FileUtilRt;
 
 import java.io.*;
@@ -11,10 +11,10 @@ import java.util.List;
 
 public class InspectionUtils {
     public static void addLinesToExclusion(List<Integer> lines) {
-        // File destinationFile = new File(String.valueOf(Paths.get(LeakageOutput.folderPath()).resolve(LeakageOutput.getExclusionFileName())));
+        // File destinationFile = new File(String.valueOf(Paths.get(LeakageResult.getFolderPath()).resolve(LeakageOutput.getExclusionFileName())));
 
 
-        String exclusionFilePath = Paths.get(LeakageOutput.folderPath()).resolve(LeakageOutput.getExclusionFileName()).toString();
+        String exclusionFilePath = Paths.get(LeakageResult.getFolderPath()).resolve(LeakageResult.getExclusionFileName()).toString();
         File exclusionFile = new File(exclusionFilePath);
 
         FileUtilRt.createIfNotExists(exclusionFile);
@@ -61,7 +61,7 @@ public class InspectionUtils {
     }
 
     protected static List<Integer> linesOnExclusionList() {
-        String exclusionFilePath = Paths.get(LeakageOutput.folderPath()).resolve(LeakageOutput.getExclusionFileName()).toString();
+        String exclusionFilePath = Paths.get(LeakageResult.getFolderPath()).resolve(LeakageResult.getExclusionFileName()).toString();
         File file = new File(exclusionFilePath);
 
 

@@ -1,6 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageOutput;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.MultiTestData;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.MultiUseTestLeak;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +22,7 @@ public class MultiTestLeakageTelemetry implements MultiTestData {
     private String test;
 
     public MultiTestLeakageTelemetry(MultiUseTestLeak multiUseTestLeak) {
-        String filePath = Paths.get(LeakageOutput.folderPath()).resolve("Telemetry_MultiUseTestLeak.csv").toString();
+        String filePath = Paths.get(LeakageResult.getFolderPath()).resolve("Telemetry_MultiUseTestLeak.csv").toString();
         File file = new File(filePath);
         this.test = "";
         this.invo = "";

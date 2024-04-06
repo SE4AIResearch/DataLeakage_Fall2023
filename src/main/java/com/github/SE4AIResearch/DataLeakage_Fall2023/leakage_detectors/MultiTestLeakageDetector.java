@@ -75,8 +75,8 @@ public class MultiTestLeakageDetector extends LeakageDetector {
         final var telemetry = new MultiTestLeakageTelemetry(multiUseTestLeak);
 
         Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
-        int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageOutput.folderPath(), invocation);
-        int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageOutput.folderPath(), internalLineNumber);
+        int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageResult.getFolderPath(), invocation);
+        int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageResult.getFolderPath(), internalLineNumber);
 
 
         return new MultiTestLeakageInstance(actualLineNumber, invocation, telemetry.getTest());
