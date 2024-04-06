@@ -28,14 +28,16 @@ public class Utils {
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
             String line;
+            int actualLineNumber = 0;
 
-            while (((line = reader.readLine()) != null)) {
+            while ((line = reader.readLine()) != null) {
 
                 String[] columns = line.split(("\t"));
 
                 if (Integer.parseInt(columns[0]) == internalLineNumber) {
 
-                    return Integer.parseInt(columns[1]);
+                    actualLineNumber = Integer.parseInt(columns[1]);
+                    break;
                 }
 
 

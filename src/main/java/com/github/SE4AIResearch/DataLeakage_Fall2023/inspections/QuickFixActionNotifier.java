@@ -7,6 +7,5 @@ public interface QuickFixActionNotifier {
     Topic<QuickFixActionNotifier> QUICK_FIX_ACTION_TOPIC =
             Topic.create("Quick Fix Action Notifier", QuickFixActionNotifier.class);
 
-    void beforeAction();
     void afterAction();
 }

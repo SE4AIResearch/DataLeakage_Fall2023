@@ -13,7 +13,7 @@ public class Utils {
 
     public static String stripSuffixFromVariableName(String variableNameWithSuffix) {
         final Pattern variablePattern = Pattern.compile(".*_[0-9]+");
-        
+
         var matcher = variablePattern.matcher(variableNameWithSuffix);
 
         if (matcher.find()) {
@@ -71,6 +71,7 @@ public class Utils {
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
             String line;
+            String train_to_return = "";
 
             while (((line = reader.readLine()) != null)) {
 
@@ -88,18 +89,18 @@ public class Utils {
                 var des = columns[10];
                 var src = columns[11];
 
-                return train;
+                train_to_return = train;
+                break;
 
             }
             reader.close();
-
+            return train_to_return;
         } catch (IOException e) {
             e.printStackTrace();
 
         }
         return "";
     }
-
 
 
 }
