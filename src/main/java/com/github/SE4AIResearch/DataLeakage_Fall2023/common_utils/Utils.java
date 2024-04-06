@@ -43,6 +43,7 @@ public class Utils {
 
             }
             reader.close();
+            return actualLineNumber;
         } catch (IOException e) {
             e.printStackTrace();
         }
