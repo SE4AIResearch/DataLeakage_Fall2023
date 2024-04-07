@@ -144,7 +144,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
             }
 
-//won't work if assignment is split on multiple lines
+//TODO: this won't work if assignment is split on multiple lines
             var instance = getInstanceForLeakageSourceAssociatedWithNode(overlapLeakageInstances, psiElement,holder);
             var source = instance.getLeakageSource();
             if (source.getCause().equals(LeakageCause.SplitBeforeSample)) {
@@ -158,7 +158,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
                 PsiManager manager = PsiManager.getInstance(project);
                 var myFacade = PyPsiFacade.getInstance(project);
 
-                var lineContentOfSplitCall = holder.getResults().stream().map(
+                var contentOfSplitCall = holder.getResults().stream().map(
                         problem -> problem.getPsiElement().getParent().getText()
                 ).filter(taint -> taint.toLowerCase().contains("split")).findFirst().get();
 
@@ -168,9 +168,9 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
                         .map(taint -> taint.getTextOffset()).filter(splitOffset -> splitOffset > offset).findFirst().get();
 
                 document.replaceString(offsetOfSplitCall, offsetOfSplitCall +
-                        lineContentOfSplitCall.length(), "");
+                        contentOfSplitCall.length(), "");
 
-                document.insertString(offset, lineContentOfSplitCall + "\n");
+                document.insertString(offset, contentOfSplitCall + "\n");
 
 
                 //Remove split sample from leakage instances

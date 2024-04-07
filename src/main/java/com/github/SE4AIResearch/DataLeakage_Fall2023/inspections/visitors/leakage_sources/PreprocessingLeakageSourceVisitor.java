@@ -1,11 +1,15 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leakage_sources;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.PreprocessingLeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.PreprocessingLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionUtils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemsHolder;
@@ -13,6 +17,7 @@ import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
@@ -41,7 +46,7 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
             @Override
             public void visitElement(@NotNull PsiElement element) {
                 // super.visitElement(element);//TODO: do we need this?
-                renderInspectionOnLeakageSource(element, holder, preprocessingLeakageInstances,myQuickFix);
+                renderInspectionOnLeakageSource(element, holder, preprocessingLeakageInstances, myQuickFix);
             }
         };
     }
@@ -68,7 +73,7 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
         if (!preprocessingLeakageInstances.isEmpty()) {
             if (leakageSourceIsAssociatedWithNode(preprocessingLeakageInstances, node, holder)) {
                 if (holder.getResults().stream().noneMatch(problemDescriptor -> problemDescriptor.getLineNumber() + 1/*need plus one to account for zero based line number*/ == PsiUtils.getNodeLineNumber(node, holder))) {//TODO: naive solution, should refactor to look more closely at method calls. need to check if the correct psi element is being highlighted
-                    renderInspectionOnLeakageSource(node, holder, preprocessingLeakageInstances,myQuickFix);
+                    renderInspectionOnLeakageSource(node, holder, preprocessingLeakageInstances, myQuickFix);
                 }
             }
 
@@ -118,13 +123,45 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
             var source = instance.getLeakageSource();
             int offset = document.getLineStartOffset(lineNumber);
 
-            @Nullable PsiElement statement = psiFile.findElementAt(offset);
-            //won't work if assignment is split on multiple lines
+            @Nullable
+            PsiElement firstElementOnLine = psiFile.findElementAt(offset);
 
-            document.insertString(offset, "split()\n");
+            int potentialOffsetOfSplitCall = document.getLineStartOffset(lineNumber + 1);
+            //TODO: this won't work if assignment is split on multiple lines
+
+            var potentialSplitCall = document.getText(new TextRange(potentialOffsetOfSplitCall, document.getLineEndOffset(lineNumber + 1)));
+
+            if (potentialSplitCall != null && potentialSplitCall.contains("split")) {
+
+                document.replaceString(potentialOffsetOfSplitCall, potentialOffsetOfSplitCall +
+                        potentialSplitCall.length(), "");
+
+                document.insertString(offset, potentialSplitCall + "\n");
 
 
+            } else {
+
+
+                document.insertString(offset, "split()\n");
+            }
+
+            var lineNumbersToRemove = new ArrayList<Integer>();
+            lineNumbersToRemove.add(document.getLineNumber(offset));
+            lineNumbersToRemove.add(document.getLineNumber(lineNumber - 1));
+            lineNumbersToRemove.add(document.getLineNumber(offset) + 1);
+            lineNumbersToRemove.add(document.getLineNumber(potentialOffsetOfSplitCall) + 1);
+            InspectionUtils.addLinesToExclusion(lineNumbersToRemove);
+            DaemonCodeAnalyzer.getInstance(project).restart();
+            QuickFixActionNotifier publisher = project.getMessageBus()
+                    .syncPublisher(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC);
+            try {
+                // do action
+            } finally {
+                publisher.afterAction();
+            }
         }
+
+
     }
 
 
