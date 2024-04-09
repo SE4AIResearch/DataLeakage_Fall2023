@@ -91,6 +91,14 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
             //    document.replaceString(instance.getTextOffset(), instance.getTextOffset() + instance.getTextLength(), instance.getText() + "_1");
             var lineNumbersToRemove = new ArrayList<Integer>();
 
+            renameVariablesInDocument(document, instance, lineNumbersToRemove);
+            lineNumbersToRemove.add(document.getLineNumber(offset) + 1);
+            addLinesToExclusion(lineNumbersToRemove);
+
+            DaemonCodeAnalyzer.getInstance(project).restart();
+        }
+
+        private void renameVariablesInDocument(Document document, PsiElement instance, ArrayList<Integer> lineNumbersToRemove) {
             for (int i = 0; i < multiTestLeakageInstances.size(); i++) {
                 //Doesn't always reload contents of document from disk
                 var inst = multiTestLeakageInstances.get(i);
@@ -102,10 +110,6 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
                 lineNumbersToRemove.add(line);
 
             }
-            lineNumbersToRemove.add(document.getLineNumber(offset) + 1);
-                addLinesToExclusion(lineNumbersToRemove);
-
-            DaemonCodeAnalyzer.getInstance(project).restart();
         }
 
 
