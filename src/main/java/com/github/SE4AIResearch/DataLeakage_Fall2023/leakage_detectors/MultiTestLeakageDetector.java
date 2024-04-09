@@ -13,7 +13,7 @@ import java.util.List;
 
 import static com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils.getActualLineNumberFromInternalLineNumber;
 
-public class MultiTestLeakageDetector extends LeakageDetector {
+public class MultiTestLeakageDetector extends LeakageDetector<MultiTestLeakageInstance> {
     private final List<LeakageInstance> leakageInstances;
 
     @Override
@@ -36,31 +36,10 @@ public class MultiTestLeakageDetector extends LeakageDetector {
         return leakageInstances;
     }
 
-    /**
-     * Looks through the CSV files that provide information about the provided {@code leakageType}.
-     * Adds leakage instances to the field {@link #leakageInstances}.
-     */
+
+
     @Override
-    public void findLeakageInstancesInFile(File file) {
-        if (file.exists()) {
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    var leakageInstance = createLeakageInstanceFromLine(line);
-
-                    addLeakageInstanceIfNotPresent(leakageInstance);
-
-                }
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void addLeakageInstanceIfNotPresent(MultiTestLeakageInstance leakageInstance) {
+    protected void addLeakageInstanceIfNotPresent(MultiTestLeakageInstance leakageInstance) {
         var existingInstances = leakageInstances();
         if (!existingInstances.contains(leakageInstance)) {
             addLeakageInstance(leakageInstance);
@@ -68,7 +47,8 @@ public class MultiTestLeakageDetector extends LeakageDetector {
 
     }
 
-    private MultiTestLeakageInstance createLeakageInstanceFromLine(String line) {
+    @Override
+    protected MultiTestLeakageInstance createLeakageInstanceFromLine(String line) {
         String[] columns = line.split(("\t"));
 
         final var multiUseTestLeak = new MultiUseTestLeak(columns);

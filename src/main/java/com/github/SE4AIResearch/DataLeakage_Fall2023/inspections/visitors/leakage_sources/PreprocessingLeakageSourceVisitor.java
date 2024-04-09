@@ -1,15 +1,13 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leakage_sources;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.PreprocessingLeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.PreprocessingLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionUtils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.Utils;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemsHolder;
@@ -145,13 +143,8 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
                 document.insertString(offset, "split()\n");
             }
 
-            var lineNumbersToRemove = new ArrayList<Integer>();
-            lineNumbersToRemove.add(document.getLineNumber(offset));
-            lineNumbersToRemove.add(document.getLineNumber(lineNumber - 1));
-            lineNumbersToRemove.add(document.getLineNumber(offset) + 1);
-            lineNumbersToRemove.add(document.getLineNumber(potentialOffsetOfSplitCall) + 1);
-            InspectionUtils.addLinesToExclusion(lineNumbersToRemove);
-            DaemonCodeAnalyzer.getInstance(project).restart();
+            Utils.removeFixedLinesFromLeakageInstance(project, document, offset, lineNumber, potentialOffsetOfSplitCall);
+
             QuickFixActionNotifier publisher = project.getMessageBus()
                     .syncPublisher(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC);
             try {

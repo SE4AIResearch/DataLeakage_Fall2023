@@ -35,7 +35,7 @@ public class FileChangeDetector implements BulkFileListener {
     }
 
     private boolean theChangedFileIsCurrentlyBeingEdited(VFileEvent event) {
-        var editor = getEditorForFileChanged(event);
+        var editor = Utils.getEditorForFileChanged(event);
         if (editor == null) {
             return false;
         }
@@ -58,18 +58,4 @@ public class FileChangeDetector implements BulkFileListener {
         return project;
     }
 
-    public Editor getEditorForFileChanged(VFileEvent event) {
-        var file = event.getFile();
-        var project = getProjectForFile(file);
-        TextEditor currentEditor = null;
-        if (project != null) {
-            currentEditor = (TextEditor) FileEditorManager.getInstance(project).getSelectedEditor();
-        }
-        Editor editor = null;
-        if (currentEditor != null) {
-            editor = currentEditor.getEditor();
-        }
-
-        return editor;
-    }
 }

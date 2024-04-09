@@ -1,5 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leakage_instances;
 
+import com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageInstance;
@@ -80,54 +81,6 @@ public class OverlapLeakageInstanceVisitor extends InstanceElementVisitor<Overla
     public void visitPyFunction(@NotNull PyFunction node) {
         this.recursiveElementVisitor.visitElement(node);
 
-    }
-    private boolean anyLinesAreOnExclusionList(LeakageInstance leakageInstance, int nodeLineNumber) {
-        List<Integer> linesOnExlcusionList = linesOnExclusionList();
-
-        if (linesOnExlcusionList.contains(leakageInstance.lineNumber())) {
-            return true;
-        }
-        if (linesOnExlcusionList.contains(nodeLineNumber)) {
-            return true;
-        }
-
-        var source = leakageInstance.getLeakageSource();
-
-        for (Integer lineNo : source.getLineNumbers()) {
-            if (linesOnExlcusionList.contains(lineNo)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private List<Integer> linesOnExclusionList() {
-        String exclusionFilePath = Paths.get(LeakageResult.getFolderPath()).resolve(LeakageResult.getExclusionFileName()).toString();
-        File file = new File(exclusionFilePath);
-
-
-        List<Integer> linesToExclude = new ArrayList<>();
-        if (file.exists()) {
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    try {
-                        linesToExclude.add(Integer.parseInt(line.strip()));
-                    } catch (NumberFormatException e) {
-                        //ignore
-                    }
-
-
-                }
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return linesToExclude;
     }
 
 

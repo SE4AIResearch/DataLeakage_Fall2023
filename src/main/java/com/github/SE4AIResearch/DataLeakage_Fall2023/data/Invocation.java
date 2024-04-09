@@ -62,18 +62,7 @@ public class Invocation {
         File file = new File(filePath);
         try {
             int lineNumber = invocation.getNumber() + 1;
-            String line = "";
-
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-
-            for (int i = 1; i <= lineNumber; i++) {
-                line = reader.readLine();
-
-            }
-            reader.close();
-
-            String[] columns = line.split(("\t"));
-
+            String[] columns = readFromFileUntilLineNumber(file, lineNumber);
 
             return Integer.parseInt(columns[1]);
 
@@ -85,24 +74,28 @@ public class Invocation {
 
     }
 
+    private static String[] readFromFileUntilLineNumber(File file, int lineNumber) throws IOException {
+        String line = "";
+
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+
+        for (int i = 1; i <= lineNumber; i++) {
+            line = reader.readLine();
+
+        }
+        reader.close();
+
+        String[] columns = line.split(("\t"));
+        return columns;
+    }
+
     private String getFunctionCallFromInvocation() {
         String filePath = Paths.get(LeakageResult.getFolderPath()).resolve("Invoke.facts").toString();
 //        File file = new File(LeakageResult.getFolderPath() + "Invoke.facts");
         File file = new File(filePath);
         try {
             int lineNumber = this.getNumber() + 1;
-            String line = "";
-
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-
-            for (int i = 1; i <= lineNumber; i++) {
-                line = reader.readLine();
-
-            }
-            reader.close();
-
-
-            String[] columns = line.split(("\t"));
+            String[] columns = readFromFileUntilLineNumber(file, lineNumber);
 
             var functionCall = columns[1];
             if (functionCall.contains(".")) {

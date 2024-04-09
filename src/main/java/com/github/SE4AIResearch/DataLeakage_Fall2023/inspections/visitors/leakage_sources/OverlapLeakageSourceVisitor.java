@@ -7,23 +7,23 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceK
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionUtils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.Utils;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiRecursiveElementVisitor;
-import com.jetbrains.python.psi.*;
+import com.jetbrains.python.psi.PyCallExpression;
+import com.jetbrains.python.psi.PyElementVisitor;
+import com.jetbrains.python.psi.PyFunction;
+import com.jetbrains.python.psi.PyReferenceExpression;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,7 +84,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
         //TODO: extract
 
         if (!overlapLeakageInstances.isEmpty()) {
-            if (leakageSourceIsAssociatedWithNode(overlapLeakageInstances, node,holder)) {
+            if (leakageSourceIsAssociatedWithNode(overlapLeakageInstances, node, holder)) {
 
                 renderInspectionOnLeakageSource(node, holder, overlapLeakageInstances, myQuickFix);
             }
@@ -94,9 +94,6 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
         }
     }
-
-
-
 
 
     @Override
@@ -127,45 +124,22 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
             var lineNumber = descriptor.getLineNumber() + 1;//was off by one
 
-            var descriptionText = descriptor.getDescriptionTemplate();
             var psiElement = descriptor.getPsiElement();
             var psiFile = psiElement.getContainingFile();
             PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
             Document document = documentManager.getDocument(psiFile);
-            //Split
-            if (descriptionText.equals(InspectionBundle.get("inspectionText.splitBeforeSampleReminder.text"))) {
 
-            }
-            //Source not linked to instance
-
-            //Sample
-            if (descriptionText.equals(InspectionBundle.get("inspectionText.overlapLeakage.text"))
-                    && psiElement.getText().contains(OverlapLeakageSourceKeyword.sample.toString())) {
-
-            }
 
 //TODO: this won't work if assignment is split on multiple lines
-            var instance = getInstanceForLeakageSourceAssociatedWithNode(overlapLeakageInstances, psiElement,holder);
+            var instance = getInstanceForLeakageSourceAssociatedWithNode(overlapLeakageInstances, psiElement, holder);
             var source = instance.getLeakageSource();
-            if (source.getCause().equals(LeakageCause.SplitBeforeSample)) {
-                Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
 
+            if (source.getCause().equals(LeakageCause.SplitBeforeSample)) {
                 int offset = document.getLineStartOffset(lineNumber - 1);
 
-                @Nullable
-                PsiElement firstElementOnLine = psiFile.findElementAt(offset
-                );
-                PsiManager manager = PsiManager.getInstance(project);
-                var myFacade = PyPsiFacade.getInstance(project);
+                var contentOfSplitCall = getContentOfSplitCall();
 
-                var contentOfSplitCall = holder.getResults().stream().map(
-                        problem -> problem.getPsiElement().getParent().getText()
-                ).filter(taint -> taint.toLowerCase().contains("split")).findFirst().get();
-
-                var offsetOfSplitCall = holder.getResults().stream().map(
-                                problem -> problem.getPsiElement().getParent()
-                        ).filter(taint -> taint.getText().toLowerCase().contains("split"))
-                        .map(taint -> taint.getTextOffset()).filter(splitOffset -> splitOffset > offset).findFirst().get();
+                int offsetOfSplitCall = getOffsetOfSplitCall(offset);
 
                 document.replaceString(offsetOfSplitCall, offsetOfSplitCall +
                         contentOfSplitCall.length(), "");
@@ -174,18 +148,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
 
                 //Remove split sample from leakage instances
-                //  removeInstance(instance);
-
-                var lineNumbersToRemove = new ArrayList<Integer>();
-                lineNumbersToRemove.add(document.getLineNumber(offset));
-                lineNumbersToRemove.add(document.getLineNumber(lineNumber - 1));
-                lineNumbersToRemove.add(document.getLineNumber(offset) + 1);
-                lineNumbersToRemove.add(document.getLineNumber(offsetOfSplitCall) + 1);
-//                overlapLeakageInstances.stream().forEach(thisInstance ->
-//                        thisInstance.getLeakageSource().removeLineNumbers(lineNumbersToRemove));
-
-                InspectionUtils.addLinesToExclusion(lineNumbersToRemove);
-                DaemonCodeAnalyzer.getInstance(project).restart();
+                Utils.removeFixedLinesFromLeakageInstance(project, document, offset, lineNumber, offsetOfSplitCall);
 
                 QuickFixActionNotifier publisher = project.getMessageBus()
                         .syncPublisher(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC);
@@ -197,6 +160,24 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
             }
 
 
+        }
+
+
+        @NotNull
+        private String getContentOfSplitCall() {
+            var contentOfSplitCall = holder.getResults().stream().map(
+                    problem -> problem.getPsiElement().getParent().getText()
+            ).filter(taint -> taint.toLowerCase().contains("split")).findFirst().get();
+            return contentOfSplitCall;
+        }
+
+        @NotNull
+        private Integer getOffsetOfSplitCall(int offset) {
+            var offsetOfSplitCall = holder.getResults().stream().map(
+                            problem -> problem.getPsiElement().getParent()
+                    ).filter(taint -> taint.getText().toLowerCase().contains("split"))
+                    .map(taint -> taint.getTextOffset()).filter(splitOffset -> splitOffset > offset).findFirst().get();
+            return offsetOfSplitCall;
         }
     }
 }
