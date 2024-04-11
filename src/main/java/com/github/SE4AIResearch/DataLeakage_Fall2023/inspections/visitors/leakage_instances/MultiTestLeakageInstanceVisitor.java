@@ -2,6 +2,7 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leaka
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.MultiTestLeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInspection.LocalQuickFix;
@@ -64,6 +65,12 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
     }
 
     class MultiTestLeakageQuickFix implements LocalQuickFix {
+        @NotNull
+        @Override
+        public String getName() {
+            return InspectionBundle.get("inspectionText.removeRedundantTestEvaluations.quickfix.text");
+        }
+
         @Override
         public @IntentionFamilyName @NotNull String getFamilyName() {
             return getName();

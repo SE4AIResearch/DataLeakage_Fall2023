@@ -101,34 +101,36 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
         @Override
         public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
 
-            var lineNumber = descriptor.getLineNumber();
 
-            var descriptionText = descriptor.getDescriptionTemplate();
             var psiElement = descriptor.getPsiElement();
             var psiFile = psiElement.getContainingFile();
             PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
             Document document = documentManager.getDocument(psiFile);
 
-            //Source not linked to instance
-
-            //Sample
-            if (descriptionText.equals(InspectionBundle.get("inspectionText.preprocessingLeakage.text")) && psiElement.getText().contains(OverlapLeakageSourceKeyword.sample.toString())) {
-
-            }
 
 //won't work if assignment is split on multiple lines
-            var instance = getInstanceForLeakageSourceAssociatedWithNode(preprocessingLeakageInstances, psiElement, holder);
-            var source = instance.getLeakageSource();
+            var lineNumber = descriptor.getLineNumber();
             int offset = document.getLineStartOffset(lineNumber);
 
-            @Nullable
-            PsiElement firstElementOnLine = psiFile.findElementAt(offset);
-
-            int potentialOffsetOfSplitCall = document.getLineStartOffset(lineNumber + 1);
+            var potentialOffsetOfSplitCall = locatePotentialSplitCall(document, offset, lineNumber);
             //TODO: this won't work if assignment is split on multiple lines
+            var potentialSplitCall =
+                    document.getText(new TextRange(potentialOffsetOfSplitCall, document.getLineEndOffset(lineNumber + 1)));
 
-            var potentialSplitCall = document.getText(new TextRange(potentialOffsetOfSplitCall, document.getLineEndOffset(lineNumber + 1)));
+            moveSplitCallIfItExists(potentialSplitCall, document, potentialOffsetOfSplitCall, offset);
 
+            Utils.removeFixedLinesFromLeakageInstance(project, document, offset, lineNumber, potentialOffsetOfSplitCall);
+
+            QuickFixActionNotifier publisher = project.getMessageBus()
+                    .syncPublisher(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC);
+            try {
+                // do action
+            } finally {
+                publisher.afterAction();
+            }
+        }
+
+        private static void moveSplitCallIfItExists(String potentialSplitCall, Document document, int potentialOffsetOfSplitCall, int offset) {
             if (potentialSplitCall != null && potentialSplitCall.contains("split")) {
 
                 document.replaceString(potentialOffsetOfSplitCall, potentialOffsetOfSplitCall +
@@ -142,16 +144,13 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
 
                 document.insertString(offset, "split()\n");
             }
+        }
 
-            Utils.removeFixedLinesFromLeakageInstance(project, document, offset, lineNumber, potentialOffsetOfSplitCall);
+        private int locatePotentialSplitCall(Document document, int offset, int lineNumber) {
+            int potentialOffsetOfSplitCall = document.getLineStartOffset(lineNumber + 1);
 
-            QuickFixActionNotifier publisher = project.getMessageBus()
-                    .syncPublisher(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC);
-            try {
-                // do action
-            } finally {
-                publisher.afterAction();
-            }
+            return potentialOffsetOfSplitCall;
+
         }
 
 
