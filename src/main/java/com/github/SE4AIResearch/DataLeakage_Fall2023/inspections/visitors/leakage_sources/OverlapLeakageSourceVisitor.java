@@ -5,10 +5,8 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionUtils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.Utils;
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemsHolder;
@@ -122,7 +120,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
         @Override
         public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
 
-            var lineNumber = descriptor.getLineNumber() + 1;//was off by one
+            var lineNumberOfLeakageSource = descriptor.getLineNumber();
 
             var psiElement = descriptor.getPsiElement();
             var psiFile = psiElement.getContainingFile();
@@ -135,20 +133,16 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
             var source = instance.getLeakageSource();
 
             if (source.getCause().equals(LeakageCause.SplitBeforeSample)) {
-                int offset = document.getLineStartOffset(lineNumber - 1);
+                int offsetOfLeakageSource = document.getLineStartOffset(lineNumberOfLeakageSource);
 
-                var contentOfSplitCall = getContentOfSplitCall();
 
-                int offsetOfSplitCall = getOffsetOfSplitCall(offset);
+                int offsetOfSplitCall = getOffsetOfSplitCall(offsetOfLeakageSource);
 
-                document.replaceString(offsetOfSplitCall, offsetOfSplitCall +
-                        contentOfSplitCall.length(), "");
-
-                document.insertString(offset, contentOfSplitCall + "\n");
+                swapSplitAndSample(document, offsetOfLeakageSource, offsetOfSplitCall);
 
 
                 //Remove split sample from leakage instances
-                Utils.removeFixedLinesFromLeakageInstance(project, document, offset, lineNumber, offsetOfSplitCall);
+                Utils.removeFixedLinesFromLeakageInstance(project, document, offsetOfLeakageSource, lineNumberOfLeakageSource, offsetOfSplitCall);
 
                 QuickFixActionNotifier publisher = project.getMessageBus()
                         .syncPublisher(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC);
@@ -162,22 +156,29 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
         }
 
+        private void swapSplitAndSample(Document document, int offset, int offsetOfSplitCall) {
+            var contentOfSplitCall = getContentOfSplitCall();
+            document.replaceString(offsetOfSplitCall, offsetOfSplitCall +
+                    contentOfSplitCall.length(), "");
+
+            document.insertString(offset, contentOfSplitCall + "\n");
+
+        }
+
 
         @NotNull
         private String getContentOfSplitCall() {
-            var contentOfSplitCall = holder.getResults().stream().map(
+            return holder.getResults().stream().map(
                     problem -> problem.getPsiElement().getParent().getText()
             ).filter(taint -> taint.toLowerCase().contains("split")).findFirst().get();
-            return contentOfSplitCall;
         }
 
         @NotNull
         private Integer getOffsetOfSplitCall(int offset) {
-            var offsetOfSplitCall = holder.getResults().stream().map(
+            return holder.getResults().stream().map(
                             problem -> problem.getPsiElement().getParent()
                     ).filter(taint -> taint.getText().toLowerCase().contains("split"))
                     .map(taint -> taint.getTextOffset()).filter(splitOffset -> splitOffset > offset).findFirst().get();
-            return offsetOfSplitCall;
         }
     }
 }
