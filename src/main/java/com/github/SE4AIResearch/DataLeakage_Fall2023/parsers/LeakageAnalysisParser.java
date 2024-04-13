@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LeakageAnalysisParser {
-    private final List<LeakageDetector> leakageDetectors;
+    private final List<LeakageDetector<? extends LeakageInstance>> leakageDetectors;
     private List<LeakageInstance> leakageInstances;
 
     private Project project;
@@ -66,7 +66,7 @@ public class LeakageAnalysisParser {
     }
 
     public boolean isLeakageDetected() {
-        for (LeakageDetector detector : leakageDetectors) {
+        for (var detector : leakageDetectors) {
             if (detector.isLeakageDetected()) {
                 return true;
             }
@@ -76,7 +76,7 @@ public class LeakageAnalysisParser {
 
     public List<LeakageInstance> LeakageInstances() {
         List<LeakageInstance> instances = new ArrayList<>();
-        for (LeakageDetector detector : leakageDetectors) {
+        for (var detector : leakageDetectors) {
             instances.addAll(detector.FindLeakageInstances());
         }
         return instances;
