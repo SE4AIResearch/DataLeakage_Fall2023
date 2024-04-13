@@ -10,11 +10,6 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry.OverlapLeaka
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 

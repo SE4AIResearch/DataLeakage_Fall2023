@@ -15,9 +15,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
-import com.intellij.refactoring.RefactoringFactory;
 import com.intellij.util.DocumentUtil;
-import com.jetbrains.python.psi.PyPsiFacade;
 import com.jetbrains.python.psi.PyReferenceExpression;
 import org.jetbrains.annotations.NotNull;
 
