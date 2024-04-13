@@ -20,7 +20,7 @@ public abstract class SourceInspection<T extends LeakageInstance, U extends Leak
     @Override
     public PyElementVisitor getElementVisitor(@NotNull ProblemsHolder holder) {
 
-        var leakageInstances = getLeakageInstancesForType(leakageAnalysisParser.LeakageInstances());
+        var leakageInstances = getLeakageInstancesForType(leakageInstanceCollector.LeakageInstances());
         return sourceElementVisitor(leakageInstances, holder);
     }
 

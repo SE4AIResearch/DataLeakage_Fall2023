@@ -18,13 +18,13 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LeakageAnalysisParser {
+public class LeakageInstanceCollector {
     private final List<LeakageDetector<? extends LeakageInstance>> leakageDetectors;
     private List<LeakageInstance> leakageInstances;
 
     private Project project;
 
-    public LeakageAnalysisParser() {
+    public LeakageInstanceCollector() {
         setProject();
 
         if (project != null) {
