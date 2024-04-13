@@ -40,14 +40,7 @@ public class PreprocessingLeakageDetector extends LeakageDetector<PreprocessingL
         return leakageInstances;
     }
 
-    @Override
-    protected void addLeakageInstanceIfNotPresent(PreprocessingLeakageInstance leakageInstance) {
-        var existingInstances = leakageInstances();
-        if (!existingInstances.contains(leakageInstance)) {
-            addLeakageInstance(leakageInstance);
 
-        }
-    }
 
     @NotNull
     protected PreprocessingLeakageInstance createLeakageInstanceFromLine(String line) {

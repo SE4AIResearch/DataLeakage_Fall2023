@@ -1,5 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors;
 
+import com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
@@ -12,7 +13,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
-public abstract class LeakageDetector<T> {
+public abstract class LeakageDetector<T extends LeakageInstance> {
     public LeakageType leakageType;
 
     /**
@@ -78,9 +79,32 @@ public abstract class LeakageDetector<T> {
 
     protected abstract T createLeakageInstanceFromLine(String line);
 
-    protected abstract void addLeakageInstanceIfNotPresent(T leakageInstance);
+    protected  void addLeakageInstanceIfNotPresent(T leakageInstance){
+        var existingInstances = leakageInstances();
+        if (!existingInstances.contains(leakageInstance)) {
+            if (!anyLinesAreOnExclusionList(leakageInstance)) {
+                addLeakageInstance(leakageInstance);
+            }
+        }
+    }
 
+    private boolean anyLinesAreOnExclusionList(LeakageInstance leakageInstance) {
+        List<Integer> linesOnExlcusionList = Utils.linesOnExclusionList();
 
+        if (linesOnExlcusionList.contains(leakageInstance.lineNumber())) {
+            return true;
+        }
+
+        var source = leakageInstance.getLeakageSource();
+
+        for (Integer lineNo : source.getLineNumbers()) {
+            if (linesOnExlcusionList.contains(lineNo)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
     public LeakageDetector() {
 
     }

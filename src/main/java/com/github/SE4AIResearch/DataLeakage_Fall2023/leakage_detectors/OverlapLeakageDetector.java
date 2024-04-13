@@ -46,34 +46,7 @@ public class OverlapLeakageDetector extends LeakageDetector<OverlapLeakageInstan
         return leakageInstances;
     }
 
-    @Override
-    protected void addLeakageInstanceIfNotPresent(OverlapLeakageInstance leakageInstance) {
 
-        var existingInstances = leakageInstances();
-        if (!existingInstances.contains(leakageInstance)) {
-            if (!anyLinesAreOnExclusionList(leakageInstance)) {
-                addLeakageInstance(leakageInstance);
-            }
-        }
-    }
-
-    private boolean anyLinesAreOnExclusionList(LeakageInstance leakageInstance) {
-        List<Integer> linesOnExlcusionList = Utils.linesOnExclusionList();
-
-        if (linesOnExlcusionList.contains(leakageInstance.lineNumber())) {
-            return true;
-        }
-
-        var source = leakageInstance.getLeakageSource();
-
-        for (Integer lineNo : source.getLineNumbers()) {
-            if (linesOnExlcusionList.contains(lineNo)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     @NotNull
     @Override

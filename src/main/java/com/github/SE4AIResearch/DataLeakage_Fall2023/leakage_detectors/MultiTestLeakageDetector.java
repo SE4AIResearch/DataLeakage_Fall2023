@@ -33,16 +33,6 @@ public class MultiTestLeakageDetector extends LeakageDetector<MultiTestLeakageIn
     }
 
 
-
-    @Override
-    protected void addLeakageInstanceIfNotPresent(MultiTestLeakageInstance leakageInstance) {
-        var existingInstances = leakageInstances();
-        if (!existingInstances.contains(leakageInstance)) {
-            addLeakageInstance(leakageInstance);
-        }
-
-    }
-
     @Override
     protected MultiTestLeakageInstance createLeakageInstanceFromLine(String line) {
         String[] columns = line.split(("\t"));
