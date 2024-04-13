@@ -78,16 +78,12 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
 
         @Override
         public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-            var myFacade = PyPsiFacade.getInstance(project);
             var instance = descriptor.getPsiElement();
-            var myFactory = RefactoringFactory.getInstance(project);
 
 
             FindManager myFindManager = FindManager.getInstance(project);
-            var possible = myFindManager.canFindUsages(instance);
 
 
-            var descriptionText = descriptor.getDescriptionTemplate();
             var psiElement = descriptor.getPsiElement();
             var psiFile = psiElement.getContainingFile();
             PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
@@ -95,10 +91,10 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
             var lineNumber = descriptor.getLineNumber();
 
             int offset = document.getLineStartOffset(lineNumber);
-            //    document.replaceString(instance.getTextOffset(), instance.getTextOffset() + instance.getTextLength(), instance.getText() + "_1");
             var lineNumbersToRemove = new ArrayList<Integer>();
 
             renameVariablesInDocument(document, instance, lineNumbersToRemove);
+
             lineNumbersToRemove.add(document.getLineNumber(offset) + 1);
             addLinesToExclusion(lineNumbersToRemove);
 
@@ -109,12 +105,13 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
             for (int i = 0; i < multiTestLeakageInstances.size(); i++) {
                 //Doesn't always reload contents of document from disk
                 var inst = multiTestLeakageInstances.get(i);
-                var line = inst.lineNumber() - 1;
-                var lineTextRange = DocumentUtil.getLineTextRange(document, line);
+                var lineNumber = inst.lineNumber() - 1;
+
+                var lineTextRange = DocumentUtil.getLineTextRange(document, lineNumber);
                 var lineContent = document.getText(lineTextRange);
-                var newStr = lineContent.replace(instance.getText(), instance.getText() + "_" + i);
-                document.replaceString(document.getLineStartOffset(line), document.getLineEndOffset(line), newStr);
-                lineNumbersToRemove.add(line);
+                var newStr = "# TODO: load the test data for the evaluation.\n" + lineContent.replace(instance.getText(), instance.getText() + "_" + i);
+                document.replaceString(document.getLineStartOffset(lineNumber), document.getLineEndOffset(lineNumber), newStr);
+                lineNumbersToRemove.add(lineNumber);
 
             }
         }
