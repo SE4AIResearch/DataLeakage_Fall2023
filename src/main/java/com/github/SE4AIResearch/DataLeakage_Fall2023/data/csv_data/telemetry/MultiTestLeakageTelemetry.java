@@ -1,8 +1,8 @@
-package com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry;
+package com.github.SE4AIResearch.DataLeakage_Fall2023.data.csv_data.telemetry;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.MultiTestData;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.MultiUseTestLeak;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.csv_data.MultiTestData;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.csv_data.MultiUseTestLeak;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;

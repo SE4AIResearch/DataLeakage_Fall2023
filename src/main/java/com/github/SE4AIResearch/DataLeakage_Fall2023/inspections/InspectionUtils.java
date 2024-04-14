@@ -1,7 +1,7 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.intellij.openapi.util.io.FileUtilRt;
 

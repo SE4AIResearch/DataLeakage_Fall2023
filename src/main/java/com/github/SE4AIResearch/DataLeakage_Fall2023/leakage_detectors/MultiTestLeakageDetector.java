@@ -1,7 +1,10 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.*;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry.MultiTestLeakageTelemetry;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.csv_data.MultiUseTestLeak;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.MultiTestLeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.csv_data.telemetry.MultiTestLeakageTelemetry;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 
 import java.util.ArrayList;

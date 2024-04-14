@@ -1,7 +1,7 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.tool_windows;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAction;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
