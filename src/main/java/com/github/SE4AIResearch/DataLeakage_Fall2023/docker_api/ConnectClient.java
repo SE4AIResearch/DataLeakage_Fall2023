@@ -15,6 +15,7 @@ import com.github.dockerjava.transport.DockerHttpClient;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +42,7 @@ public class ConnectClient {
 
         // Create a default http client
         DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
-                .dockerHost(config.getDockerHost())
+                .dockerHost(URI.create("npipe:////./pipe/docker_engine"))
                 .sslConfig(config.getSSLConfig())
                 .maxConnections(100)
                 .connectionTimeout(Duration.ofSeconds(30))
