@@ -2,6 +2,9 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Corresponds to MultiUseTestLeak.csv
+ */
 public class MultiUseTestLeak implements MultiTestData {
     private String test;
     private String invo;
@@ -46,4 +49,8 @@ public class MultiUseTestLeak implements MultiTestData {
     }
 
 
+    @Override
+    public String getCsvFileName() {
+        return "MultiUseTestLeak.csv";
+    }
 }

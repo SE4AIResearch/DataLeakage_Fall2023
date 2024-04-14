@@ -7,7 +7,7 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils.getActualLineNumberFromInternalLineNumber;
+import static com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils.getActualLineNumberFromInvocation;
 
 public class MultiTestLeakageDetector extends LeakageDetector<MultiTestLeakageInstance> {
     private final List<LeakageInstance> leakageInstances;
@@ -41,9 +41,7 @@ public class MultiTestLeakageDetector extends LeakageDetector<MultiTestLeakageIn
         final var telemetry = new MultiTestLeakageTelemetry(multiUseTestLeak);
 
         Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
-        int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageResult.getFolderPath(), invocation);
-        int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageResult.getFolderPath(), internalLineNumber);
-
+        int actualLineNumber = getActualLineNumberFromInvocation(invocation);
 
         return new MultiTestLeakageInstance(actualLineNumber, invocation, telemetry.getTest());
 

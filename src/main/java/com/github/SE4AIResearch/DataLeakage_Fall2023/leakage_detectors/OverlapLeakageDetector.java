@@ -3,7 +3,6 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.finals.OverlapLeakageFinal;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry.OverlapLeakageTelemetry;
@@ -13,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils.getActualLineNumberFromInternalLineNumber;
 
 public class OverlapLeakageDetector extends LeakageDetector<OverlapLeakageInstance> {
     private final List<LeakageInstance> leakageInstances;
@@ -47,7 +45,6 @@ public class OverlapLeakageDetector extends LeakageDetector<OverlapLeakageInstan
     }
 
 
-
     @NotNull
     @Override
     protected OverlapLeakageInstance createLeakageInstanceFromLine(String line) {
@@ -57,8 +54,7 @@ public class OverlapLeakageDetector extends LeakageDetector<OverlapLeakageInstan
         final var telemetry = new OverlapLeakageTelemetry(leakageFinal);
 
         Invocation invocation = new Invocation(leakageFinal.getInvo());
-        int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageResult.getFolderPath(), invocation);
-        int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageResult.getFolderPath(), internalLineNumber);
+        int actualLineNumber = Utils.getActualLineNumberFromInvocation(invocation);
 
 
         return new OverlapLeakageInstance(actualLineNumber, invocation,

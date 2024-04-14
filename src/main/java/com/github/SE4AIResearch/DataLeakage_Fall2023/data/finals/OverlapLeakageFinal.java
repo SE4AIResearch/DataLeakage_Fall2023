@@ -65,4 +65,9 @@ public class OverlapLeakageFinal implements OverlapLeakageData {
                 this.getTrainMeth().equals(o.getTrainMeth()) &&
                 this.getCtx().equals(o.getCtx()));
     }
+
+    @Override
+    public String getCsvFileName() {
+        return "FinalOverlapLeak.csv";
+    }
 }

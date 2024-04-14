@@ -2,12 +2,17 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface MultiTestData {
+/**
+ * An interface for common fields shared by multiple CSV files
+ * in the Leakage Analysis tool output.
+ */
+public interface MultiTestData extends CsvFileData {
     String getCtx1();
 
     String getMeth();
 
     String getInvo();
+
     String getTest();
 
 

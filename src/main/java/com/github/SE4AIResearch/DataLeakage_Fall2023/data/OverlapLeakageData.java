@@ -2,7 +2,7 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface OverlapLeakageData  {
+public interface OverlapLeakageData extends CsvFileData {
     String getTrainModel();
 
     String getTrain();
@@ -12,7 +12,6 @@ public interface OverlapLeakageData  {
     String getTrainMeth();
 
     String getCtx();
-
 
 
     boolean equals(@NotNull OverlapLeakageData o);

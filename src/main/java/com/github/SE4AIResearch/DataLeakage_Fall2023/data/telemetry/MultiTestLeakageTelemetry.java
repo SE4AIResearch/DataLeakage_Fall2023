@@ -92,4 +92,8 @@ public class MultiTestLeakageTelemetry implements MultiTestData {
     }
 
 
+    @Override
+    public String getCsvFileName() {
+        return "Telemetry_MultiUseTestLeak.csv";
+    }
 }

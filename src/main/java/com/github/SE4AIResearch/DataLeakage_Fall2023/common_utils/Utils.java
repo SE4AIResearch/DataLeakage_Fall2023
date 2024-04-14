@@ -1,5 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils;
 
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 
 import java.io.BufferedReader;
@@ -52,6 +53,12 @@ public class Utils {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public static int getActualLineNumberFromInvocation(Invocation invocation) {
+
+        int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageResult.getFolderPath(), invocation);
+        return getActualLineNumberFromInternalLineNumber(LeakageResult.getFolderPath(), internalLineNumber);
     }
 
     public static List<Integer> linesOnExclusionList() {
