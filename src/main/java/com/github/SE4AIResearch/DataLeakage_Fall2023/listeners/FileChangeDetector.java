@@ -1,8 +1,5 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.listeners;
 
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectLocator;
 import com.intellij.openapi.roots.ProjectFileIndex;
@@ -35,7 +32,7 @@ public class FileChangeDetector implements BulkFileListener {
     }
 
     private boolean theChangedFileIsCurrentlyBeingEdited(VFileEvent event) {
-        var editor = getEditorForFileChanged(event);
+        var editor = Utils.getEditorForFileChanged(event);
         if (editor == null) {
             return false;
         }
@@ -58,18 +55,4 @@ public class FileChangeDetector implements BulkFileListener {
         return project;
     }
 
-    public Editor getEditorForFileChanged(VFileEvent event) {
-        var file = event.getFile();
-        var project = getProjectForFile(file);
-        TextEditor currentEditor = null;
-        if (project != null) {
-            currentEditor = (TextEditor) FileEditorManager.getInstance(project).getSelectedEditor();
-        }
-        Editor editor = null;
-        if (currentEditor != null) {
-            editor = currentEditor.getEditor();
-        }
-
-        return editor;
-    }
 }

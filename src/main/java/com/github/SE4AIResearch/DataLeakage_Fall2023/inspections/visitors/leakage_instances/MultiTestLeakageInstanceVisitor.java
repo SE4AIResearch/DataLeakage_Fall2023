@@ -2,6 +2,7 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leaka
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.MultiTestLeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInspection.LocalQuickFix;
@@ -14,9 +15,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
-import com.intellij.refactoring.RefactoringFactory;
 import com.intellij.util.DocumentUtil;
-import com.jetbrains.python.psi.PyPsiFacade;
 import com.jetbrains.python.psi.PyReferenceExpression;
 import org.jetbrains.annotations.NotNull;
 
@@ -64,6 +63,12 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
     }
 
     class MultiTestLeakageQuickFix implements LocalQuickFix {
+        @NotNull
+        @Override
+        public String getName() {
+            return InspectionBundle.get("inspectionText.removeRedundantTestEvaluations.quickfix.text");
+        }
+
         @Override
         public @IntentionFamilyName @NotNull String getFamilyName() {
             return getName();
@@ -71,16 +76,12 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
 
         @Override
         public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-            var myFacade = PyPsiFacade.getInstance(project);
             var instance = descriptor.getPsiElement();
-            var myFactory = RefactoringFactory.getInstance(project);
 
 
             FindManager myFindManager = FindManager.getInstance(project);
-            var possible = myFindManager.canFindUsages(instance);
 
 
-            var descriptionText = descriptor.getDescriptionTemplate();
             var psiElement = descriptor.getPsiElement();
             var psiFile = psiElement.getContainingFile();
             PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
@@ -88,24 +89,29 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
             var lineNumber = descriptor.getLineNumber();
 
             int offset = document.getLineStartOffset(lineNumber);
-            //    document.replaceString(instance.getTextOffset(), instance.getTextOffset() + instance.getTextLength(), instance.getText() + "_1");
             var lineNumbersToRemove = new ArrayList<Integer>();
 
+            renameVariablesInDocument(document, instance, lineNumbersToRemove);
+
+            lineNumbersToRemove.add(document.getLineNumber(offset) + 1);
+            addLinesToExclusion(lineNumbersToRemove);
+
+            DaemonCodeAnalyzer.getInstance(project).restart();
+        }
+
+        private void renameVariablesInDocument(Document document, PsiElement instance, ArrayList<Integer> lineNumbersToRemove) {
             for (int i = 0; i < multiTestLeakageInstances.size(); i++) {
                 //Doesn't always reload contents of document from disk
                 var inst = multiTestLeakageInstances.get(i);
-                var line = inst.lineNumber() - 1;
-                var lineTextRange = DocumentUtil.getLineTextRange(document, line);
+                var lineNumber = inst.lineNumber() - 1;
+
+                var lineTextRange = DocumentUtil.getLineTextRange(document, lineNumber);
                 var lineContent = document.getText(lineTextRange);
-                var newStr = lineContent.replace(instance.getText(), instance.getText() + "_" + i);
-                document.replaceString(document.getLineStartOffset(line), document.getLineEndOffset(line), newStr);
-                lineNumbersToRemove.add(line);
+                var newStr = "# TODO: load the test data for the evaluation.\n" + lineContent.replace(instance.getText(), instance.getText() + "_" + i);
+                document.replaceString(document.getLineStartOffset(lineNumber), document.getLineEndOffset(lineNumber), newStr);
+                lineNumbersToRemove.add(lineNumber);
 
             }
-            lineNumbersToRemove.add(document.getLineNumber(offset) + 1);
-                addLinesToExclusion(lineNumbersToRemove);
-
-            DaemonCodeAnalyzer.getInstance(project).restart();
         }
 
 

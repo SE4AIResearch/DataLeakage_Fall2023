@@ -5,11 +5,14 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
-public abstract class LeakageDetector {
+public abstract class LeakageDetector<T> {
     public LeakageType leakageType;
 
     /**
@@ -47,7 +50,36 @@ public abstract class LeakageDetector {
 
     }
 
-    public abstract void findLeakageInstancesInFile(File file);
+
+    /**
+     * Looks through the CSV files that provide information about the provided {@code leakageType}.
+     * Adds leakage instances to the field {@link #leakageInstances}.
+     */
+    public void findLeakageInstancesInFile(File file) {
+        if (file.exists()) {
+
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    var leakageInstance = createLeakageInstanceFromLine(line);
+
+                    addLeakageInstanceIfNotPresent(leakageInstance);
+
+
+                }
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    protected abstract T createLeakageInstanceFromLine(String line);
+
+    protected abstract void addLeakageInstanceIfNotPresent(T leakageInstance);
+
 
     public LeakageDetector() {
 

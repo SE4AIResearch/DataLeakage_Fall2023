@@ -8,8 +8,6 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors.MultiTest
 import com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors.PreprocessingLeakageDetector;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-
 import com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors.OverlapLeakageDetector;
 import org.junit.Assert;
 

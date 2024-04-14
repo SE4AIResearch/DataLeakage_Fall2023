@@ -1,15 +1,12 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leakage_sources;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.PreprocessingLeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.PreprocessingLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionUtils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.Utils;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemsHolder;
@@ -24,7 +21,6 @@ import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.jetbrains.python.psi.PyCallExpression;
 import com.jetbrains.python.psi.PyFunction;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -103,34 +99,36 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
         @Override
         public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
 
-            var lineNumber = descriptor.getLineNumber();
 
-            var descriptionText = descriptor.getDescriptionTemplate();
             var psiElement = descriptor.getPsiElement();
             var psiFile = psiElement.getContainingFile();
             PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
             Document document = documentManager.getDocument(psiFile);
 
-            //Source not linked to instance
-
-            //Sample
-            if (descriptionText.equals(InspectionBundle.get("inspectionText.preprocessingLeakage.text")) && psiElement.getText().contains(OverlapLeakageSourceKeyword.sample.toString())) {
-
-            }
 
 //won't work if assignment is split on multiple lines
-            var instance = getInstanceForLeakageSourceAssociatedWithNode(preprocessingLeakageInstances, psiElement, holder);
-            var source = instance.getLeakageSource();
+            var lineNumber = descriptor.getLineNumber();
             int offset = document.getLineStartOffset(lineNumber);
 
-            @Nullable
-            PsiElement firstElementOnLine = psiFile.findElementAt(offset);
-
-            int potentialOffsetOfSplitCall = document.getLineStartOffset(lineNumber + 1);
+            var potentialOffsetOfSplitCall = locatePotentialSplitCall(document, offset, lineNumber);
             //TODO: this won't work if assignment is split on multiple lines
+            var potentialSplitCall =
+                    document.getText(new TextRange(potentialOffsetOfSplitCall, document.getLineEndOffset(lineNumber + 1)));
 
-            var potentialSplitCall = document.getText(new TextRange(potentialOffsetOfSplitCall, document.getLineEndOffset(lineNumber + 1)));
+            moveSplitCallIfItExists(potentialSplitCall, document, potentialOffsetOfSplitCall, offset);
 
+            Utils.removeFixedLinesFromLeakageInstance(project, document, offset, lineNumber, potentialOffsetOfSplitCall);
+
+            QuickFixActionNotifier publisher = project.getMessageBus()
+                    .syncPublisher(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC);
+            try {
+                // do action
+            } finally {
+                publisher.afterAction();
+            }
+        }
+
+        private static void moveSplitCallIfItExists(String potentialSplitCall, Document document, int potentialOffsetOfSplitCall, int offset) {
             if (potentialSplitCall != null && potentialSplitCall.contains("split")) {
 
                 document.replaceString(potentialOffsetOfSplitCall, potentialOffsetOfSplitCall +
@@ -144,21 +142,13 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
 
                 document.insertString(offset, "split()\n");
             }
+        }
 
-            var lineNumbersToRemove = new ArrayList<Integer>();
-            lineNumbersToRemove.add(document.getLineNumber(offset));
-            lineNumbersToRemove.add(document.getLineNumber(lineNumber - 1));
-            lineNumbersToRemove.add(document.getLineNumber(offset) + 1);
-            lineNumbersToRemove.add(document.getLineNumber(potentialOffsetOfSplitCall) + 1);
-            InspectionUtils.addLinesToExclusion(lineNumbersToRemove);
-            DaemonCodeAnalyzer.getInstance(project).restart();
-            QuickFixActionNotifier publisher = project.getMessageBus()
-                    .syncPublisher(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC);
-            try {
-                // do action
-            } finally {
-                publisher.afterAction();
-            }
+        private int locatePotentialSplitCall(Document document, int offset, int lineNumber) {
+            int potentialOffsetOfSplitCall = document.getLineStartOffset(lineNumber + 1);
+
+            return potentialOffsetOfSplitCall;
+
         }
 
 

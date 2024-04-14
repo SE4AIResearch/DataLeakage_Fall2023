@@ -6,15 +6,12 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.PreprocessingLeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PreprocessingLeakageDetector extends LeakageDetector {
+public class PreprocessingLeakageDetector extends LeakageDetector<PreprocessingLeakageInstance> {
     private final List<LeakageInstance> leakageInstances;
 
     public PreprocessingLeakageDetector() {
@@ -44,34 +41,22 @@ public class PreprocessingLeakageDetector extends LeakageDetector {
     }
 
     @Override
-    public void findLeakageInstancesInFile(File file) {
-        if (file.exists()) {
+    protected void addLeakageInstanceIfNotPresent(PreprocessingLeakageInstance leakageInstance) {
+        var existingInstances = leakageInstances();
+        if (!existingInstances.contains(leakageInstance)) {
+            addLeakageInstance(leakageInstance);
 
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    String[] columns = line.split(("\t"));
-                    Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
-                    int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageResult.getFolderPath(), invocation);
-                    int actualLineNumber = Utils.getActualLineNumberFromInternalLineNumber(LeakageResult.getFolderPath(), internalLineNumber);
-
-                    var leakageInstance = new PreprocessingLeakageInstance(actualLineNumber, invocation);
-
-                    var existingInstances = leakageInstances();
-                    if (!existingInstances.contains(leakageInstance)) {
-                        addLeakageInstance(leakageInstance);
-
-                    }
-
-
-                }
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
+    }
+
+    @NotNull
+    protected PreprocessingLeakageInstance createLeakageInstanceFromLine(String line) {
+        String[] columns = line.split(("\t"));
+        Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
+        int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageResult.getFolderPath(), invocation);
+        int actualLineNumber = Utils.getActualLineNumberFromInternalLineNumber(LeakageResult.getFolderPath(), internalLineNumber);
+
+        return new PreprocessingLeakageInstance(actualLineNumber, invocation);
     }
 
     @Override
