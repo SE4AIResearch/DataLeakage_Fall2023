@@ -10,10 +10,8 @@ import java.util.List;
 public class MultiTestLeakageSource extends LeakageSource {
     private List<Taint> taints;
     private List<Integer> lineNumbers;
-    private final LeakageCause cause;
 
     public MultiTestLeakageSource() {
-        this.cause = LeakageCause.RepeatDataEvaluation;
         this.taints = new ArrayList<>();
         this.lineNumbers = new ArrayList<>();
     }
