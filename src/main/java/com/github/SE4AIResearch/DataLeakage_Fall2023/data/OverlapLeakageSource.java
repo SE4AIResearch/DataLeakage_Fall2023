@@ -27,14 +27,6 @@ public class OverlapLeakageSource extends LeakageSource {
         return leakageSourceKeyword;
     }
 
-    @Override
-    public List<LeakageCause> getPotentialCauses() {
-        return switch (this.leakageSourceKeyword) {
-            case flow -> List.of(LeakageCause.DataAugmentation);
-            case sample -> List.of(LeakageCause.SplitBeforeSample);
-        };
-    }
-
 
 
     @Override

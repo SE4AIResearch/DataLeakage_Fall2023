@@ -87,7 +87,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
                 renderInspectionOnLeakageSource(node, holder, overlapLeakageInstances, myQuickFix);
             }
 
-            renderInspectionOnTaints(node, holder, Arrays.stream(OverlapLeakageSourceKeyword.values()).toList(), overlapLeakageInstances);
+            renderInspectionOnTaints(node, holder, Arrays.stream(OverlapLeakageSourceKeyword.values()).toList());
 
 
         }
@@ -130,9 +130,9 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
 //TODO: this won't work if assignment is split on multiple lines
             var instance = getInstanceForLeakageSourceAssociatedWithNode(overlapLeakageInstances, psiElement, holder);
-            var source = instance.getLeakageSource();
+            var source = instance.getLeakageSource();//TODO: move
 
-            if (source.getCause().equals(LeakageCause.SplitBeforeSample)) {
+            if (instance.getCause().equals(LeakageCause.SplitBeforeSample)) {
                 int offsetOfLeakageSource = document.getLineStartOffset(lineNumberOfLeakageSource);
 
 

@@ -482,7 +482,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
                 newDataRow[1] = String.valueOf(instance.lineNumber()); //Line Number
                 newDataRow[2] = Utils.stripSuffixFromVariableName(instance.variableName()); // Variable Associated
                 if (source != null) {
-                    newDataRow[3] = causeMap.get(source.getCause()); // Cause
+                    newDataRow[3] = causeMap.get(instance.getCause()); // Cause
                 }
 
                 data.add(curRow, newDataRow);

@@ -23,8 +23,6 @@ public abstract class LeakageSource {
 
     public abstract LeakageSourceKeyword getLeakageSourceKeyword();
 
-    public abstract List<LeakageCause> getPotentialCauses();
-
 
     public List<Integer> setLineNumbers() {
         return this.getTaints().stream().map(taint ->

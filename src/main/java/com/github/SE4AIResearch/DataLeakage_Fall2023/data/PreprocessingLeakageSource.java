@@ -29,14 +29,6 @@ public class PreprocessingLeakageSource extends LeakageSource {
         return leakageSourceKeyword;
     }
 
-    @Override
-    public List<LeakageCause> getPotentialCauses() {
-        return switch (this.leakageSourceKeyword) {
-
-            case predict -> List.of(LeakageCause.VectorizingTextData);
-
-        };
-    }
 
     @Override
     public void setLineNumbers(List<Integer> lineNumbers) {

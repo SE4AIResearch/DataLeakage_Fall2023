@@ -26,10 +26,6 @@ public class MultiTestLeakageSource extends LeakageSource {
         return null;//TODO: better way of doing this?
     }
 
-    @Override
-    public List<LeakageCause> getPotentialCauses() {
-        return List.of(LeakageCause.RepeatDataEvaluation);
-    }
 
 
 

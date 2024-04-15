@@ -2,8 +2,10 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.PreprocessingLeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.taints.Taint;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.taints.TaintLabel;
 
@@ -21,7 +23,7 @@ public class PreprocessingLeakageInstance implements LeakageInstance {
       this.type = LeakageType.PreprocessingLeakage;
       this.invocation = invocation;
       this.train = Utils.getTrainFromPreprocessingLeakTelemetryFile();
-      this.leakageSource = new LeakageSource(this.type);
+      this.leakageSource = new PreprocessingLeakageSource();
    }
 
 
@@ -47,6 +49,11 @@ public class PreprocessingLeakageInstance implements LeakageInstance {
 
    public LeakageSource getLeakageSource() {
       return leakageSource;
+   }
+
+   @Override
+   public LeakageCause getCause() {
+      return null;
    }
 
    public Taint findTaintThatMatchesText(String text) {
