@@ -17,6 +17,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
+import com.intellij.util.DocumentUtil;
 import com.jetbrains.python.psi.PyCallExpression;
 import com.jetbrains.python.psi.PyElementVisitor;
 import com.jetbrains.python.psi.PyFunction;
@@ -140,6 +141,9 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
                 swapSplitAndSample(document, offsetOfLeakageSource, offsetOfSplitCall);
 
+
+                var newStr = "# TODO: Check the arguments provided to the call to split.\n";
+                document.insertString(offsetOfLeakageSource,  newStr);
 
                 //Remove split sample from leakage instances
                 Utils.removeFixedLinesFromLeakageInstance(project, document, offsetOfLeakageSource, lineNumberOfLeakageSource, offsetOfSplitCall);

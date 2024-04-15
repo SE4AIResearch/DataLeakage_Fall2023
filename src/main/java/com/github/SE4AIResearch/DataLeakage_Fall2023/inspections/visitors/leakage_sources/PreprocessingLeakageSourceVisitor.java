@@ -105,8 +105,6 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
             PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
             Document document = documentManager.getDocument(psiFile);
 
-
-//won't work if assignment is split on multiple lines
             var lineNumber = descriptor.getLineNumber();
             int offset = document.getLineStartOffset(lineNumber);
 
@@ -116,7 +114,8 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
                     document.getText(new TextRange(potentialOffsetOfSplitCall, document.getLineEndOffset(lineNumber + 1)));
 
             moveSplitCallIfItExists(potentialSplitCall, document, potentialOffsetOfSplitCall, offset);
-
+            var newStr = "# TODO: Check the arguments provided to the call to split.\n";
+            document.insertString(offset,  newStr);
             Utils.removeFixedLinesFromLeakageInstance(project, document, offset, lineNumber, potentialOffsetOfSplitCall);
 
             QuickFixActionNotifier publisher = project.getMessageBus()
