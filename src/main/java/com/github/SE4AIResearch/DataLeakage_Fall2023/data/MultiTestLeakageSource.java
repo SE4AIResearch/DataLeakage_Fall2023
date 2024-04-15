@@ -19,16 +19,6 @@ public class MultiTestLeakageSource extends LeakageSource {
     }
 
 
-
-
-    @Override
-    public LeakageSourceKeyword getLeakageSourceKeyword() {
-        return null;//TODO: better way of doing this?
-    }
-
-
-
-
     @Override
     public void setLineNumbers(List<Integer> lineNumbers) {
         this.lineNumbers = lineNumbers;

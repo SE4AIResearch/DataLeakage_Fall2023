@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class PreprocessingLeakageSource extends LeakageSource {
-    private PreprocessingLeakageSourceKeyword leakageSourceKeyword;
 
     private List<Taint> taints;
     private List<Integer> lineNumbers;
@@ -24,10 +23,6 @@ public class PreprocessingLeakageSource extends LeakageSource {
         this.lineNumbers = setLineNumbers();
     }
 
-    @Override
-    public LeakageSourceKeyword getLeakageSourceKeyword() {
-        return leakageSourceKeyword;
-    }
 
 
     @Override
@@ -37,13 +32,13 @@ public class PreprocessingLeakageSource extends LeakageSource {
 
     @Override
     public List<Taint> getTaints() {
-        return null;
+        return taints;
     }
 
 
     @Override
     public List<Integer> getLineNumbers() {
-        return null;
+        return lineNumbers;
     }
 
     @Override

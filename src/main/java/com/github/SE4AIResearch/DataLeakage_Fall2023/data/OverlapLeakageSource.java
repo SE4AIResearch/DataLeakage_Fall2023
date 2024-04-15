@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class OverlapLeakageSource extends LeakageSource {
-    private OverlapLeakageSourceKeyword leakageSourceKeyword;
 
     private List<Taint> taints;
     private List<Integer> lineNumbers;
@@ -21,12 +20,6 @@ public class OverlapLeakageSource extends LeakageSource {
         intializeTaints();
         this.lineNumbers = setLineNumbers();
     }
-
-    @Override
-    public OverlapLeakageSourceKeyword getLeakageSourceKeyword() {
-        return leakageSourceKeyword;
-    }
-
 
 
     @Override

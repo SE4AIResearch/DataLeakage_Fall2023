@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 public abstract class LeakageSource {
 
-    public abstract LeakageSourceKeyword getLeakageSourceKeyword();
 
 
     public List<Integer> setLineNumbers() {
