@@ -1,6 +1,8 @@
-package com.github.SE4AIResearch.DataLeakage_Fall2023.data;
+package com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_sources;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.taints.Taint;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.taints.TaintUtils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
@@ -20,7 +22,6 @@ import java.util.stream.Collectors;
  */
 
 public abstract class LeakageSource {
-
 
 
     public List<Integer> setLineNumbers() {

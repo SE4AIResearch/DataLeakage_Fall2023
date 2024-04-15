@@ -33,12 +33,14 @@ public class InspectionUtils {
             e.printStackTrace();
         }
     }
+
     public static boolean anyLinesAreOnExclusionList(int nodeLineNumber) {
         List<Integer> linesOnExlcusionList = Utils.linesOnExclusionList();
 
 
         return linesOnExlcusionList.contains(nodeLineNumber);
     }
+
     public static boolean anyLinesAreOnExclusionList(LeakageInstance leakageInstance, int nodeLineNumber) {
         List<Integer> linesOnExlcusionList = Utils.linesOnExclusionList();
 
@@ -49,14 +51,14 @@ public class InspectionUtils {
             return true;
         }
 
-        var source = leakageInstance.getLeakageSource();
-
-        for (Integer lineNo : source.getLineNumbers()) {
-            if (linesOnExlcusionList.contains(lineNo)) {
-                return true;
+        var sourceOptional = leakageInstance.getLeakageSource();
+        if (sourceOptional.isPresent()) {
+            for (Integer lineNo : sourceOptional.get().getLineNumbers()) {
+                if (linesOnExlcusionList.contains(lineNo)) {
+                    return true;
+                }
             }
         }
-
         return false;
     }
 

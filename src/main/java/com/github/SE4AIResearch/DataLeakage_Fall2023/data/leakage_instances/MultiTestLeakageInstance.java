@@ -1,13 +1,13 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.MultiTestLeakageSource;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_sources.LeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class MultiTestLeakageInstance implements LeakageInstance {
 
@@ -47,8 +47,8 @@ public class MultiTestLeakageInstance implements LeakageInstance {
     }
 
     @Override
-    public LeakageSource getLeakageSource() {
-        return new MultiTestLeakageSource();
+    public Optional<LeakageSource> getLeakageSource() {
+        return Optional.empty();//TODO;
     }
 
     @Override

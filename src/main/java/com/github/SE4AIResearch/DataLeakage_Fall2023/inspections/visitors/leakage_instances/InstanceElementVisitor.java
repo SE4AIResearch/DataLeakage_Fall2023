@@ -34,13 +34,21 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
     public T getLeakageInstanceAssociatedWithNode(List<T> leakageInstances, @NotNull PsiElement node) {
         return leakageInstances.stream().filter(leakageInstanceIsAssociatedWithNode(node)).findFirst().get();
     }
+
     public void renderInspectionOnLeakageInstance(List<T> leakageInstances, PsiElement node) {
         if (leakageIsAssociatedWithNode(leakageInstances, node)) {
             var instance = getLeakageInstanceAssociatedWithNode(leakageInstances, node);
-            var sourceLineNumbers = instance.getLeakageSource().getLineNumbers();
             LeakageType leakageType = getLeakageType();
-            var sb = getViewSourceMessage(leakageType, sourceLineNumbers);
 
+            var sourceOptional = instance.getLeakageSource();
+            String sb;
+            if (sourceOptional.isPresent()) {
+                var sourceLineNumbers = sourceOptional.get().getLineNumbers();
+                sb = getViewSourceMessage(leakageType, sourceLineNumbers);
+            } else {
+                sb = InspectionBundle.get(leakageType.getInspectionTextKey());
+
+            }
             DataLeakageWarningRenderer.renderDataLeakageWarning(instance, node,
                     holder, sb, collection
             );
@@ -48,17 +56,23 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
 
         }
     }
+
     public void renderInspectionOnLeakageInstance(List<T> leakageInstances, PsiElement node, LocalQuickFix fix) {
         if (leakageIsAssociatedWithNode(leakageInstances, node)) {
             var instance = getLeakageInstanceAssociatedWithNode(leakageInstances, node);
-            var sourceLineNumbers = instance.getLeakageSource().getLineNumbers();
             LeakageType leakageType = getLeakageType();
-            var sb = getViewSourceMessage(leakageType, sourceLineNumbers);
 
+            var sourceOptional = instance.getLeakageSource();
+            String sb;
+            if (sourceOptional.isPresent()) {
+                var sourceLineNumbers = sourceOptional.get().getLineNumbers();
+                sb = getViewSourceMessage(leakageType, sourceLineNumbers);
+            } else {
+                sb = InspectionBundle.get(leakageType.getInspectionTextKey());
+            }
             DataLeakageWarningRenderer.renderDataLeakageWarning(instance, node,
                     holder, sb, fix, collection
             );
-
 
         }
     }
@@ -68,15 +82,13 @@ public abstract class InstanceElementVisitor<T extends LeakageInstance> extends 
         var sb = new StringBuilder();
 
 
-        sb.append(InspectionBundle.get(leakageType.getInspectionTextKey()));
+        sb.append(InspectionBundle.get(leakageType.getInspectionTextKey()));//TODO: duplicate of above
         sb.append(" ");
 
         if (sourceLineNumbers.size() == 1) {
             sb.append("See Line ");
             sb.append(sourceLineNumbers.get(0));
             sb.append(" which contains the source of the leakage.");
-        } else if (sourceLineNumbers.isEmpty()) {//for multitest leakage
-
         } else {
 
             sb.append("See Lines: ");

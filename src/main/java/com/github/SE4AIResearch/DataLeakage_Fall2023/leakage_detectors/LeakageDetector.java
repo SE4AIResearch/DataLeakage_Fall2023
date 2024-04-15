@@ -79,7 +79,7 @@ public abstract class LeakageDetector<T extends LeakageInstance> {
 
     protected abstract T createLeakageInstanceFromLine(String line);
 
-    protected  void addLeakageInstanceIfNotPresent(T leakageInstance){
+    protected void addLeakageInstanceIfNotPresent(T leakageInstance) {
         var existingInstances = leakageInstances();
         if (!existingInstances.contains(leakageInstance)) {
             if (!anyLinesAreOnExclusionList(leakageInstance)) {
@@ -95,16 +95,20 @@ public abstract class LeakageDetector<T extends LeakageInstance> {
             return true;
         }
 
-        var source = leakageInstance.getLeakageSource();
+        var sourceOptional = leakageInstance.getLeakageSource();
+        if (sourceOptional.isPresent()) {
 
-        for (Integer lineNo : source.getLineNumbers()) {
-            if (linesOnExlcusionList.contains(lineNo)) {
-                return true;
+            for (Integer lineNo : sourceOptional.get().getLineNumbers()) {
+                if (linesOnExlcusionList.contains(lineNo)) {
+                    return true;
+                }
             }
         }
 
+
         return false;
     }
+
     public LeakageDetector() {
 
     }

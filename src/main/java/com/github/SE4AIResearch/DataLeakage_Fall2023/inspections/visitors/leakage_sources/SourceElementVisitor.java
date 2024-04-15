@@ -2,7 +2,7 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leaka
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.CauseMapFactory;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_sources.LeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.taints.Taint;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.source_keywords.LeakageSourceKeyword;
@@ -35,8 +35,16 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
     public Predicate<T> leakageSourceAssociatedWithNode(@NotNull PsiElement node,
                                                         @NotNull ProblemsHolder holder) {
         var nodeLineNumber = PsiUtils.getNodeLineNumber(node, holder);
+        boolean bol;
+        return instance -> {
+            var sourceOptional = instance.getLeakageSource();
+            if (sourceOptional.isPresent()) {
+                var source = sourceOptional.get();
+                return source.getLineNumbers().stream().anyMatch(leakageSourceLineNumber -> leakageSourceLineNumber == nodeLineNumber);
+            }
+            return false;
+        };
 
-        return instance -> (instance.getLeakageSource().getLineNumbers().stream().anyMatch(leakageSourceLineNumber -> leakageSourceLineNumber == nodeLineNumber));
 
     }
 
@@ -67,7 +75,7 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
         leakageInstances.stream().filter(leakageSourceAssociatedWithNode(node, holder)).findFirst().ifPresent(
                 instance ->
                 {
-                    var inspectionMessage = getInspectionMessageForLeakageSource(instance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText()));
+                    var inspectionMessage = getInspectionMessageForLeakageSource(instance.getLeakageSource().get().findTaintThatMatchesText(node.getFirstChild().getText()));
                     DataLeakageWarningRenderer.renderDataLeakageWarning(instance, node, holder, inspectionMessage, collection);
                 }
         );
@@ -80,7 +88,7 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
 
         leakageInstances.stream().filter(leakageSourceAssociatedWithNode(node, holder)).findFirst().ifPresent(
                 instance -> {
-                    var inspectionMessage = getInspectionMessageForLeakageSource(instance.getLeakageSource().findTaintThatMatchesText(node.getFirstChild().getText()));
+                    var inspectionMessage = getInspectionMessageForLeakageSource(instance.getLeakageSource().get().findTaintThatMatchesText(node.getFirstChild().getText()));
                     DataLeakageWarningRenderer.renderDataLeakageWarning(instance, node, holder, inspectionMessage, fix, collection);
                 }
         );

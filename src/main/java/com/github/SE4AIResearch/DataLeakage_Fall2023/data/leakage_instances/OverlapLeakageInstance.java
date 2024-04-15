@@ -1,13 +1,14 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageSource;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_sources.LeakageSource;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_sources.OverlapLeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class OverlapLeakageInstance implements LeakageInstance {
 
@@ -31,8 +32,8 @@ public class OverlapLeakageInstance implements LeakageInstance {
         this.train = Utils.stripSuffixFromVariableName(train);
     }
 
-    public LeakageSource getLeakageSource() {
-        return leakageSource;
+    public Optional<LeakageSource> getLeakageSource() {
+        return Optional.of(leakageSource);
     }
     @Override
     public LeakageCause getCause() {
