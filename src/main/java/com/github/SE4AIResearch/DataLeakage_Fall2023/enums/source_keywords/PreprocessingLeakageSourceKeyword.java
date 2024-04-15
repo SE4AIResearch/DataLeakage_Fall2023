@@ -22,14 +22,6 @@ public enum PreprocessingLeakageSourceKeyword implements LeakageSourceKeyword {
         };
     }
 
-    @Override
-    public List<LeakageCause> getPotentialCauses() {
-        return switch (this) {
-
-            case predict -> List.of(LeakageCause.VectorizingTextData);
-
-        };
-    }
 
 
     @Override

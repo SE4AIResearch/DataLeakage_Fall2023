@@ -87,7 +87,7 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
                 renderInspectionOnLeakageSource(node, holder, overlapLeakageInstances, myQuickFix);
             }
 
-            renderInspectionOnTaints(node, holder, Arrays.stream(OverlapLeakageSourceKeyword.values()).toList());
+            renderInspectionOnTaints(node, holder, Arrays.stream(OverlapLeakageSourceKeyword.values()).toList(), overlapLeakageInstances);
 
 
         }

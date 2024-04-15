@@ -29,13 +29,6 @@ public enum OverlapLeakageSourceKeyword implements LeakageSourceKeyword {
     }
 
 
-    @Override
-    public List<LeakageCause> getPotentialCauses() {
-        return switch (this) {
-            case flow -> List.of(LeakageCause.DataAugmentation);
-            case sample -> List.of(LeakageCause.SplitBeforeSample);
-        };
-    }
 
     @Override
     public String toString() {

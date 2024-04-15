@@ -87,12 +87,12 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
 
     }
 
-    public void renderInspectionOnTaintForInstanceWithKeyword(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, U keyword) {
+    public void renderInspectionOnTaintForInstanceWithKeyword(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, U keyword, T instance) {
 
         var taintKeyword = keyword.getTaintKeyword();
-        var potentialCauses = keyword.getPotentialCauses();
+        var cause = instance.getCause();
 
-        var key = potentialCauses.get(0).getInspectionTextKey();//TODO: refactor
+        var key = cause.getInspectionTextKey();//TODO: refactor
 //TODO: train test split is not necessarily a taint
         if (node.getText().toLowerCase().contains(taintKeyword)) {//TODO: not the whole node text, just the method itself
             var inspectionMessage = InspectionBundle.get(key);
@@ -113,10 +113,10 @@ public abstract class SourceElementVisitor<T extends LeakageInstance, U extends 
         }//TODO: the split call isn't flagged as a taint by the leakage tool, but it is considered as a taint here
     }
 
-    public void renderInspectionOnTaints(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<U> keywords) {
+    public void renderInspectionOnTaints(@NotNull PyCallExpression node, @NotNull ProblemsHolder holder, List<U> keywords, List<LeakageInstance> overlapLeakageInstances) {
         // for overlap leakage instancesWhoseSourcesHaveDataAugmentation, instancesWhoseSourcesHaveSampling
 
-        keywords.forEach(keyword -> renderInspectionOnTaintForInstanceWithKeyword(node, holder, keyword));
+        keywords.forEach(keyword -> renderInspectionOnTaintForInstanceWithKeyword(node, holder, keyword,overlapLeakageInstances));
 
     }
 
