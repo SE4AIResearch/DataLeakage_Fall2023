@@ -30,7 +30,7 @@ public abstract class LeakageSource {
                         Invocation.getInternalLineNumberFromInvocation(LeakageResult.getFolderPath(),
                                 taint.getInvocation()))
 
-        ).collect(Collectors.toList());
+        ).distinct().collect(Collectors.toList());
 
 
     }
