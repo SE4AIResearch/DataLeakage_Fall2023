@@ -1,13 +1,13 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.tool_windows;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAction;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageSource;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_sources.LeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageInstanceCollector;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
@@ -458,8 +458,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
         private Object[][] fetchInstanceData() {
             // for instance it is type, line number, variable name
             ArrayList<String[]> data;
-            LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
-            List<LeakageInstance> leakageInstances = leakageAnalysisParser.LeakageInstances();
+            LeakageInstanceCollector leakageInstanceCollector = new LeakageInstanceCollector();
+            List<LeakageInstance> leakageInstances = leakageInstanceCollector.LeakageInstances();
             int row = leakageInstances.size();
             int col = instanceTableModel.getColumnCount();
             HashMap<LeakageCause, String> causeMap = CauseMapFactory.getCauseMap();
@@ -476,25 +476,27 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             int curRow = 0;
             for (LeakageInstance instance : leakageInstances) {
                 String[] newDataRow = new String[col];
-                LeakageSource source = instance.getLeakageSource();
+                var sourceOptional = instance.getLeakageSource();
 
                 newDataRow[0] = leakageTypeMap.get(instance.type()); // Leakage Type
                 newDataRow[1] = String.valueOf(instance.lineNumber()); //Line Number
                 newDataRow[2] = Utils.stripSuffixFromVariableName(instance.variableName()); // Variable Associated
-                if (source != null) {
-                    newDataRow[3] = causeMap.get(source.getCause()); // Cause
-                }
+
+                newDataRow[3] = causeMap.get(instance.getCause()); // Cause
+
 
                 data.add(curRow, newDataRow);
                 curRow++;
-                curRow = addLeakageSourcesIfPresent(source, newDataRow, data, curRow);
+                curRow = addLeakageSourcesIfPresent(instance, newDataRow, data, curRow);
             }
 
             return data.toArray(String[][]::new); // Convert data arraylist to array
         }
 
-        private static int addLeakageSourcesIfPresent(LeakageSource source, String[] newDataRow, ArrayList<String[]> data, int curRow) {
-            if (source != null) {
+        private static int addLeakageSourcesIfPresent(LeakageInstance instance, String[] newDataRow, ArrayList<String[]> data, int curRow) {
+            var sourceOptional = instance.getLeakageSource();
+            if (sourceOptional.isPresent()) {
+                var source = instance.getLeakageSource().get();
                 for (int i = 0; i < source.getLineNumbers().size(); i++) {
                     String[] subDataRow = newDataRow.clone();
                     subDataRow[1] = source.getLineNumbers().get(i).toString();
@@ -509,8 +511,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
         private Object[][] fetchSummaryData() {
             Object[][] data = new String[3][2];
-            LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
-            List<LeakageInstance> leakageInstances = leakageAnalysisParser.LeakageInstances();
+            LeakageInstanceCollector leakageInstanceCollector = new LeakageInstanceCollector();
+            List<LeakageInstance> leakageInstances = leakageInstanceCollector.LeakageInstances();
             int preproc = 0, multitest = 0, overlap = 0;
 
             for (LeakageInstance instance : leakageInstances) {

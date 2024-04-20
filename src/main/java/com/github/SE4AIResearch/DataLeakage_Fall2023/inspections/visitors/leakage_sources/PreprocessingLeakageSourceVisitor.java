@@ -1,8 +1,8 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leakage_sources;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.PreprocessingLeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.PreprocessingLeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.PreprocessingLeakageSourceKeyword;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.source_keywords.PreprocessingLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;

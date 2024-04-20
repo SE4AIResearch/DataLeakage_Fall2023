@@ -1,9 +1,9 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leakage_sources;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.OverlapLeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceKeyword;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.source_keywords.OverlapLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.Utils;
@@ -131,9 +131,9 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
 //TODO: this won't work if assignment is split on multiple lines
             var instance = getInstanceForLeakageSourceAssociatedWithNode(overlapLeakageInstances, psiElement, holder);
-            var source = instance.getLeakageSource();
+            var source = instance.getLeakageSource();//TODO: move
 
-            if (source.getCause().equals(LeakageCause.SplitBeforeSample)) {
+            if (instance.getCause().equals(LeakageCause.SplitBeforeSample)) {
                 int offsetOfLeakageSource = document.getLineStartOffset(lineNumberOfLeakageSource);
 
 

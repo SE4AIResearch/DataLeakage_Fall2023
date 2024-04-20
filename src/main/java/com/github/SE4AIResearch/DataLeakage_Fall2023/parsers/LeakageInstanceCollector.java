@@ -1,6 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.parsers;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors.LeakageDetector;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors.MultiTestLeakageDetector;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors.OverlapLeakageDetector;
@@ -18,13 +18,13 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LeakageAnalysisParser {
+public class LeakageInstanceCollector {
     private final List<LeakageDetector<? extends LeakageInstance>> leakageDetectors;
     private List<LeakageInstance> leakageInstances;
 
     private Project project;
 
-    public LeakageAnalysisParser() {
+    public LeakageInstanceCollector() {
         setProject();
 
         if (project != null) {

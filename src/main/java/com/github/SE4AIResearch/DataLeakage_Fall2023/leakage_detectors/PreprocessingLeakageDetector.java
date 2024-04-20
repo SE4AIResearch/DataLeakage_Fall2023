@@ -2,9 +2,8 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.PreprocessingLeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.PreprocessingLeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,21 +39,12 @@ public class PreprocessingLeakageDetector extends LeakageDetector<PreprocessingL
         return leakageInstances;
     }
 
-    @Override
-    protected void addLeakageInstanceIfNotPresent(PreprocessingLeakageInstance leakageInstance) {
-        var existingInstances = leakageInstances();
-        if (!existingInstances.contains(leakageInstance)) {
-            addLeakageInstance(leakageInstance);
-
-        }
-    }
 
     @NotNull
     protected PreprocessingLeakageInstance createLeakageInstanceFromLine(String line) {
         String[] columns = line.split(("\t"));
         Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
-        int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageResult.getFolderPath(), invocation);
-        int actualLineNumber = Utils.getActualLineNumberFromInternalLineNumber(LeakageResult.getFolderPath(), internalLineNumber);
+        int actualLineNumber = Utils.getActualLineNumberFromInvocation(invocation);
 
         return new PreprocessingLeakageInstance(actualLineNumber, invocation);
     }

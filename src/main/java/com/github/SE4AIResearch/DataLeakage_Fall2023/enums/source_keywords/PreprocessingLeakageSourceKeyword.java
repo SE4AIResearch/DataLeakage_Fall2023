@@ -1,4 +1,7 @@
-package com.github.SE4AIResearch.DataLeakage_Fall2023.enums;
+package com.github.SE4AIResearch.DataLeakage_Fall2023.enums.source_keywords;
+
+import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.source_keywords.LeakageSourceKeyword;
 
 import java.util.List;
 
@@ -19,14 +22,6 @@ public enum PreprocessingLeakageSourceKeyword implements LeakageSourceKeyword {
         };
     }
 
-    @Override
-    public List<LeakageCause> getPotentialCauses() {
-        return switch (this) {
-
-            case predict -> List.of(LeakageCause.VectorizingTextData);
-
-        };
-    }
 
 
     @Override

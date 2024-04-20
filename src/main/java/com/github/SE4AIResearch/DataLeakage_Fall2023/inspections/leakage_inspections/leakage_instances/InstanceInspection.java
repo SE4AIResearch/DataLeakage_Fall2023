@@ -1,6 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_instances;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.LeakageInspection;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leakage_instances.InstanceElementVisitor;
 import com.intellij.codeInspection.ProblemsHolder;
@@ -15,7 +15,7 @@ public abstract class InstanceInspection<T extends LeakageInstance> extends Leak
 
     @Override
     public PyElementVisitor getElementVisitor(@NotNull ProblemsHolder holder) {
-        var leakageInstances = getLeakageInstancesForType(leakageAnalysisParser.LeakageInstances());
+        var leakageInstances = getLeakageInstancesForType(leakageInstanceCollector.LeakageInstances());
         return instanceElementVisitor(leakageInstances, holder);
     }
 }

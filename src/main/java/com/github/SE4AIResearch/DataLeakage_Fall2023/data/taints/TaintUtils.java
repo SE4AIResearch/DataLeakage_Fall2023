@@ -1,7 +1,7 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.data.taints;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.TaintLabel;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.taints.TaintLabel;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -1,6 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.listeners;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageInstanceCollector;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import org.jetbrains.annotations.NotNull;
@@ -11,11 +11,11 @@ import static com.github.SE4AIResearch.DataLeakage_Fall2023.listeners.Utils.aCSV
 
 public  class LeakageFileChangeDetector implements BulkFileListener {
   //  private final List<LeakageDetector> leakageDetectors;
-    private LeakageAnalysisParser leakageAnalysisParser;
+    private LeakageInstanceCollector leakageInstanceCollector;
 
 
     public LeakageFileChangeDetector() {
-        leakageAnalysisParser = new LeakageAnalysisParser();
+        leakageInstanceCollector = new LeakageInstanceCollector();
     }
 
 
