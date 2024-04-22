@@ -1,13 +1,16 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.*;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry.MultiTestLeakageTelemetry;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.csv_data.MultiUseTestLeak;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.MultiTestLeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.csv_data.telemetry.MultiTestLeakageTelemetry;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils.getActualLineNumberFromInternalLineNumber;
+import static com.github.SE4AIResearch.DataLeakage_Fall2023.common_utils.Utils.getActualLineNumberFromInvocation;
 
 public class MultiTestLeakageDetector extends LeakageDetector<MultiTestLeakageInstance> {
     private final List<LeakageInstance> leakageInstances;
@@ -33,16 +36,6 @@ public class MultiTestLeakageDetector extends LeakageDetector<MultiTestLeakageIn
     }
 
 
-
-    @Override
-    protected void addLeakageInstanceIfNotPresent(MultiTestLeakageInstance leakageInstance) {
-        var existingInstances = leakageInstances();
-        if (!existingInstances.contains(leakageInstance)) {
-            addLeakageInstance(leakageInstance);
-        }
-
-    }
-
     @Override
     protected MultiTestLeakageInstance createLeakageInstanceFromLine(String line) {
         String[] columns = line.split(("\t"));
@@ -51,9 +44,7 @@ public class MultiTestLeakageDetector extends LeakageDetector<MultiTestLeakageIn
         final var telemetry = new MultiTestLeakageTelemetry(multiUseTestLeak);
 
         Invocation invocation = new Invocation(columns[getCsvInvocationColumn()]);
-        int internalLineNumber = Invocation.getInternalLineNumberFromInvocation(LeakageResult.getFolderPath(), invocation);
-        int actualLineNumber = getActualLineNumberFromInternalLineNumber(LeakageResult.getFolderPath(), internalLineNumber);
-
+        int actualLineNumber = getActualLineNumberFromInvocation(invocation);
 
         return new MultiTestLeakageInstance(actualLineNumber, invocation, telemetry.getTest());
 

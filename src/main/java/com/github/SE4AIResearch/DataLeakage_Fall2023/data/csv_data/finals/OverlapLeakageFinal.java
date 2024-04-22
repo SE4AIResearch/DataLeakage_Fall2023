@@ -1,6 +1,6 @@
-package com.github.SE4AIResearch.DataLeakage_Fall2023.data.finals;
+package com.github.SE4AIResearch.DataLeakage_Fall2023.data.csv_data.finals;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageData;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.csv_data.OverlapLeakageData;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -64,5 +64,10 @@ public class OverlapLeakageFinal implements OverlapLeakageData {
                 this.getInvo().equals(o.getInvo()) &&
                 this.getTrainMeth().equals(o.getTrainMeth()) &&
                 this.getCtx().equals(o.getCtx()));
+    }
+
+    @Override
+    public String getCsvFileName() {
+        return "FinalOverlapLeak.csv";
     }
 }

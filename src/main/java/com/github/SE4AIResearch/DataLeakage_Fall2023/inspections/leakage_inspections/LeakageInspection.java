@@ -1,9 +1,9 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageAnalysisParser;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageInstanceCollector;
 import com.intellij.codeInspection.LocalInspectionToolSession;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.jetbrains.python.inspections.PyInspection;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public abstract class LeakageInspection<T extends LeakageInstance> extends PyInspection {
     public abstract LeakageType getLeakageType();
-    public final LeakageAnalysisParser leakageAnalysisParser = new LeakageAnalysisParser();
+    public final LeakageInstanceCollector leakageInstanceCollector = new LeakageInstanceCollector();
 
     /**
      * @return A list of {@link LeakageInstance}s having the same type as this {@link LeakageInspection}.

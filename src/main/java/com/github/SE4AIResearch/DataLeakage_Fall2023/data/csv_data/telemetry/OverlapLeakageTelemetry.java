@@ -1,8 +1,8 @@
-package com.github.SE4AIResearch.DataLeakage_Fall2023.data.telemetry;
+package com.github.SE4AIResearch.DataLeakage_Fall2023.data.csv_data.telemetry;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageResult;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageData;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.finals.OverlapLeakageFinal;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.csv_data.OverlapLeakageData;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.csv_data.finals.OverlapLeakageFinal;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -100,5 +100,10 @@ public class OverlapLeakageTelemetry implements OverlapLeakageData {
                 this.getInvo().equals(o.getInvo()) &&
                 this.getTrainMeth().equals(o.getTrainMeth());
 
+    }
+
+    @Override
+    public String getCsvFileName() {
+        return "Telemetry_OverlapLeak.csv";
     }
 }

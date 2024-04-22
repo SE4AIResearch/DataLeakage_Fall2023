@@ -1,6 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.warning_renderers;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.LeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
 import com.intellij.codeInsight.highlighting.HighlightManager;
 import com.intellij.codeInspection.LocalQuickFix;
@@ -62,6 +62,20 @@ public class DataLeakageWarningRenderer {
 
                 anyLinesAreOnExclusionList(instance, PsiUtils.getNodeLineNumber(node, holder))) {
             holder.registerProblem(node, inspectionMessage, ProblemHighlightType.WARNING, fix);
+
+            highlight(project, editor, startoffset, endoffset, collection);
+        }
+    }
+    public static void renderDataLeakageWarning(LeakageInstance instance, PsiElement node, @NotNull ProblemsHolder holder, LocalQuickFix fix, Collection<RangeHighlighter> collection) {
+        int startoffset = node.getTextRange().getStartOffset();
+        int endoffset = node.getTextRange().getEndOffset();
+        Editor editor = PsiEditorUtil.findEditor(node); //Project curr_project = project[0];
+        PsiFile containingFile = node.getContainingFile();
+        Project project = containingFile.getProject();
+        if (!
+
+                anyLinesAreOnExclusionList(instance, PsiUtils.getNodeLineNumber(node, holder))) {
+            holder.registerProblem(node, "", ProblemHighlightType.WARNING, fix);
 
             highlight(project, editor, startoffset, endoffset, collection);
         }

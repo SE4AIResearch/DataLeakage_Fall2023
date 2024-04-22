@@ -1,9 +1,9 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.leakage_sources;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.OverlapLeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.OverlapLeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.OverlapLeakageSourceKeyword;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.source_keywords.OverlapLeakageSourceKeyword;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.Utils;
@@ -17,6 +17,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
+import com.intellij.util.DocumentUtil;
 import com.jetbrains.python.psi.PyCallExpression;
 import com.jetbrains.python.psi.PyElementVisitor;
 import com.jetbrains.python.psi.PyFunction;
@@ -130,9 +131,9 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
 //TODO: this won't work if assignment is split on multiple lines
             var instance = getInstanceForLeakageSourceAssociatedWithNode(overlapLeakageInstances, psiElement, holder);
-            var source = instance.getLeakageSource();
+            var source = instance.getLeakageSource();//TODO: move
 
-            if (source.getCause().equals(LeakageCause.SplitBeforeSample)) {
+            if (instance.getCause().equals(LeakageCause.SplitBeforeSample)) {
                 int offsetOfLeakageSource = document.getLineStartOffset(lineNumberOfLeakageSource);
 
 
@@ -140,6 +141,9 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
                 swapSplitAndSample(document, offsetOfLeakageSource, offsetOfSplitCall);
 
+
+                var newStr = "# TODO: Check the arguments provided to the call to split.\n";
+                document.insertString(offsetOfLeakageSource,  newStr);
 
                 //Remove split sample from leakage instances
                 Utils.removeFixedLinesFromLeakageInstance(project, document, offsetOfLeakageSource, lineNumberOfLeakageSource, offsetOfSplitCall);
