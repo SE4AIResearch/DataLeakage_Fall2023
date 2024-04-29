@@ -73,6 +73,6 @@ First version of a plugin that detects data leakage in Python code for ML.
 
 ## Usage
 
-- **<ins>Data Leakage Plugin Usage:</ins>**
+- **<ins>Data Leakage Plugin Demo Video:</ins>**
   Video down below shows how to run the data leakage plugin for a given python file in pycharm. 
-  https://youtu.be/gb9sF-MTsM8
+  https://youtu.be/6b8NjMS7NW8
