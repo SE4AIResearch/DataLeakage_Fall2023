@@ -17,7 +17,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
-import com.intellij.util.DocumentUtil;
 import com.jetbrains.python.psi.PyCallExpression;
 import com.jetbrains.python.psi.PyElementVisitor;
 import com.jetbrains.python.psi.PyFunction;
@@ -133,6 +132,8 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
             var instance = getInstanceForLeakageSourceAssociatedWithNode(overlapLeakageInstances, psiElement, holder);
             var source = instance.getLeakageSource();//TODO: move
 
+            var fixedLines = new ArrayList<Integer>();
+
             if (instance.getCause().equals(LeakageCause.SplitBeforeSample)) {
                 int offsetOfLeakageSource = document.getLineStartOffset(lineNumberOfLeakageSource);
 
@@ -143,17 +144,20 @@ public class OverlapLeakageSourceVisitor extends SourceElementVisitor<OverlapLea
 
 
                 var newStr = "# TODO: Check the arguments provided to the call to split.\n";
-                document.insertString(offsetOfLeakageSource,  newStr);
+                document.insertString(offsetOfLeakageSource, newStr);
 
                 //Remove split sample from leakage instances
-                Utils.removeFixedLinesFromLeakageInstance(project, document, offsetOfLeakageSource, lineNumberOfLeakageSource, offsetOfSplitCall);
+                fixedLines.addAll(Utils.getFixedLines(project, document, offsetOfLeakageSource, lineNumberOfLeakageSource, offsetOfSplitCall));
+                Utils.removeFixedLinesFromLeakageInstance(project, fixedLines);
 
                 QuickFixActionNotifier publisher = project.getMessageBus()
                         .syncPublisher(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC);
                 try {
                     // do action
                 } finally {
-                    publisher.afterAction();
+                    //publisher.afterAction();
+                    publisher.afterLinesFixed((fixedLines));
+
                 }
             }
 

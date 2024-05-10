@@ -3,7 +3,7 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspec
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageInstanceCollector;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.LeakageInstanceCollector;
 import com.intellij.codeInspection.LocalInspectionToolSession;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.jetbrains.python.inspections.PyInspection;

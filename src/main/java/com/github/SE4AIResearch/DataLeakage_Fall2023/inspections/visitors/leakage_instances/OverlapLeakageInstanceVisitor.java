@@ -22,6 +22,7 @@ import com.jetbrains.python.psi.PyFunction;
 import com.jetbrains.python.psi.PyReferenceExpression;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -113,7 +114,7 @@ public class OverlapLeakageInstanceVisitor extends InstanceElementVisitor<Overla
 //TODO: this won't work if assignment is split on multiple lines
             var instance = getLeakageInstanceAssociatedWithNode(overlapLeakageInstances, psiElement);
             var sourceLineNumbers = instance.getLeakageSource().get().getLineNumbers();//TODO: move
-
+            var fixedLines = new ArrayList<Integer>();
             if (instance.getCause().equals(LeakageCause.SplitBeforeSample)) {
                 for (var lineNumber : sourceLineNumbers) {
 
@@ -124,30 +125,29 @@ public class OverlapLeakageInstanceVisitor extends InstanceElementVisitor<Overla
                     var potentialSplitCall =
                             document.getText(new TextRange(potentialOffsetOfSplitCall, document.getLineEndOffset(lineNumber + 1)));
 
-                    moveSplitCallIfItExists(potentialSplitCall, document, potentialOffsetOfSplitCall, document.getLineStartOffset(lineNumber-1));
+                    moveSplitCallIfItExists(potentialSplitCall, document, potentialOffsetOfSplitCall, document.getLineStartOffset(lineNumber - 1));
 
                     //  swapSplitAndSample(document, offsetOfLeakageSource, offsetOfSplitCall,lineNumber);
 
 
                     var newStr = "# TODO: Check the arguments provided to the call to split.\n";
-                    document.insertString(document.getLineStartOffset(lineNumber-1), newStr);
+                    document.insertString(document.getLineStartOffset(lineNumber - 1), newStr);
 
                     //Remove split sample from leakage instances
-                    Utils.removeFixedLinesFromLeakageInstance(project, document, offsetOfLeakageSource, lineNumber, potentialOffsetOfSplitCall);
+                    fixedLines.addAll(Utils.getFixedLines(project, document, offsetOfLeakageSource, lineNumber, potentialOffsetOfSplitCall));
+                    Utils.removeFixedLinesFromLeakageInstance(project, fixedLines);
                 }
                 QuickFixActionNotifier publisher = project.getMessageBus()
                         .syncPublisher(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC);
                 try {
                     // do action
                 } finally {
-                    publisher.afterAction();
+                    publisher.afterLinesFixed((fixedLines));
                 }
             }
 
 
         }
-
-
 
 
         @NotNull

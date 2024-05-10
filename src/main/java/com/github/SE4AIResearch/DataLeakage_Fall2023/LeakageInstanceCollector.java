@@ -1,6 +1,7 @@
-package com.github.SE4AIResearch.DataLeakage_Fall2023.parsers;
+package com.github.SE4AIResearch.DataLeakage_Fall2023;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors.LeakageDetector;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors.MultiTestLeakageDetector;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.leakage_detectors.OverlapLeakageDetector;
@@ -35,6 +36,8 @@ public class LeakageInstanceCollector {
                 }
 
             });
+
+
         }
         this.leakageDetectors = new ArrayList<>();
         leakageDetectors.add(new OverlapLeakageDetector());

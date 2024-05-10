@@ -1,6 +1,6 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.listeners;
 
-import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageInstanceCollector;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.LeakageInstanceCollector;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import org.jetbrains.annotations.NotNull;

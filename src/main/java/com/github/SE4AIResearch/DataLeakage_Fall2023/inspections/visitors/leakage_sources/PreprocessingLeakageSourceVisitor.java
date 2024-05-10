@@ -115,15 +115,16 @@ public class PreprocessingLeakageSourceVisitor extends SourceElementVisitor<Prep
 
             moveSplitCallIfItExists(potentialSplitCall, document, potentialOffsetOfSplitCall, offset);
             var newStr = "# TODO: Check the arguments provided to the call to split.\n";
-            document.insertString(offset,  newStr);
-            Utils.removeFixedLinesFromLeakageInstance(project, document, offset, lineNumber, potentialOffsetOfSplitCall);
-
+            document.insertString(offset, newStr);
+            var fixedLines = Utils.getFixedLines(project, document, offset, lineNumber, potentialOffsetOfSplitCall);
+            Utils.removeFixedLinesFromLeakageInstance(project, fixedLines);
             QuickFixActionNotifier publisher = project.getMessageBus()
                     .syncPublisher(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC);
             try {
                 // do action
             } finally {
-                publisher.afterAction();
+                // publisher.afterAction();
+                publisher.afterLinesFixed(fixedLines);
             }
         }
 

@@ -2,12 +2,11 @@ package com.github.SE4AIResearch.DataLeakage_Fall2023.tool_windows;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAction;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_sources.LeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.parsers.LeakageInstanceCollector;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.LeakageInstanceCollector;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
@@ -85,7 +84,18 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             this.runLeakageAction = new RunLeakageAction(project);
 
             toolWindow.getComponent().add(contentPanel);
-            project.getMessageBus().connect().subscribe(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC, (QuickFixActionNotifier) this::updateTableData);
+            project.getMessageBus().connect().subscribe(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC,
+                    new QuickFixActionNotifier() {
+                        @Override
+                        public void afterAction() {
+                        }
+
+                        @Override
+                        public void afterLinesFixed(List<Integer> lines) {
+                            updateTableData();
+
+                        }
+                    });
 
             project.getMessageBus().connect().subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, new FileEditorManagerListener() {
                 @Override
