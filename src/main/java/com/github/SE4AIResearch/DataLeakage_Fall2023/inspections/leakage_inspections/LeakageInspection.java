@@ -4,6 +4,8 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.Leak
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.LeakageInstanceCollector;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_instances.InstanceInspection;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.leakage_inspections.leakage_sources.SourceInspection;
 import com.intellij.codeInspection.LocalInspectionToolSession;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.jetbrains.python.inspections.PyInspection;
@@ -27,6 +29,13 @@ public abstract class LeakageInspection<T extends LeakageInstance> extends PyIns
     }
 
     public abstract PyElementVisitor getElementVisitor(@NotNull ProblemsHolder holder);
+
+    /**
+     * This method is called by one of PyCharm's internal mechanisms.
+     * It causes the inspection visitors (namely, {@link InstanceInspection} and {@link SourceInspection})
+     * to traverse the PSI Tree of the Python file.
+     */
+
     @Override
     public  @NotNull PyElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly, @NotNull LocalInspectionToolSession session){
         if (PsiUtils.getInjectionHost(holder) != null) {

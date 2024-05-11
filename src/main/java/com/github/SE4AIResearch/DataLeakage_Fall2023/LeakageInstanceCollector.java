@@ -37,6 +37,18 @@ public class LeakageInstanceCollector {
 
             });
 
+            project.getMessageBus().connect().subscribe(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC,
+                    new QuickFixActionNotifier() {
+                        @Override
+                        public void afterAction() {
+                        }
+
+                        @Override
+                        public void afterLinesFixed(List<Integer> lines) {
+                            ClearLeakageInstancesOnLines(lines);
+                        }
+                    });
+
 
         }
         this.leakageDetectors = new ArrayList<>();
@@ -84,6 +96,10 @@ public class LeakageInstanceCollector {
         }
         return instances;
 
+    }
+
+    public void ClearLeakageInstancesOnLines(List<Integer> lineNumbers) {
+        this.leakageInstances.removeIf(instance -> lineNumbers.stream().anyMatch(lineNumber -> lineNumber.equals(instance.lineNumber())));
     }
 
     public List<LeakageInstance> GetLeakageInstances() {
