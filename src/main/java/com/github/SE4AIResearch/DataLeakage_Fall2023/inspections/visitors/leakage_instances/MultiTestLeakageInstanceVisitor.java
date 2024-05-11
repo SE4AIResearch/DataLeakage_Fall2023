@@ -4,6 +4,8 @@ import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.Mult
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionBundle;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.PsiUtils;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.visitors.Utils;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
@@ -89,28 +91,38 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
             var lineNumber = descriptor.getLineNumber();
 
             int offset = document.getLineStartOffset(lineNumber);
-            var lineNumbersToRemove = new ArrayList<Integer>();
+            var fixedLines = new ArrayList<Integer>();
 
-            renameVariablesInDocument(document, instance, lineNumbersToRemove);
+            renameVariablesInDocument(document, instance, fixedLines);
 
-            lineNumbersToRemove.add(document.getLineNumber(offset) + 1);
-            addLinesToExclusion(lineNumbersToRemove);
+            fixedLines.add(document.getLineNumber(offset) + 1);
+            Utils.removeFixedLinesFromLeakageInstance(project, fixedLines);
 
             DaemonCodeAnalyzer.getInstance(project).restart();
+
+            QuickFixActionNotifier publisher =
+                    project.getMessageBus().syncPublisher(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC);
+
+            try {
+
+            } finally {
+                publisher.afterLinesFixed(fixedLines);
+            }
         }
 
-        private void renameVariablesInDocument(Document document, PsiElement instance, ArrayList<Integer> lineNumbersToRemove) {
+        private void renameVariablesInDocument(Document document, PsiElement instance, ArrayList<Integer> fixedLines) {
+            var inc = 0;
             for (int i = 0; i < multiTestLeakageInstances.size(); i++) {
                 //Doesn't always reload contents of document from disk
                 var inst = multiTestLeakageInstances.get(i);
-                var lineNumber = inst.lineNumber() - 1;
+                var lineNumber = inst.lineNumber() - 1 + inc;
 
                 var lineTextRange = DocumentUtil.getLineTextRange(document, lineNumber);
                 var lineContent = document.getText(lineTextRange);
                 var newStr = "# TODO: load the test data for the evaluation.\n" + lineContent.replace(instance.getText(), instance.getText() + "_" + i);
                 document.replaceString(document.getLineStartOffset(lineNumber), document.getLineEndOffset(lineNumber), newStr);
-                lineNumbersToRemove.add(lineNumber);
-
+                fixedLines.add(lineNumber);
+                inc++;
             }
         }
 
