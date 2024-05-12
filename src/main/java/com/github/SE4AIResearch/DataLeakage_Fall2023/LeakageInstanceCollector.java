@@ -19,9 +19,9 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LeakageInstanceCollector {
-    private final List<LeakageDetector<? extends LeakageInstance>> leakageDetectors;
-    private List<LeakageInstance> leakageInstances;
+public class LeakageInstanceCollector implements  QuickFixActionNotifier{
+    //   private final List<LeakageDetector<? extends LeakageInstance>> leakageDetectors;
+    private static List<LeakageInstance> leakageInstances;
 
     private Project project;
 
@@ -39,9 +39,6 @@ public class LeakageInstanceCollector {
 
             project.getMessageBus().connect().subscribe(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC,
                     new QuickFixActionNotifier() {
-                        @Override
-                        public void afterAction() {
-                        }
 
                         @Override
                         public void afterLinesFixed(List<Integer> lines) {
@@ -51,11 +48,20 @@ public class LeakageInstanceCollector {
 
 
         }
-        this.leakageDetectors = new ArrayList<>();
+
+        // this.leakageInstances = LeakageInstances();
+        detectNewInstances();
+    }
+
+    public static void detectNewInstances() {
+        var leakageDetectors = new ArrayList<LeakageDetector<? extends LeakageInstance>>();
         leakageDetectors.add(new OverlapLeakageDetector());
         leakageDetectors.add(new MultiTestLeakageDetector());
         leakageDetectors.add(new PreprocessingLeakageDetector());
-        this.leakageInstances = LeakageInstances();
+        leakageInstances = new ArrayList<>();
+        for (var detector : leakageDetectors) {
+            leakageInstances.addAll(detector.FindLeakageInstances());
+        }
     }
 
     private void setProject() {
@@ -77,10 +83,10 @@ public class LeakageInstanceCollector {
     }
 
     private void clearLeakageInstances() {
-        this.leakageInstances = new ArrayList<>();
+        leakageInstances = new ArrayList<>();
     }
 
-    public boolean isLeakageDetected() {
+    public boolean isLeakageDetected(List<LeakageDetector<? extends LeakageInstance>> leakageDetectors) {
         for (var detector : leakageDetectors) {
             if (detector.isLeakageDetected()) {
                 return true;
@@ -89,26 +95,46 @@ public class LeakageInstanceCollector {
         return false;
     }
 
-    public List<LeakageInstance> LeakageInstances() {
-        List<LeakageInstance> instances = new ArrayList<>();
-        for (var detector : leakageDetectors) {
-            instances.addAll(detector.FindLeakageInstances());
-        }
-        return instances;
+    public static List<LeakageInstance> LeakageInstances() {
+//        List<LeakageInstance> instances = new ArrayList<>();
+//        for (var detector : leakageDetectors) {
+//            instances.addAll(detector.FindLeakageInstances());
+//        }
+//        return instances;
+        return leakageInstances;
 
     }
 
     public void ClearLeakageInstancesOnLines(List<Integer> lineNumbers) {
-        this.leakageInstances.removeIf(instance -> lineNumbers.stream().anyMatch(lineNumber -> lineNumber.equals(instance.lineNumber())));
+        leakageInstances.removeIf(instance -> lineNumbers.stream().anyMatch(lineNumber -> lineNumber.equals(instance.lineNumber())
+                )
+
+
+        );
+        for (var l : lineNumbers) {
+
+            leakageInstances.removeIf(instance -> instance.getLeakageSource().get()
+                    .getLineNumbers().stream().
+                    anyMatch(srcLine ->
+                            srcLine.equals(l))
+            );
+
+
+        }
+
     }
 
     public List<LeakageInstance> GetLeakageInstances() {
-        return this.leakageInstances;
+        return leakageInstances;
     }
 
     public List<LeakageInstance> SetLeakageInstances(List<LeakageInstance> leakageInstances) {
-        return this.leakageInstances;
+        return leakageInstances;
     }
 
+    @Override
+    public void afterLinesFixed(List<Integer> lines) {
+        ClearLeakageInstancesOnLines(lines);
+    }
 }
 

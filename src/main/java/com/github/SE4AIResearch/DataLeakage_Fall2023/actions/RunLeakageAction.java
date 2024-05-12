@@ -225,7 +225,6 @@ public class RunLeakageAction extends AnAction {
       };
 
       DaemonCodeAnalyzer.getInstance(project).restart();//TODO: restart only for psifile
-
       return runLeakage;
    }
 }

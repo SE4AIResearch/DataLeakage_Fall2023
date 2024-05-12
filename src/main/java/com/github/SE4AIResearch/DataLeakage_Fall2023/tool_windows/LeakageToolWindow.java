@@ -42,7 +42,7 @@ import java.util.List;
 
 // implementing DumbAware makes the tool window not available until indexing is complete
 public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
-
+LeakageInstanceCollector collector ;
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         LeakageToolWindowContent toolWindowContent = new LeakageToolWindowContent(project, toolWindow);
@@ -86,9 +86,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             toolWindow.getComponent().add(contentPanel);
             project.getMessageBus().connect().subscribe(QuickFixActionNotifier.QUICK_FIX_ACTION_TOPIC,
                     new QuickFixActionNotifier() {
-                        @Override
-                        public void afterAction() {
-                        }
+
 
                         @Override
                         public void afterLinesFixed(List<Integer> lines) {
@@ -213,6 +211,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
                 // Check to make sure a python file is open before updating the tables and time label
                 String fileName = getOnlyPythonFileName();
                 if (fileName != null && runLeakageAction.isCompleted()) {
+                    LeakageInstanceCollector.detectNewInstances();
                     update(fileName);
                 }
 
@@ -468,8 +467,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
         private Object[][] fetchInstanceData() {
             // for instance it is type, line number, variable name
             ArrayList<String[]> data;
-            LeakageInstanceCollector leakageInstanceCollector = new LeakageInstanceCollector();
-            List<LeakageInstance> leakageInstances = leakageInstanceCollector.LeakageInstances();
+            List<LeakageInstance> leakageInstances = LeakageInstanceCollector.LeakageInstances();
             int row = leakageInstances.size();
             int col = instanceTableModel.getColumnCount();
             HashMap<LeakageCause, String> causeMap = CauseMapFactory.getCauseMap();
@@ -521,8 +519,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
         private Object[][] fetchSummaryData() {
             Object[][] data = new String[3][2];
-            LeakageInstanceCollector leakageInstanceCollector = new LeakageInstanceCollector();
-            List<LeakageInstance> leakageInstances = leakageInstanceCollector.LeakageInstances();
+            List<LeakageInstance> leakageInstances = LeakageInstanceCollector.LeakageInstances();
             int preproc = 0, multitest = 0, overlap = 0;
 
             for (LeakageInstance instance : leakageInstances) {

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Utils {
     public static void removeFixedLinesFromLeakageInstance(@NotNull Project project, List<Integer> lineNumbersToRemove) {
-        InspectionUtils.addLinesToExclusion(lineNumbersToRemove);
+       // InspectionUtils.addLinesToExclusion(lineNumbersToRemove);
         //TODO: plus ones were added because of the todo message. Remove them.
         DaemonCodeAnalyzer.getInstance(project).restart();
     }
@@ -22,7 +22,7 @@ public class Utils {
         lineNumbersToRemove.add(document.getLineNumber(lineNumber - 1) + 1);
         lineNumbersToRemove.add(document.getLineNumber(offset) + 1 + 1);
         lineNumbersToRemove.add(document.getLineNumber(potentialOffsetOfSplitCall) + 1 + 1);
-        InspectionUtils.addLinesToExclusion(lineNumbersToRemove);
+     //   InspectionUtils.addLinesToExclusion(lineNumbersToRemove);
         //TODO: plus ones were added because of the todo message. Remove them.
         DaemonCodeAnalyzer.getInstance(project).restart();
         return lineNumbersToRemove;

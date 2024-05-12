@@ -85,4 +85,10 @@
                 class="com.github.SE4AIResearch.DataLeakage_Fall2023.listeners.LeakageFileChangeDetector"
                 topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
     </applicationListeners>
+    <projectListeners>
+
+        <listener
+                class="com.github.SE4AIResearch.DataLeakage_Fall2023.LeakageInstanceCollector"
+                topic="com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier"/>
+    </projectListeners>
 </idea-plugin>

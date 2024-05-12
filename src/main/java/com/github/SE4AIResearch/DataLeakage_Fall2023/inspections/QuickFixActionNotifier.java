@@ -10,7 +10,5 @@ public interface QuickFixActionNotifier {
     Topic<QuickFixActionNotifier> QUICK_FIX_ACTION_TOPIC =
             Topic.create("Quick Fix Action Notifier", QuickFixActionNotifier.class);
 
-    void afterAction();
-
     void afterLinesFixed(List<Integer> lines);
 }

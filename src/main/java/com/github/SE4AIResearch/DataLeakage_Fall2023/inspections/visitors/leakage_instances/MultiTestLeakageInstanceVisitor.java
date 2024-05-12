@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.InspectionUtils.addLinesToExclusion;
-
 public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<MultiTestLeakageInstance> {
     private final List<MultiTestLeakageInstance> multiTestLeakageInstances;
     private final PsiRecursiveElementVisitor recursiveElementVisitor;
