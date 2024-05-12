@@ -100,17 +100,18 @@ public class MultiTestLeakageInstanceVisitor extends InstanceElementVisitor<Mult
         }
 
         private void renameVariablesInDocument(Document document, PsiElement instance, ArrayList<Integer> lineNumbersToRemove) {
+            var inc = 0;
             for (int i = 0; i < multiTestLeakageInstances.size(); i++) {
                 //Doesn't always reload contents of document from disk
                 var inst = multiTestLeakageInstances.get(i);
-                var lineNumber = inst.lineNumber() - 1;
+                var lineNumber = inst.lineNumber() - 1 + inc;
 
                 var lineTextRange = DocumentUtil.getLineTextRange(document, lineNumber);
                 var lineContent = document.getText(lineTextRange);
                 var newStr = "# TODO: load the test data for the evaluation.\n" + lineContent.replace(instance.getText(), instance.getText() + "_" + i);
                 document.replaceString(document.getLineStartOffset(lineNumber), document.getLineEndOffset(lineNumber), newStr);
                 lineNumbersToRemove.add(lineNumber);
-
+                inc++;
             }
         }
 
