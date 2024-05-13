@@ -35,6 +35,7 @@ public class OverlapLeakageInstance implements LeakageInstance {
     public Optional<LeakageSource> getLeakageSource() {
         return Optional.of(leakageSource);
     }
+
     @Override
     public LeakageCause getCause() {
         if (this.leakageSource.getTaints().stream().anyMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("vector"))) {
@@ -43,9 +44,9 @@ public class OverlapLeakageInstance implements LeakageInstance {
             return LeakageCause.SplitBeforeSample;
         } else if (this.leakageSource.getTaints().stream().allMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("flow"))) {
             return LeakageCause.DataAugmentation;
-        } else {
-            return LeakageCause.unknownOverlap;
         }
+        return LeakageCause.unknownOverlap;
+        
     }
 
     @Override
