@@ -1,9 +1,8 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.tool_windows;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.actions.RunLeakageAction;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_sources.LeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Utils;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances.LeakageInstance;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.inspections.QuickFixActionNotifier;
@@ -23,8 +22,10 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
+import com.intellij.ui.hover.TableHoverListener;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -40,6 +41,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.intellij.ui.render.RenderingUtil.PAINT_HOVERED_BACKGROUND;
+
 
 // implementing DumbAware makes the tool window not available until indexing is complete
 public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
@@ -75,11 +79,6 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
         public LeakageToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
             this.project = project;
             this.contentPanel = createContentPanel(toolWindow);
-//         this.timeLabel = new JBLabel();
-//         this.summaryTable = new JBTable();
-//         this.instanceTable = new JBTable();
-//         this.instanceTableModel = new DefaultTableModel();
-//         this.summaryTableModel = new DefaultTableModel();
             this.execTime = -1;
             this.formattedTimeString = "";
             this.runLeakageAction = new RunLeakageAction(project);
@@ -248,7 +247,33 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
                     return false;
                 }
             };
-            summaryTable = new JBTable(summaryTableModel);
+            summaryTable = new JBTable(summaryTableModel) {
+                @Override
+                protected @Nullable Color getHoveredRowBackground() {
+                    return null;
+                }
+
+                @Override
+                public String getToolTipText(final @NotNull MouseEvent event) {
+                    int row, column;
+
+                    row = this.rowAtPoint(event.getPoint());
+                    column = this.columnAtPoint(event.getPoint());
+                    DefaultTableModel model = (DefaultTableModel) this.getModel();
+
+
+                    String cellValue = (String) model.getValueAt(row, column);
+
+                    return cellValue;
+
+                }
+            };
+            TableHoverListener.DEFAULT.removeFrom(summaryTable);
+
+            summaryTable.putClientProperty(PAINT_HOVERED_BACKGROUND, Boolean.FALSE);
+
+
+            summaryTable.setOpaque(false);
 
             summaryTable.setValueAt("Preprocessing Leakage", 0, 0);
             summaryTable.setValueAt("Multi-Test Leakage", 1, 0);
@@ -347,8 +372,34 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
                     // Make all cells non-editable
                     return false;
                 }
+
             };
-            instanceTable = new JBTable(instanceTableModel);
+            instanceTable = new JBTable(instanceTableModel) {
+                @Override
+                protected @Nullable Color getHoveredRowBackground() {
+                    return null;
+                }
+
+                @Override
+                public String getToolTipText(final @NotNull MouseEvent event) {
+                    int row, column;
+
+                    row = this.rowAtPoint(event.getPoint());
+                    column = this.columnAtPoint(event.getPoint());
+                    DefaultTableModel model = (DefaultTableModel) this.getModel();
+
+
+                    String cellValue = (String) model.getValueAt(row, column);
+
+                    return cellValue;
+
+                }
+
+            };
+            TableHoverListener.DEFAULT.removeFrom(instanceTable);
+
+
+            instanceTable.putClientProperty(PAINT_HOVERED_BACKGROUND, Boolean.FALSE);
 
             JBScrollPane scrollPane = new JBScrollPane(instanceTable);
             scrollPane.setBorder(BorderFactory.createTitledBorder("Leakage Instances"));
