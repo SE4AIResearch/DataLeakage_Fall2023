@@ -247,24 +247,24 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
                     return null;
                 }
 
-                @Override
-                public String getToolTipText(final @NotNull MouseEvent event) {
-                    int row, column;
-
-                    row = this.rowAtPoint(event.getPoint());
-                    column = this.columnAtPoint(event.getPoint());
-                    DefaultTableModel model = (DefaultTableModel) this.getModel();
-
-
-                    String cellValue = null;
-                    try {
-                        cellValue = (String) model.getValueAt(row, column);
-                    } catch (ArrayIndexOutOfBoundsException e) {
-
-                    }
-                    return cellValue;
-
-                }
+//                @Override
+//                public String getToolTipText(final @NotNull MouseEvent event) {
+//                    int row, column;
+//
+//                    row = this.rowAtPoint(event.getPoint());
+//                    column = this.columnAtPoint(event.getPoint());
+//                    DefaultTableModel model = (DefaultTableModel) this.getModel();
+//
+//
+//                    String cellValue = null;
+//                    try {
+//                        cellValue = (String) model.getValueAt(row, column);
+//                    } catch (ArrayIndexOutOfBoundsException e) {
+//
+//                    }
+//                    return cellValue;
+//
+//                }
             };
 
             summaryTable.setExpandableItemsEnabled(false);
@@ -373,22 +373,22 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             instanceTable = new JBTable(instanceTableModel) {
 
 
-                @Override
-                public String getToolTipText(final @NotNull MouseEvent event) {
-                    int row, column;
-
-                    row = this.rowAtPoint(event.getPoint());
-                    column = this.columnAtPoint(event.getPoint());
-                    DefaultTableModel model = (DefaultTableModel) this.getModel();
-                    String cellValue = null;
-                    try {
-                        cellValue = (String) model.getValueAt(row, column);
-                    } catch (ArrayIndexOutOfBoundsException e) {
-
-                    }
-                    return cellValue;
-
-                }
+//                @Override
+//                public String getToolTipText(final @NotNull MouseEvent event) {
+//                    int row, column;
+//
+//                    row = this.rowAtPoint(event.getPoint());
+//                    column = this.columnAtPoint(event.getPoint());
+//                    DefaultTableModel model = (DefaultTableModel) this.getModel();
+//                    String cellValue = null;
+//                    try {
+//                        cellValue = (String) model.getValueAt(row, column);
+//                    } catch (ArrayIndexOutOfBoundsException e) {
+//
+//                    }
+//                    return cellValue;
+//
+//                }
 
             };
             instanceTable.setExpandableItemsEnabled(false);
@@ -412,7 +412,6 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
         // Method to resize columns to fit data
         private void packColumns(JBTable table) {
             int maxHeaderWidth = findMaxHeaderWidth(table);
-            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             for (int i = 0; i < table.getColumnCount(); i++) {
                 TableColumn column = table.getColumnModel().getColumn(i);
                 int maxWidth = 0;
@@ -431,8 +430,8 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             }
         }
 
-        private int findMaxHeaderWidth(JBTable table) {            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
+        private int findMaxHeaderWidth(JBTable table) {
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             JTableHeader header = table.getTableHeader();
             int maxHeaderWidth = 0;
             for (int i = 0; i < table.getColumnCount() ; i++) {
