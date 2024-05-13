@@ -22,16 +22,12 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
-import com.intellij.ui.hover.TableHoverListener;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -41,8 +37,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import static com.intellij.ui.render.RenderingUtil.PAINT_HOVERED_BACKGROUND;
 
 
 // implementing DumbAware makes the tool window not available until indexing is complete
@@ -253,27 +247,29 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
                     return null;
                 }
 
-                @Override
-                public String getToolTipText(final @NotNull MouseEvent event) {
-                    int row, column;
-
-                    row = this.rowAtPoint(event.getPoint());
-                    column = this.columnAtPoint(event.getPoint());
-                    DefaultTableModel model = (DefaultTableModel) this.getModel();
-
-
-                    String cellValue = (String) model.getValueAt(row, column);
-
-                    return cellValue;
-
-                }
+//                @Override
+//                public String getToolTipText(final @NotNull MouseEvent event) {
+//                    int row, column;
+//
+//                    row = this.rowAtPoint(event.getPoint());
+//                    column = this.columnAtPoint(event.getPoint());
+//                    DefaultTableModel model = (DefaultTableModel) this.getModel();
+//
+//
+//                    String cellValue = null;
+//                    try {
+//                        cellValue = (String) model.getValueAt(row, column);
+//                    } catch (ArrayIndexOutOfBoundsException e) {
+//
+//                    }
+//                    return cellValue;
+//
+//                }
             };
-            TableHoverListener.DEFAULT.removeFrom(summaryTable);
 
-            summaryTable.putClientProperty(PAINT_HOVERED_BACKGROUND, Boolean.FALSE);
+            summaryTable.setExpandableItemsEnabled(false);
+            summaryTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
-
-            summaryTable.setOpaque(false);
 
             summaryTable.setValueAt("Preprocessing Leakage", 0, 0);
             summaryTable.setValueAt("Multi-Test Leakage", 1, 0);
@@ -375,31 +371,28 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
             };
             instanceTable = new JBTable(instanceTableModel) {
-                @Override
-                protected @Nullable Color getHoveredRowBackground() {
-                    return null;
-                }
-
-                @Override
-                public String getToolTipText(final @NotNull MouseEvent event) {
-                    int row, column;
-
-                    row = this.rowAtPoint(event.getPoint());
-                    column = this.columnAtPoint(event.getPoint());
-                    DefaultTableModel model = (DefaultTableModel) this.getModel();
 
 
-                    String cellValue = (String) model.getValueAt(row, column);
-
-                    return cellValue;
-
-                }
+//                @Override
+//                public String getToolTipText(final @NotNull MouseEvent event) {
+//                    int row, column;
+//
+//                    row = this.rowAtPoint(event.getPoint());
+//                    column = this.columnAtPoint(event.getPoint());
+//                    DefaultTableModel model = (DefaultTableModel) this.getModel();
+//                    String cellValue = null;
+//                    try {
+//                        cellValue = (String) model.getValueAt(row, column);
+//                    } catch (ArrayIndexOutOfBoundsException e) {
+//
+//                    }
+//                    return cellValue;
+//
+//                }
 
             };
-            TableHoverListener.DEFAULT.removeFrom(instanceTable);
-
-
-            instanceTable.putClientProperty(PAINT_HOVERED_BACKGROUND, Boolean.FALSE);
+            instanceTable.setExpandableItemsEnabled(false);
+            instanceTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
             JBScrollPane scrollPane = new JBScrollPane(instanceTable);
             scrollPane.setBorder(BorderFactory.createTitledBorder("Leakage Instances"));
@@ -418,6 +411,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
         // Method to resize columns to fit data
         private void packColumns(JBTable table) {
+            int maxHeaderWidth = findMaxHeaderWidth(table);
             for (int i = 0; i < table.getColumnCount(); i++) {
                 TableColumn column = table.getColumnModel().getColumn(i);
                 int maxWidth = 0;
@@ -426,7 +420,9 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
                 for (int row = 0; row < table.getRowCount(); row++) {
                     TableCellRenderer renderer = table.getCellRenderer(row, i);
                     Component comp = table.prepareRenderer(renderer, row, i);
-                    maxWidth = Math.max(comp.getPreferredSize().width, maxWidth);
+                    int width = comp.getPreferredSize().width + table.getIntercellSpacing().width;
+
+                    maxWidth = Math.max(maxHeaderWidth, Math.max(width, maxWidth));
                 }
 
                 // Set the column width to the maximum width
@@ -434,18 +430,24 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             }
         }
 
-        private void packColumnsToHeader(JBTable table) {
+        private int findMaxHeaderWidth(JBTable table) {
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             JTableHeader header = table.getTableHeader();
-            for (int i = 0; i < table.getColumnCount() - 1; i++) {
+            int maxHeaderWidth = 0;
+            for (int i = 0; i < table.getColumnCount() ; i++) {
                 TableColumn col = table.getColumnModel().getColumn(i);
                 TableCellRenderer headerRenderer = col.getHeaderRenderer();
                 if (headerRenderer == null) {
                     headerRenderer = header.getDefaultRenderer();
                 }
                 Component headerComp = headerRenderer.getTableCellRendererComponent(table, col.getHeaderValue(), false, false, 0, i);
-                int width = (int) headerComp.getPreferredSize().width;
-                col.setPreferredWidth(width - 50);
+                int width = (int) headerComp.getPreferredSize().width + table.getIntercellSpacing().width;
+            //    col.setPreferredWidth(width - 50);
+                col.setPreferredWidth(width );
+
+                maxHeaderWidth = Math.max(maxHeaderWidth, width );
             }
+            return maxHeaderWidth;
         }
 
         private void clearTableData() {
@@ -453,15 +455,17 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             clearTable(instanceTable, instanceTableModel);
 
             // Refresh table view
+            packColumns(instanceTable);
             instanceTable.revalidate();
             instanceTable.repaint();
-            packColumnsToHeader(instanceTable);
+           // packColumnsToHeader(instanceTable);
 
             // Update Summary
             clearTable(summaryTable, summaryTableModel);
 
 
             // Refresh table view
+            packColumns(summaryTable);
             summaryTable.revalidate();
             summaryTable.repaint();
 
@@ -483,9 +487,11 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             }
 
             // Refresh table view
+            //        packColumnsToHeader(instanceTable);
+            packColumns(instanceTable);
             instanceTable.revalidate();
             instanceTable.repaint();
-            packColumnsToHeader(instanceTable);
+
 
             // Update Summary
             clearTable(summaryTable, summaryTableModel);
@@ -502,8 +508,10 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             instanceTable.addMouseListener(myTableMouseListener);
 
             // Refresh table view
+            packColumns(summaryTable);
             summaryTable.revalidate();
             summaryTable.repaint();
+
         }
 
         private Object[][] fetchInstanceData() {

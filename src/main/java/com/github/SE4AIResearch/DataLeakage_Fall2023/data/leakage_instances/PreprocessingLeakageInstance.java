@@ -1,13 +1,11 @@
 package com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_instances;
 
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Invocation;
+import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Utils;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_sources.LeakageSource;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.data.leakage_sources.PreprocessingLeakageSource;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.Utils;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.data.taints.Taint;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageCause;
 import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.LeakageType;
-import com.github.SE4AIResearch.DataLeakage_Fall2023.enums.taints.TaintLabel;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -54,7 +52,14 @@ public class PreprocessingLeakageInstance implements LeakageInstance {
 
     @Override
     public LeakageCause getCause() {
-        return null;
+        if (this.leakageSource.getTaints().stream().anyMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("vector"))) {
+            return LeakageCause.VectorizingTextData;
+        } else if (this.leakageSource.getTaints().stream().allMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("split") || taint.getPyCallExpression().toLowerCase().contains("sample"))) {
+            return LeakageCause.SplitBeforeSample;
+        } else if (this.leakageSource.getTaints().stream().allMatch(taint -> taint.getPyCallExpression().toLowerCase().contains("flow"))) {
+            return LeakageCause.DataAugmentation;
+        }
+        return LeakageCause.unknownPreprocessing;
     }
 
 
