@@ -268,7 +268,6 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             };
 
             summaryTable.setExpandableItemsEnabled(false);
-            summaryTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 
             summaryTable.setValueAt("Preprocessing Leakage", 0, 0);
@@ -282,7 +281,6 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
             summaryPanel.add(scrollPane, BorderLayout.CENTER);
             summaryPanel.setMinimumSize(new Dimension(0, summaryTable.getRowHeight() * 4 + summaryTable.getTableHeader().getPreferredSize().height));
-
 
             return summaryPanel;
         }
@@ -392,7 +390,6 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
             };
             instanceTable.setExpandableItemsEnabled(false);
-            instanceTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
             JBScrollPane scrollPane = new JBScrollPane(instanceTable);
             scrollPane.setBorder(BorderFactory.createTitledBorder("Leakage Instances"));
@@ -426,15 +423,23 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
                 }
 
                 // Set the column width to the maximum width
-                column.setPreferredWidth(maxWidth);
+                column.setMinWidth(maxWidth);
             }
         }
 
+        private int getTotalWidth(JBTable table) {
+            int sum = 0;
+            for (int i = 0; i < table.getColumnCount(); i++) {
+                TableColumn column = table.getColumnModel().getColumn(i);
+                sum += column.getWidth()+table.getIntercellSpacing().width;
+            }
+            return sum;
+        }
+
         private int findMaxHeaderWidth(JBTable table) {
-            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             JTableHeader header = table.getTableHeader();
             int maxHeaderWidth = 0;
-            for (int i = 0; i < table.getColumnCount() ; i++) {
+            for (int i = 0; i < table.getColumnCount(); i++) {
                 TableColumn col = table.getColumnModel().getColumn(i);
                 TableCellRenderer headerRenderer = col.getHeaderRenderer();
                 if (headerRenderer == null) {
@@ -442,10 +447,10 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
                 }
                 Component headerComp = headerRenderer.getTableCellRendererComponent(table, col.getHeaderValue(), false, false, 0, i);
                 int width = (int) headerComp.getPreferredSize().width + table.getIntercellSpacing().width;
-            //    col.setPreferredWidth(width - 50);
-                col.setPreferredWidth(width );
+                //    col.setPreferredWidth(width - 50);
+                col.setMinWidth(width);
 
-                maxHeaderWidth = Math.max(maxHeaderWidth, width );
+                maxHeaderWidth = Math.max(maxHeaderWidth, width);
             }
             return maxHeaderWidth;
         }
@@ -455,17 +460,17 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             clearTable(instanceTable, instanceTableModel);
 
             // Refresh table view
-            packColumns(instanceTable);
+            //packColumns(instanceTable);
             instanceTable.revalidate();
             instanceTable.repaint();
-           // packColumnsToHeader(instanceTable);
+            // packColumnsToHeader(instanceTable);
 
             // Update Summary
             clearTable(summaryTable, summaryTableModel);
 
 
             // Refresh table view
-            packColumns(summaryTable);
+//packColumns(summaryTable);
             summaryTable.revalidate();
             summaryTable.repaint();
 
@@ -488,7 +493,13 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
             // Refresh table view
             //        packColumnsToHeader(instanceTable);
+         //   instanceTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             packColumns(instanceTable);
+
+            //Using the instance table to compute the width, since this table will likely be larger
+            //than the summary table
+            var totalWidth =getTotalWidth(instanceTable);
+            instanceTable.setMinimumSize(new Dimension(totalWidth,instanceTable.getHeight()));
             instanceTable.revalidate();
             instanceTable.repaint();
 
@@ -508,9 +519,12 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             instanceTable.addMouseListener(myTableMouseListener);
 
             // Refresh table view
+            //summaryTable.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
             packColumns(summaryTable);
             summaryTable.revalidate();
             summaryTable.repaint();
+
+
 
         }
 
