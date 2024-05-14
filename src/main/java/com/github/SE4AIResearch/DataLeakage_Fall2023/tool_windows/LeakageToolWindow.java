@@ -24,10 +24,12 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -87,7 +89,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
                 }
 
             });
-            updateTableData();
+            //updateTableData();
         }
 
         private JPanel createContentPanel(@NotNull ToolWindow toolWindow) {
@@ -123,7 +125,6 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             GridAdder.addObject(controlsPanel, mainPanel, layout, gbc, 0, row, 1, 1, 1, 0);
 
             mainPanel.setLayout(layout);
-
             return mainPanel;
         }
 
@@ -242,10 +243,6 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
                 }
             };
             summaryTable = new JBTable(summaryTableModel) {
-                @Override
-                protected @Nullable Color getHoveredRowBackground() {
-                    return null;
-                }
 
 //                @Override
 //                public String getToolTipText(final @NotNull MouseEvent event) {
@@ -391,12 +388,19 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             };
             instanceTable.setExpandableItemsEnabled(false);
 
-            JBScrollPane scrollPane = new JBScrollPane(instanceTable);
-            scrollPane.setBorder(BorderFactory.createTitledBorder("Leakage Instances"));
+            JBScrollPane scrollPane = new JBScrollPane(instanceTable,
+                    ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
+//
+//            var hScrollBar = scrollPane.createHorizontalScrollBar();
+//            var vScrollBar = scrollPane.createVerticalScrollBar();
+//            scrollPane.add(hScrollBar);
+//            scrollPane.add(vScrollBar);
+//            scrollPane.revalidate();
+            scrollPane.setBorder(BorderFactory.createTitledBorder("Leakage Instances"));
             instancesPanel.add(scrollPane, BorderLayout.CENTER);
 
-
+            instancesPanel.setMinimumSize(new Dimension(0, instanceTable.getRowHeight() * 20 + instanceTable.getTableHeader().getPreferredSize().height));
             return instancesPanel;
         }
 
@@ -431,7 +435,7 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             int sum = 0;
             for (int i = 0; i < table.getColumnCount(); i++) {
                 TableColumn column = table.getColumnModel().getColumn(i);
-                sum += column.getWidth()+table.getIntercellSpacing().width;
+                sum += column.getWidth() + table.getIntercellSpacing().width;
             }
             return sum;
         }
@@ -493,15 +497,16 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
 
             // Refresh table view
             //        packColumnsToHeader(instanceTable);
-         //   instanceTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            //   instanceTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             packColumns(instanceTable);
 
             //Using the instance table to compute the width, since this table will likely be larger
             //than the summary table
-            var totalWidth =getTotalWidth(instanceTable);
-            instanceTable.setMinimumSize(new Dimension(totalWidth,instanceTable.getHeight()));
+            var totalWidth = getTotalWidth(instanceTable);
+            instanceTable.setMinimumSize(new Dimension(totalWidth, instanceTable.getHeight()));
             instanceTable.revalidate();
             instanceTable.repaint();
+
 
 
             // Update Summary
@@ -523,7 +528,6 @@ public class LeakageToolWindow implements ToolWindowFactory, DumbAware {
             packColumns(summaryTable);
             summaryTable.revalidate();
             summaryTable.repaint();
-
 
 
         }
